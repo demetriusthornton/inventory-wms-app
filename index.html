@@ -1,13 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <title>Blue IT Inventory</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>inventory-wms-app</title>
   </head>
-  <body>
+  <body class="bg-slate-100">
     <div id="root"></div>
+
+    <script>
+      // Replace these values with your real Firebase config
+      window.__firebase_config = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID",
+      };
+
+      // Unique id for this app instance
+      window.__app_id = "wms-app-prod";
+
+      // Optional custom token from your backend
+      // Leave null to fall back to anonymous auth
+      window.__initial_auth_token = null;
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
