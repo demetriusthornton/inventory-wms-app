@@ -8,17 +8,20 @@ import React, {
   useImperativeHandle,
 } from "react";
 import type { ReactNode } from "react";
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+
+import { initializeApp, getApps } from "firebase/app";
+import type { FirebaseApp } from "firebase/app";
+
 import {
   getAuth,
   signInAnonymously,
   signInWithCustomToken,
   onAuthStateChanged,
-  User,
 } from "firebase/auth";
+import type { User } from "firebase/auth";
+
 import {
   getFirestore,
-  Firestore,
   collection,
   doc,
   onSnapshot,
@@ -30,6 +33,7 @@ import {
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import type { Firestore } from "firebase/firestore";
 
 type PageKey = "inventory" | "pos" | "poHistory" | "transfers" | "warehouses";
 
@@ -73,12 +77,35 @@ interface PurchaseOrder {
   manufacture: string;
   receivingWarehouseId: string;
   items: PurchaseOrderItem[];
-  status: PurchaseOrderStatus;
+  status: "pending" | "received" | "deleted";
   orderDate: string;
-  receivedDate?: string;
-  deletedDate?: string;
+  receivedDate?: string | null;
+  deletedDate?: string | null;
+}
+interface PoFormState {
+  orderNumber: string;
+  vendor: string;
+  manufacture: string;
+  receivingWarehouseId: string;
+  items: PurchaseOrderItem[];
 }
 
+const makeEmptyPoForm = (): PoFormState => ({
+  orderNumber: "",
+  vendor: "",
+  manufacture: "",
+  receivingWarehouseId: "",
+  items: [
+    {
+      itemName: "",
+      modelNumber: "",
+      amountOrdered: 0,
+      category: "",
+      orderCost: 0,
+      amountReceived: 0,
+    },
+  ],
+});
 type TransferStatus = "pending" | "in-transit" | "completed";
 
 interface Transfer {
@@ -765,6 +792,87 @@ const App: React.FC = () => {
     [inventoryItems, onOrderMap]
   );
 
+  const warehouseSelectOptions = useMemo(
+    () =>
+      warehouses.map((w) => ({
+        label: w.shortCode || w.name,
+        value: w.id,
+      })),
+    [warehouses]
+  );
+
+  const inventoryCategoryOptions = useMemo(() => {
+    const set = new Set<string>();
+    enrichedInventory.forEach((item) => {
+      if (item.category) set.add(item.category);
+    });
+    return Array.from(set).map((c) => ({ label: c, value: c }));
+  }, [enrichedInventory]);
+
+  const poVendorOptions = useMemo(() => {
+    const set = new Set<string>();
+    purchaseOrders.forEach((po) => {
+      if (po.vendor) set.add(po.vendor);
+    });
+    return Array.from(set).map((v) => ({ label: v, value: v }));
+  }, [purchaseOrders]);
+
+  const poManufactureOptions = useMemo(() => {
+    const set = new Set<string>();
+    purchaseOrders.forEach((po) => {
+      if (po.manufacture) set.add(po.manufacture);
+    });
+    return Array.from(set).map((m) => ({ label: m, value: m }));
+  }, [purchaseOrders]);
+
+  const poHistoryStatusOptions = useMemo(() => {
+    const set = new Set<string>();
+    poHistory.forEach((po) => {
+      if (po.status) set.add(po.status);
+    });
+    return Array.from(set).map((s) => ({ label: s, value: s }));
+  }, [poHistory]);
+
+  const transferStatusOptions = useMemo(() => {
+    const set = new Set<string>();
+    transfers.forEach((t) => {
+      if (t.status) set.add(t.status);
+    });
+    return Array.from(set).map((s) => ({ label: s, value: s }));
+  }, [transfers, poHistory]);
+
+  const transferSourceOptions = useMemo(() => {
+    const set = new Set<string>();
+    transfers.forEach((t) => set.add(t.sourceBranchId));
+    return Array.from(set).map((id) => {
+      const wh = warehouses.find((w) => w.id === id);
+      return {
+        label: wh ? wh.shortCode || wh.name : id,
+        value: id,
+      };
+    });
+  }, [transfers, warehouses]);
+
+  const transferDestinationOptions = useMemo(() => {
+    const set = new Set<string>();
+    transfers.forEach((t) => set.add(t.destinationBranchId));
+    return Array.from(set).map((id) => {
+      const wh = warehouses.find((w) => w.id === id);
+      return {
+        label: wh ? wh.shortCode || wh.name : id,
+        value: id,
+      };
+    });
+  }, [transfers, warehouses]);
+
+  const warehouseStateOptions = useMemo(() => {
+    const set = new Set<string>();
+    warehouses.forEach((w) => {
+      if (w.state) set.add(w.state);
+    });
+    return Array.from(set).map((s) => ({ label: s, value: s }));
+  }, [warehouses]);
+
   const [inventoryModalOpen, setInventoryModalOpen] = useState(false);
   const [editingInventoryItem, setEditingInventoryItem] =
     useState<InventoryItem | null>(null);
@@ -916,22 +1024,10 @@ const App: React.FC = () => {
     messageBoxRef.current?.alert("Inventory CSV import complete.");
   };
 
-  const [poForm, setPoForm] = useState<Partial<PurchaseOrder>>({
-    orderNumber: "",
-    vendor: "",
-    manufacture: "",
-    receivingWarehouseId: "",
-    items: [],
-  });
+  const [poForm, setPoForm] = useState<PoFormState>(makeEmptyPoForm);
 
   const resetPoForm = () => {
-    setPoForm({
-      orderNumber: "",
-      vendor: "",
-      manufacture: "",
-      receivingWarehouseId: "",
-      items: [],
-    });
+    setPoForm(makeEmptyPoForm());
     setEditingPO(null);
   };
 
@@ -942,7 +1038,10 @@ const App: React.FC = () => {
 
   const openPoModalForEdit = (po: PurchaseOrder) => {
     setPoForm({
-      ...po,
+      orderNumber: po.orderNumber,
+      vendor: po.vendor,
+      manufacture: po.manufacture,
+      receivingWarehouseId: po.receivingWarehouseId,
       items: po.items.map((it) => ({ ...it })),
     });
     setEditingPO(po);
@@ -950,23 +1049,20 @@ const App: React.FC = () => {
   };
 
   const handleAddPoLineItem = () => {
-    setPoForm((prev) => {
-      const items = (prev.items ?? []) as PurchaseOrderItem[];
-      return {
-        ...prev,
-        items: [
-          ...items,
-          {
-            itemName: "",
-            modelNumber: "",
-            amountOrdered: 0,
-            category: "",
-            orderCost: 0,
-            amountReceived: 0,
-          },
-        ],
-      };
-    });
+    setPoForm((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          itemName: "",
+          modelNumber: "",
+          amountOrdered: 0,
+          category: "",
+          orderCost: 0,
+          amountReceived: 0,
+        },
+      ],
+    }));
   };
 
   const handleUpdatePoLineItem = (
@@ -975,14 +1071,14 @@ const App: React.FC = () => {
     value: any
   ) => {
     setPoForm((prev) => {
-      const items = [...((prev.items ?? []) as PurchaseOrderItem[])];
+      const items = [...prev.items];
       const item = { ...items[index] };
       if (
         field === "amountOrdered" ||
         field === "orderCost" ||
         field === "amountReceived"
       ) {
-        item[field] = Number(value);
+        (item as any)[field] = Number(value);
       } else {
         (item as any)[field] = value;
       }
@@ -993,27 +1089,38 @@ const App: React.FC = () => {
 
   const handleRemovePoLineItem = (index: number) => {
     setPoForm((prev) => {
-      const items = [...((prev.items ?? []) as PurchaseOrderItem[])];
+      const items = [...prev.items];
       items.splice(index, 1);
       return { ...prev, items };
     });
   };
 
   const handleSavePurchaseOrder = async () => {
-    if (!db || !basePath) return;
-    const { orderNumber, vendor, manufacture, receivingWarehouseId, items } =
-      poForm;
-    if (!orderNumber || !vendor || !manufacture || !receivingWarehouseId) {
-      messageBoxRef.current?.alert("Fill in required PO fields.");
+    if (!db || !basePath) {
+      console.error("DB or basePath missing, cannot save PO");
+      messageBoxRef.current?.alert(
+        "Internal configuration error. Database is not ready."
+      );
       return;
     }
+
+    const { orderNumber, vendor, manufacture, receivingWarehouseId, items } =
+      poForm;
+
+    if (!orderNumber || !vendor || !manufacture || !receivingWarehouseId) {
+      messageBoxRef.current?.alert("Fill in all required PO fields.");
+      return;
+    }
+
     if (!items || items.length === 0) {
       messageBoxRef.current?.alert("Add at least one line item.");
       return;
     }
+
     const id = editingPO?.id ?? crypto.randomUUID();
     const ref = doc(collection(db, `${basePath}/purchaseOrders`), id);
     const nowIso = new Date().toISOString();
+
     const po: PurchaseOrder = {
       id,
       orderNumber,
@@ -1030,12 +1137,36 @@ const App: React.FC = () => {
       })),
       status: "pending",
       orderDate: editingPO ? editingPO.orderDate : nowIso,
-      receivedDate: editingPO?.receivedDate,
-      deletedDate: editingPO?.deletedDate,
     };
-    await setDoc(ref, po);
-    setPoModalOpen(false);
-    resetPoForm();
+
+    // Only carry dates over if we are editing and they exist.
+    // New POs do not need these fields at all.
+    if (editingPO?.receivedDate) {
+      po.receivedDate = editingPO.receivedDate;
+    }
+    if (editingPO?.deletedDate) {
+      po.deletedDate = editingPO.deletedDate;
+    }
+
+    console.log(
+      "Saving purchase order:",
+      po,
+      "to",
+      `${basePath}/purchaseOrders/${id}`
+    );
+
+    try {
+      await setDoc(ref, po);
+      console.log("PO saved successfully");
+      setPoModalOpen(false);
+      resetPoForm();
+      messageBoxRef.current?.alert("Purchase order saved.");
+    } catch (err) {
+      console.error("Failed to save purchase order", err);
+      messageBoxRef.current?.alert(
+        "Failed to save purchase order. Open the browser console for error details."
+      );
+    }
   };
 
   const handleReceivePoFull = async (po: PurchaseOrder) => {
@@ -1401,10 +1532,49 @@ const App: React.FC = () => {
           title="Inventory"
           data={enrichedInventory}
           searchFields={["modelNumber", "name", "category", "manufactureName"]}
+          filterFields={[
+            {
+              key: "assignedBranchId",
+              label: "Warehouse",
+              type: "select",
+              options: warehouseSelectOptions,
+            },
+            {
+              key: "category",
+              label: "Category",
+              type: "select",
+              options: inventoryCategoryOptions,
+            },
+          ]}
           getRowId={(row) => row.id}
           columns={[
-            { key: "modelNumber", label: "Model #" },
-            { key: "name", label: "Name" },
+            {
+              key: "modelNumber",
+              label: "Item",
+              render: (row) => (
+                <div className="flex items-center gap-3">
+                  {row.imageUrl ? (
+                    <img
+                      src={row.imageUrl}
+                      alt={row.name || row.modelNumber}
+                      className="w-10 h-10 rounded-md object-cover border border-slate-200"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600">
+                      {(row.modelNumber || "").slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-slate-900">
+                      {row.modelNumber}
+                    </span>
+                    <span className="text-[11px] text-slate-600">
+                      {row.name}
+                    </span>
+                  </div>
+                </div>
+              ),
+            },
             { key: "category", label: "Category" },
             {
               key: "assignedBranchId",
@@ -1682,6 +1852,26 @@ const App: React.FC = () => {
           title="Purchase Orders (Pending)"
           data={pendingPOs}
           searchFields={["orderNumber", "vendor", "manufacture"]}
+          filterFields={[
+            {
+              key: "receivingWarehouseId",
+              label: "Warehouse",
+              type: "select",
+              options: warehouseSelectOptions,
+            },
+            {
+              key: "vendor",
+              label: "Vendor",
+              type: "select",
+              options: poVendorOptions,
+            },
+            {
+              key: "manufacture",
+              label: "Manufacture",
+              type: "select",
+              options: poManufactureOptions,
+            },
+          ]}
           getRowId={(row) => row.id}
           columns={[
             { key: "orderNumber", label: "PO Number" },
@@ -2077,6 +2267,26 @@ const App: React.FC = () => {
         title="Purchase Order History"
         data={poHistory}
         searchFields={["orderNumber", "vendor", "manufacture"]}
+        filterFields={[
+          {
+            key: "status",
+            label: "Status",
+            type: "select",
+            options: poHistoryStatusOptions,
+          },
+          {
+            key: "vendor",
+            label: "Vendor",
+            type: "select",
+            options: poVendorOptions,
+          },
+          {
+            key: "manufacture",
+            label: "Manufacture",
+            type: "select",
+            options: poManufactureOptions,
+          },
+        ]}
         getRowId={(row) => row.id}
         columns={[
           { key: "orderNumber", label: "PO Number" },
@@ -2125,6 +2335,26 @@ const App: React.FC = () => {
             "itemName",
             "sourceBranchId",
             "destinationBranchId",
+          ]}
+          filterFields={[
+            {
+              key: "status",
+              label: "Status",
+              type: "select",
+              options: transferStatusOptions,
+            },
+            {
+              key: "sourceBranchId",
+              label: "Source",
+              type: "select",
+              options: transferSourceOptions,
+            },
+            {
+              key: "destinationBranchId",
+              label: "Destination",
+              type: "select",
+              options: transferDestinationOptions,
+            },
           ]}
           getRowId={(row) => row.id}
           columns={[
@@ -2307,6 +2537,14 @@ const App: React.FC = () => {
           title="Warehouses"
           data={warehouses}
           searchFields={["shortCode", "name", "city", "state"]}
+          filterFields={[
+            {
+              key: "state",
+              label: "State",
+              type: "select",
+              options: warehouseStateOptions,
+            },
+          ]}
           getRowId={(row) => row.id}
           columns={[
             { key: "shortCode", label: "Code" },
@@ -2416,11 +2654,11 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-bold">
-              WMS
+              BLX
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-semibold">
-                Warehouse Management System
+                INVENTORY WMS
               </h1>
               <p className="text-[11px] text-white/80">
                 App ID: {appId} · User: {authUser.uid.slice(0, 8)}
