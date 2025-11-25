@@ -1871,6 +1871,18 @@ const App: React.FC = () => {
               type: "select",
               options: poManufactureOptions,
             },
+            {
+              key: "totalCost",
+              label: "Total Cost",
+              render: (row) => {
+                const total = row.items.reduce(
+                  (sum, it) =>
+                    sum + (it.orderCost || 0) * (it.amountOrdered || 0),
+                  0
+                );
+                return `$${total.toFixed(2)}`;
+              },
+            },
           ]}
           getRowId={(row) => row.id}
           columns={[
