@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "inventory-wms"
-  }
+    "default": "inventory-wms",
+    "dev": "inventory-wms",
+    "prod": "inventory-wms"
+  },
+  "targets": {},
+  "etags": {}
 }

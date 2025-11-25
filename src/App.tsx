@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useCallback,
   useMemo,
   useRef,
   forwardRef,
@@ -25,15 +24,14 @@ import {
   collection,
   doc,
   onSnapshot,
+  setDoc,
+  deleteDoc,
+  writeBatch,
   query,
   where,
-  writeBatch,
-  setDoc,
   updateDoc,
-  deleteDoc,
-  serverTimestamp,
 } from "firebase/firestore";
-import type { Firestore } from "firebase/firestore";
+import type { Firestore, Query, QuerySnapshot } from "firebase/firestore";
 
 type PageKey = "inventory" | "pos" | "poHistory" | "transfers" | "warehouses";
 
@@ -58,8 +56,6 @@ interface InventoryItem {
   assignedBranchId: string;
   minStockLevel: number;
 }
-
-type PurchaseOrderStatus = "pending" | "received" | "deleted";
 
 interface PurchaseOrderItem {
   itemName: string;
@@ -615,7 +611,7 @@ function parseCsvSimple(text: string): string[][] {
   return lines.map((line) => line.split(",").map((cell) => cell.trim()));
 }
 
-interface UseCollectionOptions<T> {
+interface UseCollectionOptions {
   db: Firestore | null;
   basePath: string | null;
   collectionName: string;
@@ -631,7 +627,7 @@ function useCollection<T>({
   basePath,
   collectionName,
   whereFilters,
-}: UseCollectionOptions<T>): { data: T[]; loading: boolean } {
+}: UseCollectionOptions): { data: T[]; loading: boolean } {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -642,7 +638,7 @@ function useCollection<T>({
       return;
     }
     const colRef = collection(db, `${basePath}/${collectionName}`);
-    let q: any = query(colRef);
+    let q: Query = query(colRef) as Query;
     if (whereFilters && whereFilters.length > 0) {
       whereFilters.forEach((flt) => {
         q = query(q, where(flt.field, flt.op, flt.value));
@@ -650,9 +646,9 @@ function useCollection<T>({
     }
     const unsub = onSnapshot(
       q,
-      (snap) => {
+      (snap: QuerySnapshot) => {
         const rows: any[] = [];
-        snap.forEach((docSnap) => {
+        snap.docs.forEach((docSnap) => {
           rows.push({ id: docSnap.id, ...docSnap.data() });
         });
         setData(rows as T[]);
@@ -1870,18 +1866,6 @@ const App: React.FC = () => {
               label: "Manufacture",
               type: "select",
               options: poManufactureOptions,
-            },
-            {
-              key: "totalCost",
-              label: "Total Cost",
-              render: (row) => {
-                const total = row.items.reduce(
-                  (sum, it) =>
-                    sum + (it.orderCost || 0) * (it.amountOrdered || 0),
-                  0
-                );
-                return `$${total.toFixed(2)}`;
-              },
             },
           ]}
           getRowId={(row) => row.id}
