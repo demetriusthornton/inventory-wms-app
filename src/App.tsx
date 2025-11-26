@@ -654,7 +654,8 @@ function useCollection<T>({
         setData(rows as T[]);
         setLoading(false);
       },
-      () => {
+      (err) => {
+        console.error("useCollection: error", collectionName, err);
         setLoading(false);
       }
     );
@@ -668,7 +669,8 @@ const App: React.FC = () => {
   const [firebaseApp, setFirebaseApp] = useState<FirebaseApp | null>(null);
   const [db, setDb] = useState<Firestore | null>(null);
   const [authUser, setAuthUser] = useState<User | null>(null);
-  const [appId, setAppId] = useState<string | null>(null);
+  // ✅ CHANGE: start with known good default
+  const [appId, setAppId] = useState<string>("wms-app-prod");
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
 
@@ -680,20 +682,35 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
+    console.log("DEBUG basePath", basePath);
+    console.log("DEBUG appId", appId);
+    console.log("DEBUG authUser uid", authUser?.uid);
+  }, [basePath, appId, authUser]);
+
+  useEffect(() => {
     const w = window as any;
     const cfg = jsonSafeParse(w.__firebase_config);
     const appIdGlobal = w.__app_id as string | undefined;
-    if (!cfg || !appIdGlobal) {
-      console.error("Missing firebase config or app id");
+
+    if (!cfg) {
+      console.error("Missing firebase config");
       return;
     }
-    setAppId(appIdGlobal);
+
+    if (appIdGlobal) {
+      setAppId(appIdGlobal);
+    } else {
+      console.warn("No __app_id found, using default 'wms-app-prod'");
+    }
+
+    // ✅ create or reuse the Firebase app
     let app: FirebaseApp;
     if (getApps().length === 0) {
       app = initializeApp(cfg);
     } else {
-      app = getApps()[0]!;
+      app = getApps()[0] as FirebaseApp;
     }
+
     setFirebaseApp(app);
     const auth = getAuth(app);
     const token = w.__initial_auth_token as string | undefined;
@@ -2708,8 +2725,8 @@ const App: React.FC = () => {
         open={warehouseModalQuickOpen}
         onClose={() => setWarehouseModalQuickOpen(false)}
         onSaved={() => {}}
-        db={db}
-        basePath={basePath}
+        db={db!} // you already used this pattern above
+        basePath={basePath!}
       />
 
       <MessageBox ref={messageBoxRef} />
