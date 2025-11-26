@@ -2675,6 +2675,8 @@ const App: React.FC = () => {
               </h1>
               <p className="text-[11px] text-white/80">
                 App ID: {appId} · User: {authUser.uid.slice(0, 8)}
+                <br />
+                Base path: {basePath}
               </p>
             </div>
           </div>
