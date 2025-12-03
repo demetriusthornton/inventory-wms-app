@@ -2,7 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #f1f5f9;
+  --fg: #0f172a;
+  --card: #ffffff;
+  --muted: #475569;
+  --border: #cbd5e1;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --fg: #e2e8f0;
+  --card: #0f172a;
+  --muted: #94a3b8;
+  --border: #1f2937;
+}
+
 /* Optional small global tweaks */
 body {
   @apply bg-slate-100 text-slate-900;
+  font-size: 16pt;
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+.dark body {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+.dark .bg-white,
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+  background-color: var(--card) !important;
+  color: var(--fg);
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: var(--fg) !important;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-300 {
+  border-color: var(--border) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8;
 }

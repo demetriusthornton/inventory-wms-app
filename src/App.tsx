@@ -5,6 +5,7 @@ import React, {
   useRef,
   forwardRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import type { ReactNode } from "react";
 
@@ -33,7 +34,13 @@ import {
 } from "firebase/firestore";
 import type { Firestore, Query, QuerySnapshot } from "firebase/firestore";
 
-type PageKey = "inventory" | "pos" | "poHistory" | "transfers" | "warehouses";
+type PageKey =
+  | "inventory"
+  | "pos"
+  | "poHistory"
+  | "transfers"
+  | "warehouses"
+  | "activityHistory";
 
 interface Warehouse {
   id: string;
@@ -52,6 +59,7 @@ interface InventoryItem {
   amountInInventory: number;
   numOnOrder: number;
   manufactureName: string;
+  manufacturePartNumber: string;
   imageUrl: string;
   assignedBranchId: string;
   minStockLevel: number;
@@ -78,6 +86,7 @@ interface PurchaseOrder {
   receivedDate?: string | null;
   deletedDate?: string | null;
 }
+
 interface PoFormState {
   orderNumber: string;
   vendor: string;
@@ -102,19 +111,35 @@ const makeEmptyPoForm = (): PoFormState => ({
     },
   ],
 });
+
 type TransferStatus = "pending" | "in-transit" | "completed";
+
+interface TransferLine {
+  itemId: string;
+  itemModelNumber: string;
+  itemName: string;
+  quantity: number;
+}
 
 interface Transfer {
   id: string;
   transferId: string;
-  itemModelNumber: string;
-  itemName: string;
-  quantity: number;
   sourceBranchId: string;
   destinationBranchId: string;
   dateInitiated: string;
   status: TransferStatus;
   dateCompleted?: string;
+  lines: TransferLine[];
+}
+
+interface ActivityLog {
+  id: string;
+  timestamp: string;
+  userName: string;
+  action: string;
+  collection: string;
+  docId?: string;
+  summary: string;
 }
 
 interface DataTableColumn<T> {
@@ -140,6 +165,8 @@ interface DataTableProps<T> {
   getRowId: (row: T) => string;
   actions?: (row: T) => ReactNode;
   children?: ReactNode;
+  expandable?: boolean;
+  renderExpandedRow?: (row: T) => ReactNode;
 }
 
 type MessageBoxType = "alert" | "confirm";
@@ -277,11 +304,14 @@ function DataTable<T extends Record<string, any>>({
   getRowId,
   actions,
   children,
+  expandable,
+  renderExpandedRow,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
   const handleSort = (key: string) => {
     setSortKey((prev) => {
@@ -389,7 +419,7 @@ function DataTable<T extends Record<string, any>>({
           {children}
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto px-4 sm:px-6">
         <table className="min-w-full text-sm">
           <thead className="bg-slate-50">
             <tr>
@@ -427,23 +457,47 @@ function DataTable<T extends Record<string, any>>({
                 </td>
               </tr>
             )}
-            {filteredData.map((row) => (
-              <tr
-                key={getRowId(row)}
-                className="border-t border-slate-100 hover:bg-slate-50"
-              >
-                {columns.map((col) => (
-                  <td key={col.key} className="px-3 py-2 align-top">
-                    {col.render ? col.render(row) : String(row[col.key] ?? "")}
-                  </td>
-                ))}
-                {actions && (
-                  <td className="px-3 py-2 text-right whitespace-nowrap">
-                    {actions(row)}
-                  </td>
-                )}
-              </tr>
-            ))}
+            {filteredData.map((row) => {
+              const rowId = getRowId(row);
+              const isExpanded = expandable && expandedRowId === rowId;
+
+              return (
+                <React.Fragment key={rowId}>
+                  <tr
+                    className="border-t border-slate-100 hover:bg-slate-50"
+                    onClick={() => {
+                      if (!expandable) return;
+                      setExpandedRowId((prev) =>
+                        prev === rowId ? null : rowId
+                      );
+                    }}
+                  >
+                    {columns.map((col) => (
+                      <td key={col.key} className="px-3 py-2 align-top">
+                        {col.render
+                          ? col.render(row)
+                          : String(row[col.key] ?? "")}
+                      </td>
+                    ))}
+                    {actions && (
+                      <td className="px-3 py-2 text-right whitespace-nowrap">
+                        {actions(row)}
+                      </td>
+                    )}
+                  </tr>
+                  {isExpanded && renderExpandedRow && (
+                    <tr>
+                      <td
+                        colSpan={columns.length + (actions ? 1 : 0)}
+                        className="px-3 py-4 bg-slate-50"
+                      >
+                        {renderExpandedRow(row)}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -458,6 +512,7 @@ interface AddWarehouseModalProps {
   db: Firestore;
   basePath: string;
   existing?: Warehouse | null;
+  onLogActivity: (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => Promise<void>;
 }
 
 const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
@@ -467,6 +522,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
   db,
   basePath,
   existing,
+  onLogActivity,
 }) => {
   const [shortCode, setShortCode] = useState("");
   const [name, setName] = useState("");
@@ -505,6 +561,12 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       state: stateVal.trim(),
     };
     await setDoc(ref, warehouse);
+    await onLogActivity({
+      action: existing ? "warehouse_update" : "warehouse_create",
+      collection: "warehouses",
+      docId: id,
+      summary: `${existing ? "Updated" : "Created"} warehouse ${warehouse.name}`,
+    });
     setSaving(false);
     onSaved(warehouse);
     onClose();
@@ -514,11 +576,11 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
     <Modal
       open={open}
       onClose={onClose}
-      title={existing ? "Edit Warehouse" : "Add Warehouse"}
+      title={existing ? "Edit Branch" : "Add Branch"}
       footer={
         <div className="flex justify-end gap-3">
           <button
-            className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:bg-slate-50"
+            className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
             onClick={onClose}
             disabled={saving}
           >
@@ -537,7 +599,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">
-            Short Code
+            Short Code <span className="text-red-500">*</span>
           </label>
           <input
             className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -547,7 +609,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">
-            Name
+            Name <span className="text-red-500">*</span>
           </label>
           <input
             className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -669,16 +731,45 @@ const App: React.FC = () => {
   const [firebaseApp, setFirebaseApp] = useState<FirebaseApp | null>(null);
   const [db, setDb] = useState<Firestore | null>(null);
   const [authUser, setAuthUser] = useState<User | null>(null);
-  // ✅ CHANGE: start with known good default
   const [appId, setAppId] = useState<string>("wms-app-prod");
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
+  const [isDark, setIsDark] = useState(false);
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
+  const [selectedInventoryIds, setSelectedInventoryIds] = useState<string[]>(
+    []
+  );
 
   const basePath = useMemo(
     () => (appId && authUser ? buildBasePath(appId, authUser.uid) : null),
     [appId, authUser]
+  );
+
+  const getUserName = useCallback(
+    () => authUser?.displayName?.trim() || authUser?.uid || "Unknown User",
+    [authUser]
+  );
+
+  const logActivity = useCallback(
+    async (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => {
+      if (!db || !basePath || !authUser) return;
+      const payload: ActivityLog = {
+        ...entry,
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+        userName: getUserName(),
+      };
+      try {
+        await setDoc(
+          doc(collection(db, `${basePath}/activityHistory`), payload.id),
+          payload
+        );
+      } catch (err) {
+        console.error("Failed to log activity", err);
+      }
+    },
+    [db, basePath, authUser, getUserName]
   );
 
   useEffect(() => {
@@ -686,6 +777,23 @@ const App: React.FC = () => {
     console.log("DEBUG appId", appId);
     console.log("DEBUG authUser uid", authUser?.uid);
   }, [basePath, appId, authUser]);
+
+  // Theme Init: Runs once on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("wms-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      setIsDark(true);
+    }
+  }, []);
+
+  // Theme Application: Runs whenever isDark changes
+  useEffect(() => {
+    if (isDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+    localStorage.setItem("wms-theme", isDark ? "dark" : "light");
+  }, [isDark]);
+
 
   useEffect(() => {
     const w = window as any;
@@ -703,7 +811,6 @@ const App: React.FC = () => {
       console.warn("No __app_id found, using default 'wms-app-prod'");
     }
 
-    // ✅ create or reuse the Firebase app
     let app: FirebaseApp;
     if (getApps().length === 0) {
       app = initializeApp(cfg);
@@ -776,6 +883,29 @@ const App: React.FC = () => {
       basePath,
       collectionName: "moves",
     });
+
+  const { data: activityHistory, loading: loadingActivity } =
+    useCollection<ActivityLog>({
+      db,
+      basePath,
+      collectionName: "activityHistory",
+    });
+
+  const activityFilterOptions = useMemo(() => {
+    const actionSet = new Set<string>();
+    const userSet = new Set<string>();
+    activityHistory.forEach((entry) => {
+      if (entry.action) actionSet.add(entry.action);
+      if (entry.userName) userSet.add(entry.userName);
+    });
+    return {
+      actions: Array.from(actionSet).map((value) => ({
+        label: value,
+        value,
+      })),
+      users: Array.from(userSet).map((value) => ({ label: value, value })),
+    };
+  }, [activityHistory]);
 
   const pendingPOs = useMemo(
     () => purchaseOrders.filter((po) => po.status === "pending"),
@@ -921,6 +1051,7 @@ const App: React.FC = () => {
     category: "",
     amountInInventory: 0,
     manufactureName: "",
+    manufacturePartNumber: "",
     imageUrl: "",
     assignedBranchId: "",
     minStockLevel: 0,
@@ -933,6 +1064,7 @@ const App: React.FC = () => {
       category: "",
       amountInInventory: 0,
       manufactureName: "",
+      manufacturePartNumber: "",
       imageUrl: "",
       assignedBranchId: "",
       minStockLevel: 0,
@@ -959,6 +1091,7 @@ const App: React.FC = () => {
       category,
       amountInInventory,
       manufactureName,
+      manufacturePartNumber,
       imageUrl,
       assignedBranchId,
       minStockLevel,
@@ -968,10 +1101,14 @@ const App: React.FC = () => {
       !name ||
       !category ||
       !assignedBranchId ||
+      !manufactureName ||
+      !manufacturePartNumber ||
       minStockLevel === undefined ||
       amountInInventory === undefined
     ) {
-      messageBoxRef.current?.alert("Fill in required inventory fields.");
+      messageBoxRef.current?.alert(
+        "Fill in all required inventory fields (Model Number, Name, Category, Manufacture, Manufacture Part Number, Branch, Amount In Inventory, Min Stock Level)."
+      );
       return;
     }
     const id = editingInventoryItem?.id ?? crypto.randomUUID();
@@ -984,11 +1121,18 @@ const App: React.FC = () => {
       amountInInventory: Number(amountInInventory),
       numOnOrder: 0,
       manufactureName: String(manufactureName ?? ""),
+      manufacturePartNumber: String(manufacturePartNumber ?? ""),
       imageUrl: String(imageUrl ?? ""),
       assignedBranchId: String(assignedBranchId),
       minStockLevel: Number(minStockLevel),
     };
     await setDoc(ref, payload);
+    await logActivity({
+      action: editingInventoryItem ? "inventory_update" : "inventory_create",
+      collection: "inventory",
+      docId: id,
+      summary: `${editingInventoryItem ? "Updated" : "Added"} inventory ${name} (${modelNumber})`,
+    });
     setInventoryModalOpen(false);
     resetInventoryForm();
   };
@@ -1009,7 +1153,7 @@ const App: React.FC = () => {
       const row = rows[i];
       if (row.length === 0) continue;
       const modelNumber =
-        row[idx("modelNumber".toLowerCase())] ?? row[idx("modelnumber")];
+        row[idx("modelnumber")] ?? row[idx("modelNumber".toLowerCase())];
       if (!modelNumber) continue;
       const id = crypto.randomUUID();
       const ref = doc(collection(db, `${basePath}/inventory`), id);
@@ -1019,21 +1163,30 @@ const App: React.FC = () => {
         name: row[idx("name")] ?? "",
         category: row[idx("category")] ?? "",
         amountInInventory: Number(
-          row[idx("amountInInventory")] ?? row[idx("amountininventory")] ?? 0
+          row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0
         ),
         numOnOrder: 0,
         manufactureName:
-          row[idx("manufactureName")] ?? row[idx("manufacturename")] ?? "",
-        imageUrl: row[idx("imageUrl")] ?? row[idx("imageurl")] ?? "",
+          row[idx("manufacturename")] ?? row[idx("manufactureName")] ?? "",
+        manufacturePartNumber:
+          row[idx("manufacturepartnumber")] ??
+          row[idx("manufacturePartNumber")] ??
+          "",
+        imageUrl: row[idx("imageurl")] ?? row[idx("imageUrl")] ?? "",
         assignedBranchId:
-          row[idx("assignedBranchId")] ?? row[idx("assignedbranchid")] ?? "",
+          row[idx("assignedbranchid")] ?? row[idx("assignedBranchId")] ?? "",
         minStockLevel: Number(
-          row[idx("minStockLevel")] ?? row[idx("minstocklevel")] ?? 0
+          row[idx("minstocklevel")] ?? row[idx("minStockLevel")] ?? 0
         ),
       };
       batch.set(ref, item);
     }
     await batch.commit();
+    await logActivity({
+      action: "inventory_import",
+      collection: "inventory",
+      summary: `Imported ${Math.max(rows.length - 1, 0)} inventory rows from CSV`,
+    });
     messageBoxRef.current?.alert("Inventory CSV import complete.");
   };
 
@@ -1121,7 +1274,9 @@ const App: React.FC = () => {
       poForm;
 
     if (!orderNumber || !vendor || !manufacture || !receivingWarehouseId) {
-      messageBoxRef.current?.alert("Fill in all required PO fields.");
+      messageBoxRef.current?.alert(
+        "Fill in all required PO fields (PO Number, Vendor, Manufacture, Receiving Branch)."
+      );
       return;
     }
 
@@ -1152,8 +1307,6 @@ const App: React.FC = () => {
       orderDate: editingPO ? editingPO.orderDate : nowIso,
     };
 
-    // Only carry dates over if we are editing and they exist.
-    // New POs do not need these fields at all.
     if (editingPO?.receivedDate) {
       po.receivedDate = editingPO.receivedDate;
     }
@@ -1171,6 +1324,12 @@ const App: React.FC = () => {
     try {
       await setDoc(ref, po);
       console.log("PO saved successfully");
+      await logActivity({
+        action: editingPO ? "purchase_order_update" : "purchase_order_create",
+        collection: "purchaseOrders",
+        docId: id,
+        summary: `${editingPO ? "Updated" : "Created"} PO ${orderNumber}`,
+      });
       setPoModalOpen(false);
       resetPoForm();
       messageBoxRef.current?.alert("Purchase order saved.");
@@ -1221,6 +1380,8 @@ const App: React.FC = () => {
           amountInInventory: remaining,
           numOnOrder: 0,
           manufactureName: po.manufacture,
+          manufacturePartNumber:
+            template?.manufacturePartNumber ?? item.modelNumber,
           imageUrl: "",
           assignedBranchId: po.receivingWarehouseId,
           minStockLevel: template?.minStockLevel ?? 0,
@@ -1244,6 +1405,12 @@ const App: React.FC = () => {
     batch.set(historyRef, poReceived);
     batch.delete(poRef);
     await batch.commit();
+    await logActivity({
+      action: "purchase_order_receive_full",
+      collection: "purchaseOrders",
+      docId: po.id,
+      summary: `Fully received PO ${po.orderNumber}`,
+    });
   };
 
   const openPartialReceiveModal = (po: PurchaseOrder) => {
@@ -1296,6 +1463,8 @@ const App: React.FC = () => {
             amountInInventory: applyQty,
             numOnOrder: 0,
             manufactureName: po.manufacture,
+            manufacturePartNumber:
+              template?.manufacturePartNumber ?? item.modelNumber,
             imageUrl: "",
             assignedBranchId: po.receivingWarehouseId,
             minStockLevel: template?.minStockLevel ?? 0,
@@ -1334,6 +1503,12 @@ const App: React.FC = () => {
 
     await batch.commit();
     setPoReceiveMode(null);
+    await logActivity({
+      action: "purchase_order_receive_partial",
+      collection: "purchaseOrders",
+      docId: po.id,
+      summary: `Partially received PO ${po.orderNumber}`,
+    });
   };
 
   const handleCancelPo = async (po: PurchaseOrder) => {
@@ -1354,75 +1529,198 @@ const App: React.FC = () => {
     batch.set(historyRef, poDeleted);
     batch.delete(poRef);
     await batch.commit();
+    await logActivity({
+      action: "purchase_order_cancel",
+      collection: "purchaseOrders",
+      docId: po.id,
+      summary: `Cancelled PO ${po.orderNumber}`,
+    });
   };
 
   const [transferForm, setTransferForm] = useState<{
-    itemId: string;
-    quantity: number;
     sourceBranchId: string;
     destinationBranchId: string;
+    lines: { itemId: string; quantity: number }[];
   }>({
-    itemId: "",
-    quantity: 0,
     sourceBranchId: "",
     destinationBranchId: "",
+    lines: [],
   });
 
-  const handleSaveTransfer = async () => {
-    if (!db || !basePath) return;
-    const { itemId, quantity, sourceBranchId, destinationBranchId } =
-      transferForm;
-    if (!itemId || !quantity || !sourceBranchId || !destinationBranchId) {
-      messageBoxRef.current?.alert("Fill in required transfer fields.");
-      return;
-    }
-    const item = inventoryItems.find((inv) => inv.id === itemId);
-    if (!item) {
-      messageBoxRef.current?.alert("Inventory item not found.");
-      return;
-    }
-    if (item.assignedBranchId !== sourceBranchId) {
+  const resetTransferForm = () => {
+    setTransferForm({
+      sourceBranchId: "",
+      destinationBranchId: "",
+      lines: [],
+    });
+  };
+
+  const addTransferLine = () => {
+    setTransferForm((prev) => ({
+      ...prev,
+      lines: [...prev.lines, { itemId: "", quantity: 0 }],
+    }));
+  };
+
+  const updateTransferLine = (
+    index: number,
+    field: "itemId" | "quantity",
+    value: any
+  ) => {
+    setTransferForm((prev) => {
+      const lines = [...prev.lines];
+      const line = { ...lines[index] };
+      if (field === "quantity") {
+        line.quantity = Number(value);
+      } else {
+        line.itemId = value;
+      }
+      lines[index] = line;
+      return { ...prev, lines };
+    });
+  };
+
+  const removeTransferLine = (index: number) => {
+    setTransferForm((prev) => {
+      const lines = [...prev.lines];
+      lines.splice(index, 1);
+      return { ...prev, lines };
+    });
+  };
+
+  const handleBuildTransferFromSelected = () => {
+    if (selectedInventoryIds.length === 0) {
       messageBoxRef.current?.alert(
-        "Source branch does not match selected inventory record."
+        "Select at least one inventory item to build a transfer."
       );
       return;
     }
-    if (item.amountInInventory < quantity) {
+
+    const selectedItems = enrichedInventory.filter((it) =>
+      selectedInventoryIds.includes(it.id)
+    );
+
+    if (selectedItems.length === 0) {
+      messageBoxRef.current?.alert("Selected items not found in inventory.");
+      return;
+    }
+
+    const sourceBranchId = selectedItems[0].assignedBranchId;
+    const sameSource = selectedItems.every(
+      (it) => it.assignedBranchId === sourceBranchId
+    );
+
+    if (!sameSource) {
       messageBoxRef.current?.alert(
-        "Quantity to transfer exceeds available stock."
+        "All selected items must use the same source branch to build a transfer."
+      );
+      return;
+    }
+
+    setTransferForm({
+      sourceBranchId,
+      destinationBranchId: "",
+      lines: selectedItems.map((it) => ({
+        itemId: it.id,
+        quantity: 1,
+      })),
+    });
+
+    setPage("transfers");
+    setTransferModalOpen(true);
+  };
+
+  const handleSaveTransfer = async () => {
+    if (!db || !basePath) return;
+    const { sourceBranchId, destinationBranchId, lines } = transferForm;
+
+    if (
+      !sourceBranchId ||
+      !destinationBranchId ||
+      !lines ||
+      lines.length === 0
+    ) {
+      messageBoxRef.current?.alert(
+        "Fill in required transfer fields (Source, Destination, at least one line item)."
+      );
+      return;
+    }
+
+    if (sourceBranchId === destinationBranchId) {
+      messageBoxRef.current?.alert(
+        "Source and destination branches must be different."
       );
       return;
     }
 
     const batch = writeBatch(db);
 
-    const sourceRef = doc(collection(db, `${basePath}/inventory`), item.id);
-    batch.update(sourceRef, {
-      amountInInventory: item.amountInInventory - quantity,
-    });
+    for (const line of lines) {
+      if (!line.itemId || !line.quantity || line.quantity <= 0) {
+        messageBoxRef.current?.alert(
+          "Each transfer line must have an item and a quantity greater than zero."
+        );
+        return;
+      }
+
+      const item = inventoryItems.find((inv) => inv.id === line.itemId);
+      if (!item) {
+        messageBoxRef.current?.alert("Transfer item not found in inventory.");
+        return;
+      }
+      if (item.assignedBranchId !== sourceBranchId) {
+        messageBoxRef.current?.alert(
+          `Item ${item.modelNumber} is not in the selected source branch.`
+        );
+        return;
+      }
+      if (item.amountInInventory < line.quantity) {
+        messageBoxRef.current?.alert(
+          `Quantity for ${item.modelNumber} exceeds available stock.`
+        );
+        return;
+      }
+
+      const sourceRef = doc(collection(db, `${basePath}/inventory`), item.id);
+      batch.update(sourceRef, {
+        amountInInventory: item.amountInInventory - line.quantity,
+      });
+    }
 
     const id = crypto.randomUUID();
     const transferRef = doc(collection(db, `${basePath}/moves`), id);
+
+    const transferLines: TransferLine[] = transferForm.lines.map((line) => {
+      const item = inventoryItems.find((inv) => inv.id === line.itemId)!;
+      return {
+        itemId: item.id,
+        itemModelNumber: item.modelNumber,
+        itemName: item.name,
+        quantity: line.quantity,
+      };
+    });
+
     const transfer: Transfer = {
       id,
       transferId: id,
-      itemModelNumber: item.modelNumber,
-      itemName: item.name,
-      quantity,
       sourceBranchId,
       destinationBranchId,
       dateInitiated: new Date().toISOString(),
       status: "pending",
+      lines: transferLines,
     };
+
     batch.set(transferRef, transfer);
 
     await batch.commit();
     setTransferModalOpen(false);
-    setTransferForm({
-      itemId: "",
-      quantity: 0,
-      sourceBranchId: "",
-      destinationBranchId: "",
+    resetTransferForm();
+    setSelectedInventoryIds([]);
+    await logActivity({
+      action: "transfer_create",
+      collection: "moves",
+      docId: id,
+      summary: `Created transfer ${id} from ${sourceBranchId} to ${destinationBranchId}`,
     });
   };
 
@@ -1437,48 +1735,53 @@ const App: React.FC = () => {
     if (newStatus === "completed" && transfer.status === "completed") {
       return;
     }
+
     if (newStatus === "completed") {
       const confirmed = await messageBoxRef.current?.confirm(
         `Mark transfer ${transfer.transferId} as completed and update destination inventory?`
       );
       if (!confirmed) return;
+
       const batch = writeBatch(db);
+      const lines = transfer.lines ?? [];
 
-      const destItem =
-        inventoryItems.find(
-          (inv) =>
-            inv.modelNumber === transfer.itemModelNumber &&
-            inv.assignedBranchId === transfer.destinationBranchId
-        ) ?? null;
+      for (const line of lines) {
+        const sourceTemplate =
+          inventoryItems.find((inv) => inv.id === line.itemId) ?? null;
 
-      if (destItem) {
-        const destRef = doc(
-          collection(db, `${basePath}/inventory`),
-          destItem.id
-        );
-        batch.update(destRef, {
-          amountInInventory: destItem.amountInInventory + transfer.quantity,
-        });
-      } else {
-        const template =
+        const destItem =
           inventoryItems.find(
-            (inv) => inv.modelNumber === transfer.itemModelNumber
+            (inv) =>
+              inv.modelNumber === line.itemModelNumber &&
+              inv.assignedBranchId === transfer.destinationBranchId
           ) ?? null;
-        const id = crypto.randomUUID();
-        const destRef = doc(collection(db, `${basePath}/inventory`), id);
-        const newItem: InventoryItem = {
-          id,
-          modelNumber: transfer.itemModelNumber,
-          name: transfer.itemName,
-          category: template?.category ?? "",
-          amountInInventory: transfer.quantity,
-          numOnOrder: 0,
-          manufactureName: template?.manufactureName ?? "",
-          imageUrl: template?.imageUrl ?? "",
-          assignedBranchId: transfer.destinationBranchId,
-          minStockLevel: template?.minStockLevel ?? 0,
-        };
-        batch.set(destRef, newItem);
+
+        if (destItem) {
+          const destRef = doc(
+            collection(db, `${basePath}/inventory`),
+            destItem.id
+          );
+          batch.update(destRef, {
+            amountInInventory: destItem.amountInInventory + line.quantity,
+          });
+        } else if (sourceTemplate) {
+          const id = crypto.randomUUID();
+          const destRef = doc(collection(db, `${basePath}/inventory`), id);
+          const newItem: InventoryItem = {
+            id,
+            modelNumber: sourceTemplate.modelNumber,
+            name: sourceTemplate.name,
+            category: sourceTemplate.category,
+            amountInInventory: line.quantity,
+            numOnOrder: 0,
+            manufactureName: sourceTemplate.manufactureName,
+            manufacturePartNumber: sourceTemplate.manufacturePartNumber,
+            imageUrl: sourceTemplate.imageUrl,
+            assignedBranchId: transfer.destinationBranchId,
+            minStockLevel: sourceTemplate.minStockLevel,
+          };
+          batch.set(destRef, newItem);
+        }
       }
 
       const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
@@ -1487,10 +1790,22 @@ const App: React.FC = () => {
         dateCompleted: new Date().toISOString(),
       });
       await batch.commit();
+      await logActivity({
+        action: "transfer_complete",
+        collection: "moves",
+        docId: transfer.id,
+        summary: `Completed transfer ${transfer.transferId}`,
+      });
     } else {
       const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
       await updateDoc(transferRef, {
         status: newStatus,
+      });
+      await logActivity({
+        action: "transfer_status_update",
+        collection: "moves",
+        docId: transfer.id,
+        summary: `Updated transfer ${transfer.transferId} status to ${newStatus}`,
       });
     }
   };
@@ -1498,11 +1813,17 @@ const App: React.FC = () => {
   const handleDeleteWarehouse = async (warehouse: Warehouse) => {
     if (!db || !basePath) return;
     const confirmed = await messageBoxRef.current?.confirm(
-      `Delete warehouse ${warehouse.name}?`
+      `Delete branch ${warehouse.name}?`
     );
     if (!confirmed) return;
     const ref = doc(collection(db, `${basePath}/warehouses`), warehouse.id);
     await deleteDoc(ref);
+    await logActivity({
+      action: "warehouse_delete",
+      collection: "warehouses",
+      docId: warehouse.id,
+      summary: `Deleted warehouse ${warehouse.name}`,
+    });
   };
 
   const handleWarehouseCsvImport = async (file: File) => {
@@ -1525,17 +1846,22 @@ const App: React.FC = () => {
       const ref = doc(collection(db, `${basePath}/warehouses`), id);
       const warehouse: Warehouse = {
         id,
-        shortCode: row[idx("shortCode")] ?? row[idx("shortcode")] ?? "",
+        shortCode: row[idx("shortcode")] ?? row[idx("shortCode")] ?? "",
         name,
         streetAddress:
-          row[idx("streetAddress")] ?? row[idx("streetaddress")] ?? "",
+          row[idx("streetaddress")] ?? row[idx("streetAddress")] ?? "",
         city: row[idx("city")] ?? "",
         state: row[idx("state")] ?? "",
       };
       batch.set(ref, warehouse);
     }
     await batch.commit();
-    messageBoxRef.current?.alert("Warehouse CSV import complete.");
+    await logActivity({
+      action: "warehouse_import",
+      collection: "warehouses",
+      summary: `Imported ${Math.max(rows.length - 1, 0)} warehouses from CSV`,
+    });
+    messageBoxRef.current?.alert("Branch CSV import complete.");
   };
 
   const renderInventoryPage = () => {
@@ -1548,7 +1874,7 @@ const App: React.FC = () => {
           filterFields={[
             {
               key: "assignedBranchId",
-              label: "Warehouse",
+              label: "Branch",
               type: "select",
               options: warehouseSelectOptions,
             },
@@ -1562,6 +1888,24 @@ const App: React.FC = () => {
           getRowId={(row) => row.id}
           columns={[
             {
+              key: "select",
+              label: "",
+              render: (row) => (
+                <input
+                  type="checkbox"
+                  checked={selectedInventoryIds.includes(row.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    setSelectedInventoryIds((prev) =>
+                      e.target.checked
+                        ? [...prev, row.id]
+                        : prev.filter((id) => id !== row.id)
+                    );
+                  }}
+                />
+              ),
+            },
+            {
               key: "modelNumber",
               label: "Item",
               render: (row) => (
@@ -1571,6 +1915,7 @@ const App: React.FC = () => {
                       src={row.imageUrl}
                       alt={row.name || row.modelNumber}
                       className="w-10 h-10 rounded-md object-cover border border-slate-200"
+                      onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600">
@@ -1591,7 +1936,7 @@ const App: React.FC = () => {
             { key: "category", label: "Category" },
             {
               key: "assignedBranchId",
-              label: "Warehouse",
+              label: "Branch",
               render: (row) => {
                 const wh = warehouses.find(
                   (w) => w.id === row.assignedBranchId
@@ -1630,14 +1975,61 @@ const App: React.FC = () => {
           ]}
           actions={(row) => (
             <button
-              className="px-2 py-1 rounded-md bg-slate-100 text-xs text-slate-800 hover:bg-slate-200"
-              onClick={() => openInventoryModalForEdit(row)}
+              className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e] hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                openInventoryModalForEdit(row);
+              }}
             >
               Edit
             </button>
           )}
+          expandable
+          renderExpandedRow={(row) => (
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:w-40 flex-shrink-0">
+                {row.imageUrl ? (
+                  <img
+                    src={row.imageUrl}
+                    alt={row.name || row.modelNumber}
+                    className="w-full h-40 object-cover rounded-md border border-slate-200"
+                  />
+                ) : (
+                  <div className="w-full h-40 rounded-md bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">
+                    No Image
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">Name</div>
+                  <div className="text-slate-700">{row.name}</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Manufacture
+                  </div>
+                  <div className="text-slate-700">{row.manufactureName}</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Manufacture Part Number
+                  </div>
+                  <div className="text-slate-700">
+                    {row.manufacturePartNumber || "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Model Number
+                  </div>
+                  <div className="text-slate-700">{row.modelNumber}</div>
+                </div>
+              </div>
+            </div>
+          )}
         >
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
               onClick={openInventoryModalForNew}
@@ -1650,6 +2042,15 @@ const App: React.FC = () => {
             >
               Import Inventory (CSV)
             </button>
+            <button
+              className="px-3 py-2 rounded-md bg-emerald-600 text-white text-xs sm:text-sm hover:bg-emerald-700"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBuildTransferFromSelected();
+              }}
+            >
+              Build Transfer from Selected
+            </button>
           </div>
         </DataTable>
 
@@ -1661,34 +2062,34 @@ const App: React.FC = () => {
           }
           footer={
             <div className="flex justify-between gap-3">
+            <button
+              type="button"
+              className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
+              onClick={() => setWarehouseModalQuickOpen(true)}
+            >
+              Quick Add Branch
+            </button>
+            <div className="flex gap-3">
               <button
-                type="button"
-                className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
-                onClick={() => setWarehouseModalQuickOpen(true)}
+                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                onClick={() => setInventoryModalOpen(false)}
               >
-                Quick Add Warehouse
+                Cancel
               </button>
-              <div className="flex gap-3">
-                <button
-                  className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:bg-slate-50"
-                  onClick={() => setInventoryModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
-                  onClick={handleSaveInventory}
-                >
-                  Save
-                </button>
-              </div>
+              <button
+                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                onClick={handleSaveInventory}
+              >
+                Save
+              </button>
             </div>
-          }
+          </div>
+        }
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Model Number
+                Model Number <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1703,7 +2104,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Name
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1718,7 +2119,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Category
+                Category <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1733,7 +2134,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture
+                Manufacture <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1748,7 +2149,22 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Warehouse
+                Manufacture Part Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                value={inventoryForm.manufacturePartNumber ?? ""}
+                onChange={(e) =>
+                  setInventoryForm((prev) => ({
+                    ...prev,
+                    manufacturePartNumber: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Branch <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1760,7 +2176,7 @@ const App: React.FC = () => {
                   }))
                 }
               >
-                <option value="">Select Warehouse</option>
+                <option value="">Select Branch</option>
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.shortCode || w.name}
@@ -1770,7 +2186,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Amount In Inventory
+                Amount In Inventory <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -1786,7 +2202,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Min Stock Level
+                Min Stock Level <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -1838,8 +2254,8 @@ const App: React.FC = () => {
         >
           <p className="text-sm text-slate-700 mb-2">
             Upload a CSV file with headers such as modelNumber, name, category,
-            amountInInventory, manufactureName, imageUrl, assignedBranchId,
-            minStockLevel.
+            amountInInventory, manufactureName, manufacturePartNumber, imageUrl,
+            assignedBranchId, minStockLevel.
           </p>
           <input
             ref={inventoryCsvInputRef}
@@ -1868,7 +2284,7 @@ const App: React.FC = () => {
           filterFields={[
             {
               key: "receivingWarehouseId",
-              label: "Warehouse",
+              label: "Branch",
               type: "select",
               options: warehouseSelectOptions,
             },
@@ -1892,7 +2308,7 @@ const App: React.FC = () => {
             { key: "manufacture", label: "Manufacture" },
             {
               key: "receivingWarehouseId",
-              label: "Receiving Warehouse",
+              label: "Receiving Branch",
               render: (row) => {
                 const wh = warehouses.find(
                   (w) => w.id === row.receivingWarehouseId
@@ -1916,26 +2332,38 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md bg-slate-100 text-xs hover:bg-slate-200"
-                onClick={() => openPoModalForEdit(row)}
+                className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openPoModalForEdit(row);
+                }}
               >
                 Edit
               </button>
               <button
                 className="px-2 py-1 rounded-md bg-emerald-100 text-xs text-emerald-800 hover:bg-emerald-200"
-                onClick={() => setPoReceiveMode({ po: row, mode: "full" })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPoReceiveMode({ po: row, mode: "full" });
+                }}
               >
                 Receive
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-amber-100 text-xs text-amber-800 hover:bg-amber-200"
-                onClick={() => openPartialReceiveModal(row)}
+                className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openPartialReceiveModal(row);
+                }}
               >
                 Partial
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-red-100 text-xs text-red-800 hover:bg-red-200"
-                onClick={() => handleCancelPo(row)}
+                className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancelPo(row);
+                }}
               >
                 Cancel
               </button>
@@ -1964,15 +2392,15 @@ const App: React.FC = () => {
                 className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
                 onClick={() => setWarehouseModalQuickOpen(true)}
               >
-                Quick Add Warehouse
+                Quick Add Branch
               </button>
-              <div className="flex gap-3">
-                <button
-                  className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:bg-slate-50"
-                  onClick={() => setPoModalOpen(false)}
-                >
-                  Cancel
-                </button>
+            <div className="flex gap-3">
+              <button
+                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                onClick={() => setPoModalOpen(false)}
+              >
+                Cancel
+              </button>
                 <button
                   className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
                   onClick={handleSavePurchaseOrder}
@@ -1986,7 +2414,7 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                PO Number
+                PO Number <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -2001,7 +2429,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Vendor
+                Vendor <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -2016,7 +2444,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture
+                Manufacture <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -2031,7 +2459,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Receiving Warehouse
+                Receiving Branch <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -2043,7 +2471,7 @@ const App: React.FC = () => {
                   }))
                 }
               >
-                <option value="">Select Warehouse</option>
+                <option value="">Select Branch</option>
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.shortCode || w.name}
@@ -2207,7 +2635,7 @@ const App: React.FC = () => {
           footer={
             <div className="flex justify-end gap-3">
               <button
-                className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:bg-slate-50"
+                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
                 onClick={() => setPoReceiveMode(null)}
               >
                 Cancel
@@ -2344,10 +2772,9 @@ const App: React.FC = () => {
           data={transfers}
           searchFields={[
             "transferId",
-            "itemModelNumber",
-            "itemName",
             "sourceBranchId",
             "destinationBranchId",
+            "status",
           ]}
           filterFields={[
             {
@@ -2372,8 +2799,16 @@ const App: React.FC = () => {
           getRowId={(row) => row.id}
           columns={[
             { key: "transferId", label: "Transfer ID" },
-            { key: "itemModelNumber", label: "Model #" },
-            { key: "itemName", label: "Item Name" },
+            {
+              key: "itemModelNumber",
+              label: "First Model #",
+              render: (row) => row.lines?.[0]?.itemModelNumber ?? "",
+            },
+            {
+              key: "itemName",
+              label: "First Item Name",
+              render: (row) => row.lines?.[0]?.itemName ?? "",
+            },
             {
               key: "sourceBranchId",
               label: "Source",
@@ -2394,7 +2829,9 @@ const App: React.FC = () => {
             },
             {
               key: "quantity",
-              label: "Qty",
+              label: "Total Qty",
+              render: (row) =>
+                row.lines?.reduce((sum, line) => sum + line.quantity, 0) ?? 0,
             },
             {
               key: "status",
@@ -2406,7 +2843,10 @@ const App: React.FC = () => {
               {row.status === "pending" && (
                 <button
                   className="px-2 py-1 rounded-md bg-amber-100 text-xs text-amber-800 hover:bg-amber-200"
-                  onClick={() => handleUpdateTransferStatus(row, "in-transit")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdateTransferStatus(row, "in-transit");
+                  }}
                 >
                   In-Transit
                 </button>
@@ -2414,7 +2854,10 @@ const App: React.FC = () => {
               {(row.status === "pending" || row.status === "in-transit") && (
                 <button
                   className="px-2 py-1 rounded-md bg-emerald-100 text-xs text-emerald-800 hover:bg-emerald-200"
-                  onClick={() => handleUpdateTransferStatus(row, "completed")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdateTransferStatus(row, "completed");
+                  }}
                 >
                   Completed
                 </button>
@@ -2425,7 +2868,10 @@ const App: React.FC = () => {
           <div className="flex gap-2">
             <button
               className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
-              onClick={() => setTransferModalOpen(true)}
+              onClick={() => {
+                resetTransferForm();
+                setTransferModalOpen(true);
+              }}
             >
               Initiate New Transfer
             </button>
@@ -2439,7 +2885,7 @@ const App: React.FC = () => {
           footer={
             <div className="flex justify-end gap-3">
               <button
-                className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:bg-slate-50"
+                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
                 onClick={() => setTransferModalOpen(false)}
               >
                 Cancel
@@ -2453,49 +2899,10 @@ const App: React.FC = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Item
-              </label>
-              <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={transferForm.itemId}
-                onChange={(e) =>
-                  setTransferForm((prev) => ({
-                    ...prev,
-                    itemId: e.target.value,
-                  }))
-                }
-              >
-                <option value="">Select Item</option>
-                {inventoryItems.map((inv) => (
-                  <option key={inv.id} value={inv.id}>
-                    {inv.modelNumber} - {inv.name} ({inv.amountInInventory} on
-                    hand)
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Quantity
-              </label>
-              <input
-                type="number"
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={transferForm.quantity}
-                onChange={(e) =>
-                  setTransferForm((prev) => ({
-                    ...prev,
-                    quantity: Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Source Warehouse
+                Source Branch <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -2517,7 +2924,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Destination Warehouse
+                Destination Branch <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -2538,7 +2945,141 @@ const App: React.FC = () => {
               </select>
             </div>
           </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Transfer Lines
+              </h3>
+              <button
+                type="button"
+                className="px-2 py-1 rounded-md bg-slate-100 text-xs hover:bg-slate-200"
+                onClick={addTransferLine}
+              >
+                Add Line
+              </button>
+            </div>
+            <div className="border border-slate-200 rounded-md overflow-x-auto">
+              <table className="min-w-full text-xs">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-2 py-2 text-left">
+                      Item <span className="text-red-500">*</span>
+                    </th>
+                    <th className="px-2 py-2 text-right">
+                      Quantity <span className="text-red-500">*</span>
+                    </th>
+                    <th className="px-2 py-2"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transferForm.lines.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="px-2 py-3 text-center text-slate-500"
+                      >
+                        No transfer lines
+                      </td>
+                    </tr>
+                  )}
+                  {transferForm.lines.map((line, idx) => (
+                    <tr key={idx} className="border-t border-slate-100">
+                      <td className="px-2 py-1">
+                        <select
+                          className="w-full border border-slate-300 rounded-md px-2 py-1 text-xs"
+                          value={line.itemId}
+                          onChange={(e) =>
+                            updateTransferLine(idx, "itemId", e.target.value)
+                          }
+                        >
+                          <option value="">Select Item</option>
+                          {inventoryItems.map((inv) => (
+                            <option key={inv.id} value={inv.id}>
+                              {inv.modelNumber} - {inv.name} (
+                              {inv.amountInInventory} on hand)
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-2 py-1 text-right">
+                        <input
+                          type="number"
+                          className="w-24 border border-slate-300 rounded-md px-2 py-1 text-right"
+                          value={line.quantity}
+                          onChange={(e) =>
+                            updateTransferLine(idx, "quantity", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="px-2 py-1 text-right">
+                        <button
+                          type="button"
+                          className="px-2 py-1 rounded-md bg-red-100 text-red-800 hover:bg-red-200"
+                          onClick={() => removeTransferLine(idx)}
+                        >
+                          ×
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </Modal>
+      </div>
+    );
+  };
+
+  const activityHistorySorted = useMemo(
+    () =>
+      [...activityHistory].sort((a, b) =>
+        (b.timestamp || "").localeCompare(a.timestamp || "")
+      ),
+    [activityHistory]
+  );
+
+  const renderActivityHistoryPage = () => {
+    return (
+      <div className="space-y-4">
+        <DataTable<ActivityLog>
+          title="Activity History"
+          data={activityHistorySorted}
+          searchFields={["summary", "action", "userName", "collection", "docId"]}
+          filterFields={[
+            {
+              key: "action",
+              label: "Action",
+              type: "select",
+              options: activityFilterOptions.actions,
+            },
+            {
+              key: "userName",
+              label: "User",
+              type: "select",
+              options: activityFilterOptions.users,
+            },
+          ]}
+          columns={[
+            {
+              key: "timestamp",
+              label: "Time",
+              render: (row) =>
+                row.timestamp
+                  ? new Date(row.timestamp).toLocaleString()
+                  : "—",
+              sortFn: (a, b) =>
+                (a.timestamp || "").localeCompare(b.timestamp || ""),
+            },
+            { key: "action", label: "Action" },
+            { key: "userName", label: "User" },
+            { key: "collection", label: "Collection" },
+            { key: "docId", label: "Doc ID" },
+            { key: "summary", label: "Summary" },
+          ]}
+          getRowId={(row) => row.id}
+        />
       </div>
     );
   };
@@ -2547,7 +3088,7 @@ const App: React.FC = () => {
     return (
       <div className="space-y-4">
         <DataTable<Warehouse>
-          title="Warehouses"
+          title="Branches"
           data={warehouses}
           searchFields={["shortCode", "name", "city", "state"]}
           filterFields={[
@@ -2569,8 +3110,9 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md bg-slate-100 text-xs hover:bg-slate-200"
-                onClick={() => {
+                className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
+                onClick={(e) => {
+                  e.stopPropagation();
                   setEditingWarehouse(row);
                   setWarehouseModalMainOpen(true);
                 }}
@@ -2578,8 +3120,11 @@ const App: React.FC = () => {
                 Edit
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-red-100 text-xs text-red-800 hover:bg-red-200"
-                onClick={() => handleDeleteWarehouse(row)}
+                className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteWarehouse(row);
+                }}
               >
                 Delete
               </button>
@@ -2612,6 +3157,7 @@ const App: React.FC = () => {
           db={db!}
           basePath={basePath!}
           existing={editingWarehouse}
+          onLogActivity={logActivity}
         />
 
         <Modal
@@ -2675,38 +3221,57 @@ const App: React.FC = () => {
               </h1>
               <p className="text-[11px] text-white/80">
                 App ID: {appId} · User: {authUser.uid.slice(0, 8)}
-                <br />
-                Base path: {basePath}
               </p>
             </div>
           </div>
-          <nav className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
-            <NavButton
-              label="Inventory"
-              active={page === "inventory"}
-              onClick={() => setPage("inventory")}
-            />
-            <NavButton
-              label="Purchase Orders"
-              active={page === "pos"}
-              onClick={() => setPage("pos")}
-            />
-            <NavButton
-              label="PO History"
-              active={page === "poHistory"}
-              onClick={() => setPage("poHistory")}
-            />
-            <NavButton
-              label="Transfers"
-              active={page === "transfers"}
-              onClick={() => setPage("transfers")}
-            />
-            <NavButton
-              label="Warehouses"
-              active={page === "warehouses"}
-              onClick={() => setPage("warehouses")}
-            />
-          </nav>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#005691]"
+              onClick={() => setIsDark((prev) => !prev)}
+              aria-pressed={isDark}
+              aria-label="Toggle dark mode"
+            >
+              <span aria-hidden className="text-base">
+                {isDark ? "🌙" : "☀️"}
+              </span>
+              <span className="sr-only sm:not-sr-only sm:inline">
+                {isDark ? "Dark mode" : "Light mode"}
+              </span>
+            </button>
+            <nav className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
+              <NavButton
+                label="Inventory"
+                active={page === "inventory"}
+                onClick={() => setPage("inventory")}
+              />
+              <NavButton
+                label="Purchase Orders"
+                active={page === "pos"}
+                onClick={() => setPage("pos")}
+              />
+              <NavButton
+                label="PO History"
+                active={page === "poHistory"}
+                onClick={() => setPage("poHistory")}
+              />
+              <NavButton
+                label="Transfers"
+                active={page === "transfers"}
+                onClick={() => setPage("transfers")}
+              />
+              <NavButton
+                label="Warehouses"
+                active={page === "warehouses"}
+                onClick={() => setPage("warehouses")}
+              />
+              <NavButton
+                label="Activity History"
+                active={page === "activityHistory"}
+                onClick={() => setPage("activityHistory")}
+              />
+            </nav>
+          </div>
         </div>
       </header>
 
@@ -2715,20 +3280,23 @@ const App: React.FC = () => {
           loadingWarehouses ||
           loadingPOs ||
           loadingPoHistory ||
-          loadingTransfers) && <LoadingSpinner />}
+          loadingTransfers ||
+          loadingActivity) && <LoadingSpinner />}
         {page === "inventory" && renderInventoryPage()}
         {page === "pos" && renderPendingPoPage()}
         {page === "poHistory" && renderPoHistoryPage()}
         {page === "transfers" && renderTransfersPage()}
         {page === "warehouses" && renderWarehousesPage()}
+        {page === "activityHistory" && renderActivityHistoryPage()}
       </main>
 
       <AddWarehouseModal
         open={warehouseModalQuickOpen}
         onClose={() => setWarehouseModalQuickOpen(false)}
         onSaved={() => {}}
-        db={db!} // you already used this pattern above
+        db={db!}
         basePath={basePath!}
+        onLogActivity={logActivity}
       />
 
       <MessageBox ref={messageBoxRef} />
