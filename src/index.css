@@ -3,20 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f1f5f9;
+  --bg: #f8fafc;
   --fg: #0f172a;
   --card: #ffffff;
   --muted: #475569;
-  --border: #cbd5e1;
+  --border: #e2e8f0;
+  --accent: #005691;
 }
 
 .dark {
   color-scheme: dark;
-  --bg: #0b1220;
-  --fg: #e2e8f0;
-  --card: #0f172a;
-  --muted: #94a3b8;
-  --border: #1f2937;
+  --bg: #111827;
+  --fg: #ffffff;
+  --card: #1f2937;
+  --muted: #e5e7eb;
+  --border: #374151;
+  --accent: #60a5fa;
 }
 
 /* Optional small global tweaks */
@@ -52,7 +54,19 @@ body {
   border-color: var(--border) !important;
 }
 
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: #94a3b8;
+.dark a,
+.dark button {
+  color: inherit;
+}
+
+/* Table row hover text color */
+tr:hover,
+tr:hover td,
+tr:hover th {
+  color: #111827 !important;
+}
+
+tr:hover a,
+tr:hover a * {
+  color: #111827 !important;
 }
