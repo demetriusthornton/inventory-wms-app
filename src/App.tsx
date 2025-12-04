@@ -14,11 +14,11 @@ import type { FirebaseApp } from "firebase/app";
 
 import {
   getAuth,
-  signInAnonymously,
-  signInWithCustomToken,
+  signOut,
   onAuthStateChanged,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
+import { AuthPage } from "./AuthPage";
 
 import {
   getFirestore,
@@ -664,8 +664,8 @@ function jsonSafeParse<T = any>(value: any): T | null {
   return value as T;
 }
 
-function buildBasePath(appId: string, userId: string) {
-  return `artifacts/${appId}/users/${userId}`;
+function buildBasePath(appId: string) {
+  return `artifacts/${appId}/shared`;
 }
 
 function parseCsvSimple(text: string): string[][] {
@@ -742,7 +742,7 @@ const App: React.FC = () => {
   );
 
   const basePath = useMemo(
-    () => (appId && authUser ? buildBasePath(appId, authUser.uid) : null),
+    () => (appId && authUser ? buildBasePath(appId) : null),
     [appId, authUser]
   );
 
@@ -820,19 +820,6 @@ const App: React.FC = () => {
 
     setFirebaseApp(app);
     const auth = getAuth(app);
-    const token = w.__initial_auth_token as string | undefined;
-
-    const signIn = async () => {
-      try {
-        if (token) {
-          await signInWithCustomToken(auth, token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch {
-        await signInAnonymously(auth);
-      }
-    };
 
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -840,14 +827,29 @@ const App: React.FC = () => {
         setDb(getFirestore(app));
         setAuthInitDone(true);
       } else {
-        signIn();
+        setAuthUser(null);
+        setDb(null);
+        setAuthInitDone(true);
       }
     });
 
-    signIn();
-
     return () => unsub();
   }, []);
+
+  const handleSignOut = async () => {
+    const auth = getAuth();
+    await signOut(auth);
+    setAuthUser(null);
+    setDb(null);
+  };
+
+  if (!authInitDone) {
+    return <LoadingSpinner />;
+  }
+
+  if (!authUser) {
+    return <AuthPage onLoginSuccess={() => {}} />;
+  }
 
   const { data: warehouses, loading: loadingWarehouses } =
     useCollection<Warehouse>({
@@ -3207,39 +3209,50 @@ const App: React.FC = () => {
     );
   }
 
+  if (!authUser) {
+    return <AuthPage onLoginSuccess={() => {}} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col">
-      <header className="bg-[#005691] text-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-bold">
-              BLX
+            <div className="w-8 h-8 bg-[#005691] rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">W</span>
             </div>
-            <div>
-              <h1 className="text-sm sm:text-base font-semibold">
-                INVENTORY WMS
-              </h1>
+            <h1 className="text-xl font-bold text-slate-900 hidden sm:block">
+              Inventory WMS
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-slate-600 hidden sm:block">
+              {getUserName()}
+            </div>
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full"
+              title="Toggle Theme"
+            >
+              {isDark ? "☀️" : "🌙"}
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+        <div className="bg-[#005691] text-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <p className="text-[11px] text-white/80">
-                App ID: {appId} · User: {authUser.uid.slice(0, 8)}
+                App ID: {appId}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70 focus:ring-offset-2 focus:ring-offset-[#005691]"
-              onClick={() => setIsDark((prev) => !prev)}
-              aria-pressed={isDark}
-              aria-label="Toggle dark mode"
-            >
-              <span aria-hidden className="text-base">
-                {isDark ? "🌙" : "☀️"}
-              </span>
-              <span className="sr-only sm:not-sr-only sm:inline">
-                {isDark ? "Dark mode" : "Light mode"}
-              </span>
-            </button>
             <nav className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
+
               <NavButton
                 label="Inventory"
                 active={page === "inventory"}
