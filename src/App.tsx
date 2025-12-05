@@ -14,8 +14,10 @@ import type { FirebaseApp } from "firebase/app";
 
 import {
   getAuth,
-  signOut,
+  signInAnonymously,
+  signInWithCustomToken,
   onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { AuthPage } from "./AuthPage";
@@ -664,8 +666,8 @@ function jsonSafeParse<T = any>(value: any): T | null {
   return value as T;
 }
 
-function buildBasePath(appId: string) {
-  return `artifacts/${appId}/shared`;
+function buildBasePath(appId: string, userId: string) {
+  return `artifacts/${appId}/users/${userId}`;
 }
 
 function parseCsvSimple(text: string): string[][] {
@@ -735,6 +737,7 @@ const App: React.FC = () => {
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
   const [isDark, setIsDark] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
   const [selectedInventoryIds, setSelectedInventoryIds] = useState<string[]>(
@@ -742,7 +745,7 @@ const App: React.FC = () => {
   );
 
   const basePath = useMemo(
-    () => (appId && authUser ? buildBasePath(appId) : null),
+    () => (appId && authUser ? buildBasePath(appId, authUser.uid) : null),
     [appId, authUser]
   );
 
@@ -794,7 +797,6 @@ const App: React.FC = () => {
     localStorage.setItem("wms-theme", isDark ? "dark" : "light");
   }, [isDark]);
 
-
   useEffect(() => {
     const w = window as any;
     const cfg = jsonSafeParse(w.__firebase_config);
@@ -802,6 +804,8 @@ const App: React.FC = () => {
 
     if (!cfg) {
       console.error("Missing firebase config");
+      setInitError("Missing firebase config. Please provide __firebase_config on window.");
+      setAuthInitDone(true);
       return;
     }
 
@@ -820,6 +824,25 @@ const App: React.FC = () => {
 
     setFirebaseApp(app);
     const auth = getAuth(app);
+    const token = w.__initial_auth_token as string | undefined;
+
+    const signIn = async () => {
+      try {
+        if (token) {
+          await signInWithCustomToken(auth, token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch {
+        try {
+          await signInAnonymously(auth);
+        } catch (err) {
+          console.error("Anonymous sign-in failed", err);
+          setInitError("Authentication failed. Please check Firebase setup.");
+          setAuthInitDone(true);
+        }
+      }
+    };
 
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -827,11 +850,11 @@ const App: React.FC = () => {
         setDb(getFirestore(app));
         setAuthInitDone(true);
       } else {
-        setAuthUser(null);
-        setDb(null);
-        setAuthInitDone(true);
+        signIn();
       }
     });
+
+    signIn();
 
     return () => unsub();
   }, []);
@@ -842,14 +865,6 @@ const App: React.FC = () => {
     setAuthUser(null);
     setDb(null);
   };
-
-  if (!authInitDone) {
-    return <LoadingSpinner />;
-  }
-
-  if (!authUser) {
-    return <AuthPage onLoginSuccess={() => {}} />;
-  }
 
   const { data: warehouses, loading: loadingWarehouses } =
     useCollection<Warehouse>({
@@ -3201,10 +3216,36 @@ const App: React.FC = () => {
     );
   };
 
-  if (!authInitDone || !firebaseApp || !db || !authUser || !basePath) {
+  if (initError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <LoadingSpinner />
+        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Failed to initialize
+          </h2>
+          <p className="text-sm text-slate-700 whitespace-pre-line">
+            {initError}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authInitDone) {
+    return <LoadingSpinner />;
+  }
+
+  if (!firebaseApp) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Firebase not initialized
+          </h2>
+          <p className="text-sm text-slate-700">
+            Firebase app failed to initialize. Check configuration.
+          </p>
+        </div>
       </div>
     );
   }
@@ -3213,78 +3254,65 @@ const App: React.FC = () => {
     return <AuthPage onLoginSuccess={() => {}} />;
   }
 
+  if (!db || !basePath) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Database not ready
+          </h2>
+          <p className="text-sm text-slate-700">
+            Firestore connection or base path not available.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <header className="bg-[#005691] text-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#005691] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">W</span>
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-bold">
+              BLX
             </div>
-            <h1 className="text-xl font-bold text-slate-900 hidden sm:block">
-              Inventory WMS
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-slate-600 hidden sm:block">
-              {getUserName()}
-            </div>
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className="p-2 text-slate-500 hover:bg-slate-100 rounded-full"
-              title="Toggle Theme"
-            >
-              {isDark ? "☀️" : "🌙"}
-            </button>
-            <button
-              onClick={handleSignOut}
-              className="text-sm font-medium text-slate-600 hover:text-slate-900"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-        <div className="bg-[#005691] text-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div>
+              <h1 className="text-sm sm:text-base font-semibold">
+                INVENTORY WMS
+              </h1>
               <p className="text-[11px] text-white/80">
-                App ID: {appId}
+                App ID: {appId} · User: {authUser.uid.slice(0, 8)}
               </p>
             </div>
-            <nav className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
-
-              <NavButton
-                label="Inventory"
-                active={page === "inventory"}
-                onClick={() => setPage("inventory")}
-              />
-              <NavButton
-                label="Purchase Orders"
-                active={page === "pos"}
-                onClick={() => setPage("pos")}
-              />
-              <NavButton
-                label="PO History"
-                active={page === "poHistory"}
-                onClick={() => setPage("poHistory")}
-              />
-              <NavButton
-                label="Transfers"
-                active={page === "transfers"}
-                onClick={() => setPage("transfers")}
-              />
-              <NavButton
-                label="Warehouses"
-                active={page === "warehouses"}
-                onClick={() => setPage("warehouses")}
-              />
-              <NavButton
-                label="Activity History"
-                active={page === "activityHistory"}
-                onClick={() => setPage("activityHistory")}
-              />
-            </nav>
           </div>
+          <nav className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
+            <NavButton
+              label="Inventory"
+              active={page === "inventory"}
+              onClick={() => setPage("inventory")}
+            />
+            <NavButton
+              label="Purchase Orders"
+              active={page === "pos"}
+              onClick={() => setPage("pos")}
+            />
+            <NavButton
+              label="PO History"
+              active={page === "poHistory"}
+              onClick={() => setPage("poHistory")}
+            />
+            <NavButton
+              label="Transfers"
+              active={page === "transfers"}
+              onClick={() => setPage("transfers")}
+            />
+            <NavButton
+              label="Warehouses"
+              active={page === "warehouses"}
+              onClick={() => setPage("warehouses")}
+            />
+          </nav>
         </div>
       </header>
 
