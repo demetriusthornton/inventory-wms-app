@@ -939,7 +939,9 @@ const App: React.FC = () => {
   const filteredPoHistory = useMemo(
     () =>
       defaultWarehouseId
-        ? poHistory.filter((po) => po.receivingWarehouseId === defaultWarehouseId)
+        ? poHistory.filter(
+            (po) => po.receivingWarehouseId === defaultWarehouseId
+          )
         : poHistory,
     [defaultWarehouseId, poHistory]
   );
@@ -1503,11 +1505,11 @@ const App: React.FC = () => {
       const remaining = item.amountOrdered - (item.amountReceived ?? 0);
       const applyQty = receiveQty > remaining ? remaining : receiveQty;
       if (applyQty > 0) {
-      const inventoryItem = inventoryItems.find(
-        (inv) =>
-          inv.manufacturePartNumber === item.modelNumber &&
-          inv.assignedBranchId === po.receivingWarehouseId
-      );
+        const inventoryItem = inventoryItems.find(
+          (inv) =>
+            inv.manufacturePartNumber === item.modelNumber &&
+            inv.assignedBranchId === po.receivingWarehouseId
+        );
         if (inventoryItem) {
           const invRef = doc(
             collection(db, `${basePath}/inventory`),
@@ -1520,10 +1522,10 @@ const App: React.FC = () => {
         } else {
           const id = crypto.randomUUID();
           const invRef = doc(collection(db, `${basePath}/inventory`), id);
-        const template =
-          inventoryItems.find(
-            (inv) => inv.manufacturePartNumber === item.modelNumber
-          ) ?? null;
+          const template =
+            inventoryItems.find(
+              (inv) => inv.manufacturePartNumber === item.modelNumber
+            ) ?? null;
           const newItem: InventoryItem = {
             id,
             modelNumber: item.modelNumber,
@@ -3013,9 +3015,8 @@ const App: React.FC = () => {
                 (entry) =>
                   entry.collection === "moves" && entry.docId === row.id
               )
-              .sort(
-                (a, b) =>
-                  (b.timestamp || "").localeCompare(a.timestamp || "")
+              .sort((a, b) =>
+                (b.timestamp || "").localeCompare(a.timestamp || "")
               );
             return (
               <div className="bg-slate-50 rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
