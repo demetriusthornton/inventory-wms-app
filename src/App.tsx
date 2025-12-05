@@ -12,14 +12,9 @@ import type { ReactNode } from "react";
 import { initializeApp, getApps } from "firebase/app";
 import type { FirebaseApp } from "firebase/app";
 
-import {
-  getAuth,
-  signInAnonymously,
-  signInWithCustomToken,
-  onAuthStateChanged,
-  signOut,
-} from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
+import { AuthPage } from "./AuthPage";
 
 import {
   getFirestore,
@@ -113,7 +108,7 @@ const makeEmptyPoForm = (): PoFormState => ({
   ],
 });
 
-type TransferStatus = "pending" | "in-transit" | "completed";
+type TransferStatus = "pending" | "in-transit" | "completed" | "cancelled";
 
 interface TransferLine {
   itemId: string;
@@ -130,6 +125,7 @@ interface Transfer {
   dateInitiated: string;
   status: TransferStatus;
   dateCompleted?: string;
+  statusUpdatedAt?: string;
   lines: TransferLine[];
 }
 
@@ -669,8 +665,9 @@ function jsonSafeParse<T = any>(value: any): T | null {
   return value as T;
 }
 
-function buildBasePath(appId: string, userId: string) {
-  return `artifacts/${appId}/users/${userId}`;
+function buildBasePath(appId: string) {
+  // Shared data across users; even segments so `${basePath}/collection` is valid
+  return `artifacts/${appId}/shared/global`;
 }
 
 function parseCsvSimple(text: string): string[][] {
@@ -740,6 +737,9 @@ const App: React.FC = () => {
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
   const [isDark, setIsDark] = useState(false);
+  const [defaultWarehouseId, setDefaultWarehouseId] = useState<string | null>(
+    () => localStorage.getItem("defaultWarehouseId") || null
+  );
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
   const [selectedInventoryIds, setSelectedInventoryIds] = useState<string[]>(
@@ -747,14 +747,17 @@ const App: React.FC = () => {
   );
 
   const basePath = useMemo(
-    () => (appId && authUser ? buildBasePath(appId, authUser.uid) : null),
-    [appId, authUser]
+    () => (appId ? buildBasePath(appId) : null),
+    [appId]
   );
 
-  const getUserName = useCallback(
-    () => authUser?.displayName?.trim() || authUser?.uid || "Unknown User",
-    [authUser]
-  );
+  const getUserName = useCallback(() => {
+    const name = authUser?.displayName?.trim();
+    if (name) return name;
+    const email = authUser?.email?.trim();
+    if (email) return email;
+    return authUser?.uid || "Unknown User";
+  }, [authUser]);
 
   const logActivity = useCallback(
     async (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => {
@@ -802,6 +805,14 @@ const App: React.FC = () => {
   }, [isDark]);
 
   useEffect(() => {
+    if (defaultWarehouseId) {
+      localStorage.setItem("defaultWarehouseId", defaultWarehouseId);
+    } else {
+      localStorage.removeItem("defaultWarehouseId");
+    }
+  }, [defaultWarehouseId]);
+
+  useEffect(() => {
     const w = window as any;
     const cfg = jsonSafeParse(w.__firebase_config);
     const appIdGlobal = w.__app_id as string | undefined;
@@ -826,31 +837,17 @@ const App: React.FC = () => {
 
     setFirebaseApp(app);
     const auth = getAuth(app);
-    const token = w.__initial_auth_token as string | undefined;
-
-    const signIn = async () => {
-      try {
-        if (token) {
-          await signInWithCustomToken(auth, token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch {
-        await signInAnonymously(auth);
-      }
-    };
 
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
         setAuthUser(user);
         setDb(getFirestore(app));
-        setAuthInitDone(true);
       } else {
-        signIn();
+        setAuthUser(null);
+        setDb(null);
       }
+      setAuthInitDone(true);
     });
-
-    signIn();
 
     return () => unsub();
   }, []);
@@ -904,6 +901,15 @@ const App: React.FC = () => {
       collectionName: "activityHistory",
     });
 
+  useEffect(() => {
+    if (
+      defaultWarehouseId &&
+      !warehouses.some((w) => w.id === defaultWarehouseId)
+    ) {
+      setDefaultWarehouseId(null);
+    }
+  }, [defaultWarehouseId, warehouses]);
+
   const activityFilterOptions = useMemo(() => {
     const actionSet = new Set<string>();
     const userSet = new Set<string>();
@@ -920,9 +926,39 @@ const App: React.FC = () => {
     };
   }, [activityHistory]);
 
+  const filteredPurchaseOrders = useMemo(
+    () =>
+      defaultWarehouseId
+        ? purchaseOrders.filter(
+            (po) => po.receivingWarehouseId === defaultWarehouseId
+          )
+        : purchaseOrders,
+    [defaultWarehouseId, purchaseOrders]
+  );
+
+  const filteredPoHistory = useMemo(
+    () =>
+      defaultWarehouseId
+        ? poHistory.filter((po) => po.receivingWarehouseId === defaultWarehouseId)
+        : poHistory,
+    [defaultWarehouseId, poHistory]
+  );
+
+  const filteredTransfers = useMemo(
+    () =>
+      defaultWarehouseId
+        ? transfers.filter(
+            (t) =>
+              t.sourceBranchId === defaultWarehouseId ||
+              t.destinationBranchId === defaultWarehouseId
+          )
+        : transfers,
+    [defaultWarehouseId, transfers]
+  );
+
   const pendingPOs = useMemo(
-    () => purchaseOrders.filter((po) => po.status === "pending"),
-    [purchaseOrders]
+    () => filteredPurchaseOrders.filter((po) => po.status === "pending"),
+    [filteredPurchaseOrders]
   );
 
   const onOrderMap = useMemo(() => {
@@ -931,7 +967,7 @@ const App: React.FC = () => {
       for (const item of po.items) {
         const remaining = item.amountOrdered - (item.amountReceived ?? 0);
         if (remaining > 0) {
-          const key = item.modelNumber;
+          const key = `${po.receivingWarehouseId}:${item.modelNumber}`;
           map.set(key, (map.get(key) ?? 0) + remaining);
         }
       }
@@ -943,9 +979,22 @@ const App: React.FC = () => {
     () =>
       inventoryItems.map((item) => ({
         ...item,
-        numOnOrder: onOrderMap.get(item.modelNumber) ?? 0,
+        numOnOrder:
+          onOrderMap.get(
+            `${item.assignedBranchId}:${item.manufacturePartNumber}`
+          ) ?? 0,
       })),
     [inventoryItems, onOrderMap]
+  );
+
+  const filteredInventory = useMemo(
+    () =>
+      defaultWarehouseId
+        ? enrichedInventory.filter(
+            (item) => item.assignedBranchId === defaultWarehouseId
+          )
+        : enrichedInventory,
+    [defaultWarehouseId, enrichedInventory]
   );
 
   const warehouseSelectOptions = useMemo(
@@ -1035,6 +1084,7 @@ const App: React.FC = () => {
 
   const [inventoryCsvModalOpen, setInventoryCsvModalOpen] = useState(false);
   const inventoryCsvInputRef = useRef<HTMLInputElement | null>(null);
+  const inventoryImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const [warehouseModalQuickOpen, setWarehouseModalQuickOpen] = useState(false);
   const [warehouseModalMainOpen, setWarehouseModalMainOpen] = useState(false);
@@ -1372,7 +1422,7 @@ const App: React.FC = () => {
       if (remaining <= 0) continue;
       const inventoryItem = inventoryItems.find(
         (inv) =>
-          inv.modelNumber === item.modelNumber &&
+          inv.manufacturePartNumber === item.modelNumber &&
           inv.assignedBranchId === po.receivingWarehouseId
       );
       if (inventoryItem) {
@@ -1388,8 +1438,9 @@ const App: React.FC = () => {
         const id = crypto.randomUUID();
         const invRef = doc(collection(db, `${basePath}/inventory`), id);
         const template =
-          inventoryItems.find((inv) => inv.modelNumber === item.modelNumber) ??
-          null;
+          inventoryItems.find(
+            (inv) => inv.manufacturePartNumber === item.modelNumber
+          ) ?? null;
         const newItem: InventoryItem = {
           id,
           modelNumber: item.modelNumber,
@@ -1452,11 +1503,11 @@ const App: React.FC = () => {
       const remaining = item.amountOrdered - (item.amountReceived ?? 0);
       const applyQty = receiveQty > remaining ? remaining : receiveQty;
       if (applyQty > 0) {
-        const inventoryItem = inventoryItems.find(
-          (inv) =>
-            inv.modelNumber === item.modelNumber &&
-            inv.assignedBranchId === po.receivingWarehouseId
-        );
+      const inventoryItem = inventoryItems.find(
+        (inv) =>
+          inv.manufacturePartNumber === item.modelNumber &&
+          inv.assignedBranchId === po.receivingWarehouseId
+      );
         if (inventoryItem) {
           const invRef = doc(
             collection(db, `${basePath}/inventory`),
@@ -1469,10 +1520,10 @@ const App: React.FC = () => {
         } else {
           const id = crypto.randomUUID();
           const invRef = doc(collection(db, `${basePath}/inventory`), id);
-          const template =
-            inventoryItems.find(
-              (inv) => inv.modelNumber === item.modelNumber
-            ) ?? null;
+        const template =
+          inventoryItems.find(
+            (inv) => inv.manufacturePartNumber === item.modelNumber
+          ) ?? null;
           const newItem: InventoryItem = {
             id,
             modelNumber: item.modelNumber,
@@ -1614,7 +1665,7 @@ const App: React.FC = () => {
       return;
     }
 
-    const selectedItems = enrichedInventory.filter((it) =>
+    const selectedItems = filteredInventory.filter((it) =>
       selectedInventoryIds.includes(it.id)
     );
 
@@ -1718,12 +1769,14 @@ const App: React.FC = () => {
       };
     });
 
+    const nowIso = new Date().toISOString();
     const transfer: Transfer = {
       id,
       transferId: id,
       sourceBranchId,
       destinationBranchId,
-      dateInitiated: new Date().toISOString(),
+      dateInitiated: nowIso,
+      statusUpdatedAt: nowIso,
       status: "pending",
       lines: transferLines,
     };
@@ -1747,10 +1800,34 @@ const App: React.FC = () => {
     newStatus: TransferStatus
   ) => {
     if (!db || !basePath) return;
+    if (transfer.status === "completed") {
+      return;
+    }
+
     if (newStatus === "in-transit" && transfer.status !== "pending") {
       return;
     }
+
     if (newStatus === "completed" && transfer.status === "completed") {
+      return;
+    }
+
+    if (newStatus === "cancelled") {
+      const confirmed = await messageBoxRef.current?.confirm(
+        `Cancel transfer ${transfer.transferId}?`
+      );
+      if (!confirmed) return;
+      const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
+      await updateDoc(transferRef, {
+        status: "cancelled",
+        statusUpdatedAt: new Date().toISOString(),
+      });
+      await logActivity({
+        action: "transfer_cancel",
+        collection: "moves",
+        docId: transfer.id,
+        summary: `Cancelled transfer ${transfer.transferId}`,
+      });
       return;
     }
 
@@ -1760,6 +1837,7 @@ const App: React.FC = () => {
       );
       if (!confirmed) return;
 
+      const nowIso = new Date().toISOString();
       const batch = writeBatch(db);
       const lines = transfer.lines ?? [];
 
@@ -1805,7 +1883,8 @@ const App: React.FC = () => {
       const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
       batch.update(transferRef, {
         status: "completed",
-        dateCompleted: new Date().toISOString(),
+        dateCompleted: nowIso,
+        statusUpdatedAt: nowIso,
       });
       await batch.commit();
       await logActivity({
@@ -1818,6 +1897,7 @@ const App: React.FC = () => {
       const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
       await updateDoc(transferRef, {
         status: newStatus,
+        statusUpdatedAt: new Date().toISOString(),
       });
       await logActivity({
         action: "transfer_status_update",
@@ -1887,7 +1967,7 @@ const App: React.FC = () => {
       <div className="space-y-4">
         <DataTable<InventoryItem>
           title="Inventory"
-          data={enrichedInventory}
+          data={filteredInventory}
           searchFields={["modelNumber", "name", "category", "manufactureName"]}
           filterFields={[
             {
@@ -2238,16 +2318,49 @@ const App: React.FC = () => {
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Image URL
               </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={inventoryForm.imageUrl ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    imageUrl: e.target.value,
-                  }))
-                }
-              />
+              <div className="flex gap-2">
+                <input
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  value={inventoryForm.imageUrl ?? ""}
+                  onChange={(e) =>
+                    setInventoryForm((prev) => ({
+                      ...prev,
+                      imageUrl: e.target.value,
+                    }))
+                  }
+                  placeholder="Paste image URL or upload below"
+                />
+                <button
+                  type="button"
+                  className="px-3 py-2 rounded-md border border-slate-300 text-xs text-slate-700 hover:bg-slate-50"
+                  onClick={() => inventoryImageInputRef.current?.click()}
+                >
+                  Upload
+                </button>
+                <input
+                  ref={inventoryImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      const result = reader.result;
+                      if (typeof result === "string") {
+                        setInventoryForm((prev) => ({
+                          ...prev,
+                          imageUrl: result,
+                        }));
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                    // clear input so same file can be reselected
+                    e.target.value = "";
+                  }}
+                />
+              </div>
             </div>
           </div>
         </Modal>
@@ -2517,7 +2630,7 @@ const App: React.FC = () => {
                 <thead className="bg-slate-50">
                   <tr>
                     <th className="px-2 py-2 text-left">Item Name</th>
-                    <th className="px-2 py-2 text-left">Model #</th>
+                    <th className="px-2 py-2 text-left">Manufacture Part #</th>
                     <th className="px-2 py-2 text-left">Category</th>
                     <th className="px-2 py-2 text-right">Qty Ordered</th>
                     <th className="px-2 py-2 text-right">Cost</th>
@@ -2724,7 +2837,7 @@ const App: React.FC = () => {
     return (
       <DataTable<PurchaseOrder>
         title="Purchase Order History"
-        data={poHistory}
+        data={filteredPoHistory}
         searchFields={["orderNumber", "vendor", "manufacture"]}
         filterFields={[
           {
@@ -2787,7 +2900,7 @@ const App: React.FC = () => {
       <div className="space-y-4">
         <DataTable<Transfer>
           title="Transfers"
-          data={transfers}
+          data={filteredTransfers}
           searchFields={[
             "transferId",
             "sourceBranchId",
@@ -2880,8 +2993,57 @@ const App: React.FC = () => {
                   Completed
                 </button>
               )}
+              {(row.status === "pending" || row.status === "in-transit") && (
+                <button
+                  className="px-2 py-1 rounded-md bg-red-100 text-xs text-red-800 hover:bg-red-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUpdateTransferStatus(row, "cancelled");
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           )}
+          expandable
+          renderExpandedRow={(row) => {
+            const entries = activityHistory
+              .filter(
+                (entry) =>
+                  entry.collection === "moves" && entry.docId === row.id
+              )
+              .sort(
+                (a, b) =>
+                  (b.timestamp || "").localeCompare(a.timestamp || "")
+              );
+            return (
+              <div className="bg-slate-50 rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
+                {entries.length === 0 && (
+                  <p className="text-xs text-slate-500">No activity yet.</p>
+                )}
+                {entries.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="text-xs text-slate-700 border-b border-slate-200 last:border-0 pb-2 last:pb-0"
+                  >
+                    <div className="font-semibold text-slate-800">
+                      {entry.action}
+                    </div>
+                    <div className="text-slate-600">
+                      {(entry.userName || getUserName()) ?? "Unknown"} ·{" "}
+                      {entry.timestamp
+                        ? new Date(entry.timestamp).toLocaleString()
+                        : "—"}
+                    </div>
+                    {entry.summary && (
+                      <div className="text-slate-600">{entry.summary}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          }}
         >
           <div className="flex gap-2">
             <button
@@ -2901,19 +3063,28 @@ const App: React.FC = () => {
           onClose={() => setTransferModalOpen(false)}
           title="Initiate Transfer"
           footer={
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-between gap-3">
               <button
-                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
-                onClick={() => setTransferModalOpen(false)}
+                type="button"
+                className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
+                onClick={() => setWarehouseModalQuickOpen(true)}
               >
-                Cancel
+                Quick Add Branch
               </button>
-              <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
-                onClick={handleSaveTransfer}
-              >
-                Save
-              </button>
+              <div className="flex gap-3">
+                <button
+                  className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                  onClick={() => setTransferModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                  onClick={handleSaveTransfer}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           }
         >
@@ -3109,6 +3280,13 @@ const App: React.FC = () => {
   const renderWarehousesPage = () => {
     return (
       <div className="space-y-4">
+        <div className="text-sm text-slate-700">
+          Default branch:{" "}
+          {defaultWarehouseId
+            ? warehouses.find((w) => w.id === defaultWarehouseId)?.name ||
+              defaultWarehouseId
+            : "None selected"}
+        </div>
         <DataTable<Warehouse>
           title="Branches"
           data={warehouses}
@@ -3128,9 +3306,31 @@ const App: React.FC = () => {
             { key: "streetAddress", label: "Address" },
             { key: "city", label: "City" },
             { key: "state", label: "State" },
+            {
+              key: "default",
+              label: "Default",
+              render: (row) =>
+                row.id === defaultWarehouseId ? (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
+                    Default
+                  </span>
+                ) : (
+                  ""
+                ),
+            },
           ]}
           actions={(row) => (
             <div className="flex gap-1 justify-end">
+              <button
+                className="px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDefaultWarehouseId(row.id);
+                }}
+                disabled={row.id === defaultWarehouseId}
+              >
+                {row.id === defaultWarehouseId ? "Default" : "Set Default"}
+              </button>
               <button
                 className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
                 onClick={(e) => {
@@ -3221,7 +3421,19 @@ const App: React.FC = () => {
     );
   };
 
-  if (!authInitDone || !firebaseApp || !db || !authUser || !basePath) {
+  if (!authInitDone || !firebaseApp) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!authUser) {
+    return <AuthPage onLoginSuccess={() => setAuthInitDone(true)} />;
+  }
+
+  if (!db || !basePath) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
         <LoadingSpinner />
@@ -3242,7 +3454,7 @@ const App: React.FC = () => {
                 INVENTORY WMS
               </h1>
               <p className="text-[11px] text-white/80">
-                App ID: {appId} · User: {authUser.uid.slice(0, 8)}
+                App ID: {appId} · User: {getUserName()}
               </p>
             </div>
           </div>
@@ -3272,6 +3484,16 @@ const App: React.FC = () => {
               active={page === "warehouses"}
               onClick={() => setPage("warehouses")}
             />
+            <button
+              type="button"
+              className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10 flex items-center gap-1"
+              onClick={() => setIsDark((prev) => !prev)}
+              aria-pressed={isDark}
+              aria-label="Toggle dark mode"
+            >
+              <span aria-hidden>{isDark ? "☀️" : "🌙"}</span>
+              <span className="sr-only">Toggle theme</span>
+            </button>
             <button
               className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
               onClick={handleSignOut}
