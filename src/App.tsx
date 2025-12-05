@@ -20,7 +20,6 @@ import {
   signOut,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
-import { AuthPage } from "./AuthPage";
 
 import {
   getFirestore,
@@ -514,7 +513,9 @@ interface AddWarehouseModalProps {
   db: Firestore;
   basePath: string;
   existing?: Warehouse | null;
-  onLogActivity: (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => Promise<void>;
+  onLogActivity: (
+    entry: Omit<ActivityLog, "id" | "timestamp" | "userName">
+  ) => Promise<void>;
 }
 
 const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
@@ -567,7 +568,9 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       action: existing ? "warehouse_update" : "warehouse_create",
       collection: "warehouses",
       docId: id,
-      summary: `${existing ? "Updated" : "Created"} warehouse ${warehouse.name}`,
+      summary: `${existing ? "Updated" : "Created"} warehouse ${
+        warehouse.name
+      }`,
     });
     setSaving(false);
     onSaved(warehouse);
@@ -737,7 +740,6 @@ const App: React.FC = () => {
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
   const [isDark, setIsDark] = useState(false);
-  const [initError, setInitError] = useState<string | null>(null);
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
   const [selectedInventoryIds, setSelectedInventoryIds] = useState<string[]>(
@@ -784,7 +786,9 @@ const App: React.FC = () => {
   // Theme Init: Runs once on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("wms-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
       setIsDark(true);
     }
@@ -804,8 +808,6 @@ const App: React.FC = () => {
 
     if (!cfg) {
       console.error("Missing firebase config");
-      setInitError("Missing firebase config. Please provide __firebase_config on window.");
-      setAuthInitDone(true);
       return;
     }
 
@@ -834,13 +836,7 @@ const App: React.FC = () => {
           await signInAnonymously(auth);
         }
       } catch {
-        try {
-          await signInAnonymously(auth);
-        } catch (err) {
-          console.error("Anonymous sign-in failed", err);
-          setInitError("Authentication failed. Please check Firebase setup.");
-          setAuthInitDone(true);
-        }
+        await signInAnonymously(auth);
       }
     };
 
@@ -1148,7 +1144,9 @@ const App: React.FC = () => {
       action: editingInventoryItem ? "inventory_update" : "inventory_create",
       collection: "inventory",
       docId: id,
-      summary: `${editingInventoryItem ? "Updated" : "Added"} inventory ${name} (${modelNumber})`,
+      summary: `${
+        editingInventoryItem ? "Updated" : "Added"
+      } inventory ${name} (${modelNumber})`,
     });
     setInventoryModalOpen(false);
     resetInventoryForm();
@@ -1202,7 +1200,10 @@ const App: React.FC = () => {
     await logActivity({
       action: "inventory_import",
       collection: "inventory",
-      summary: `Imported ${Math.max(rows.length - 1, 0)} inventory rows from CSV`,
+      summary: `Imported ${Math.max(
+        rows.length - 1,
+        0
+      )} inventory rows from CSV`,
     });
     messageBoxRef.current?.alert("Inventory CSV import complete.");
   };
@@ -2079,29 +2080,29 @@ const App: React.FC = () => {
           }
           footer={
             <div className="flex justify-between gap-3">
-            <button
-              type="button"
-              className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
-              onClick={() => setWarehouseModalQuickOpen(true)}
-            >
-              Quick Add Branch
-            </button>
-            <div className="flex gap-3">
               <button
-                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
-                onClick={() => setInventoryModalOpen(false)}
+                type="button"
+                className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
+                onClick={() => setWarehouseModalQuickOpen(true)}
               >
-                Cancel
+                Quick Add Branch
               </button>
-              <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
-                onClick={handleSaveInventory}
-              >
-                Save
-              </button>
+              <div className="flex gap-3">
+                <button
+                  className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                  onClick={() => setInventoryModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                  onClick={handleSaveInventory}
+                >
+                  Save
+                </button>
+              </div>
             </div>
-          </div>
-        }
+          }
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -2411,13 +2412,13 @@ const App: React.FC = () => {
               >
                 Quick Add Branch
               </button>
-            <div className="flex gap-3">
-              <button
-                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
-                onClick={() => setPoModalOpen(false)}
-              >
-                Cancel
-              </button>
+              <div className="flex gap-3">
+                <button
+                  className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                  onClick={() => setPoModalOpen(false)}
+                >
+                  Cancel
+                </button>
                 <button
                   className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
                   onClick={handleSavePurchaseOrder}
@@ -3063,7 +3064,13 @@ const App: React.FC = () => {
         <DataTable<ActivityLog>
           title="Activity History"
           data={activityHistorySorted}
-          searchFields={["summary", "action", "userName", "collection", "docId"]}
+          searchFields={[
+            "summary",
+            "action",
+            "userName",
+            "collection",
+            "docId",
+          ]}
           filterFields={[
             {
               key: "action",
@@ -3083,9 +3090,7 @@ const App: React.FC = () => {
               key: "timestamp",
               label: "Time",
               render: (row) =>
-                row.timestamp
-                  ? new Date(row.timestamp).toLocaleString()
-                  : "—",
+                row.timestamp ? new Date(row.timestamp).toLocaleString() : "—",
               sortFn: (a, b) =>
                 (a.timestamp || "").localeCompare(b.timestamp || ""),
             },
@@ -3216,55 +3221,10 @@ const App: React.FC = () => {
     );
   };
 
-  if (initError) {
+  if (!authInitDone || !firebaseApp || !db || !authUser || !basePath) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center space-y-3">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Failed to initialize
-          </h2>
-          <p className="text-sm text-slate-700 whitespace-pre-line">
-            {initError}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!authInitDone) {
-    return <LoadingSpinner />;
-  }
-
-  if (!firebaseApp) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center space-y-3">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Firebase not initialized
-          </h2>
-          <p className="text-sm text-slate-700">
-            Firebase app failed to initialize. Check configuration.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!authUser) {
-    return <AuthPage onLoginSuccess={() => {}} />;
-  }
-
-  if (!db || !basePath) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white rounded-lg shadow p-6 max-w-md text-center space-y-3">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Database not ready
-          </h2>
-          <p className="text-sm text-slate-700">
-            Firestore connection or base path not available.
-          </p>
-        </div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -3286,7 +3246,7 @@ const App: React.FC = () => {
               </p>
             </div>
           </div>
-          <nav className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
+          <nav className="flex gap-1 sm:gap-2 items-center text-xs sm:text-sm">
             <NavButton
               label="Inventory"
               active={page === "inventory"}
@@ -3312,6 +3272,12 @@ const App: React.FC = () => {
               active={page === "warehouses"}
               onClick={() => setPage("warehouses")}
             />
+            <button
+              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
+              onClick={handleSignOut}
+            >
+              Sign Out
+            </button>
           </nav>
         </div>
       </header>
