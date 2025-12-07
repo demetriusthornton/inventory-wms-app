@@ -59,6 +59,8 @@ interface InventoryItem {
   modelNumber: string;
   name: string;
   category: string;
+  tags?: string[];
+  description?: string;
   amountInInventory: number;
   numOnOrder: number;
   manufactureName: string;
@@ -682,6 +684,8 @@ const App: React.FC = () => {
     modelNumber: "",
     name: "",
     category: "",
+    tags: [],
+    description: "",
     amountInInventory: 0,
     manufactureName: "",
     manufacturePartNumber: "",
@@ -695,6 +699,8 @@ const App: React.FC = () => {
       modelNumber: "",
       name: "",
       category: "",
+      tags: [],
+      description: "",
       amountInInventory: 0,
       manufactureName: "",
       manufacturePartNumber: "",
@@ -722,6 +728,8 @@ const App: React.FC = () => {
       modelNumber,
       name,
       category,
+      tags,
+      description,
       amountInInventory,
       manufactureName,
       manufacturePartNumber,
@@ -730,17 +738,14 @@ const App: React.FC = () => {
       minStockLevel,
     } = inventoryForm;
     if (
-      !modelNumber ||
       !name ||
       !category ||
       !assignedBranchId ||
       !manufactureName ||
-      !manufacturePartNumber ||
-      minStockLevel === undefined ||
-      amountInInventory === undefined
+      !manufacturePartNumber
     ) {
       messageBoxRef.current?.alert(
-        "Fill in all required inventory fields (Model Number, Name, Category, Manufacture, Manufacture Part Number, Branch, Amount In Inventory, Min Stock Level)."
+        "Fill in all required inventory fields (Name, Category, Manufacture, Manufacture Part Number, Branch)."
       );
       return;
     }
@@ -748,16 +753,23 @@ const App: React.FC = () => {
     const ref = doc(collection(db, `${basePath}/inventory`), id);
     const payload: InventoryItem = {
       id,
-      modelNumber: String(modelNumber),
+      modelNumber: String(modelNumber ?? ""),
       name: String(name),
       category: String(category),
-      amountInInventory: Number(amountInInventory),
+      tags: Array.isArray(tags)
+        ? tags
+        : String(tags ?? "")
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+      description: String(description ?? ""),
+      amountInInventory: Number(amountInInventory ?? 0),
       numOnOrder: 0,
       manufactureName: String(manufactureName ?? ""),
       manufacturePartNumber: String(manufacturePartNumber ?? ""),
       imageUrl: String(imageUrl ?? ""),
       assignedBranchId: String(assignedBranchId),
-      minStockLevel: Number(minStockLevel),
+      minStockLevel: Number(minStockLevel ?? 0),
     };
     await setDoc(ref, payload);
     await logActivity({
@@ -1757,7 +1769,7 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Model Number <span className="text-red-500">*</span>
+                Model Number
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1772,15 +1784,15 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Name <span className="text-red-500">*</span>
+                Part Number <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={inventoryForm.name ?? ""}
+                value={inventoryForm.manufacturePartNumber ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
                     ...prev,
-                    name: e.target.value,
+                    manufacturePartNumber: e.target.value,
                   }))
                 }
               />
@@ -1802,6 +1814,57 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
+                Tags
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                placeholder="Comma separated"
+                value={
+                  Array.isArray(inventoryForm.tags)
+                    ? inventoryForm.tags.join(", ")
+                    : inventoryForm.tags ?? ""
+                }
+                onChange={(e) =>
+                  setInventoryForm((prev) => ({
+                    ...prev,
+                    tags: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                value={inventoryForm.name ?? ""}
+                onChange={(e) =>
+                  setInventoryForm((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Description
+              </label>
+              <textarea
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                rows={3}
+                value={inventoryForm.description ?? ""}
+                onChange={(e) =>
+                  setInventoryForm((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
                 Manufacture <span className="text-red-500">*</span>
               </label>
               <input
@@ -1811,21 +1874,6 @@ const App: React.FC = () => {
                   setInventoryForm((prev) => ({
                     ...prev,
                     manufactureName: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture Part Number <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={inventoryForm.manufacturePartNumber ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    manufacturePartNumber: e.target.value,
                   }))
                 }
               />
@@ -1854,7 +1902,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Amount In Inventory <span className="text-red-500">*</span>
+                Amount In Inventory
               </label>
               <input
                 type="number"
@@ -1870,7 +1918,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Min Stock Level <span className="text-red-500">*</span>
+                Min Stock Level
               </label>
               <input
                 type="number"
