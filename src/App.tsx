@@ -578,6 +578,7 @@ const App: React.FC = () => {
     });
     return Array.from(set).map((c) => ({ label: c, value: c }));
   }, [enrichedInventory]);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   const poVendorOptions = useMemo(() => {
     const set = new Set<string>();
@@ -1805,42 +1806,48 @@ const App: React.FC = () => {
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Category <span className="text-red-500">*</span>
               </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={inventoryForm.category ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => {
-                    setCategorySearch(e.target.value);
-                    return {
+              <div className="relative">
+                <input
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  value={inventoryForm.category ?? ""}
+                  onChange={(e) =>
+                    setInventoryForm((prev) => ({
                       ...prev,
                       category: e.target.value,
-                    };
-                  })
-                }
-              />
-              <div className="mt-1 max-h-28 overflow-y-auto border border-slate-200 rounded-md bg-white shadow-sm">
-                {filteredCategoryOptions.length === 0 && (
-                  <div className="px-2 py-1 text-[11px] text-slate-500">
-                    No matches. Type to add a new category.
-                  </div>
-                )}
-                {filteredCategoryOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className="w-full text-left px-2 py-1 text-xs hover:bg-slate-50"
-                    onClick={() => {
-                      setCategorySearch(opt.value);
-                      setInventoryForm((prev) => ({
-                        ...prev,
-                        category: opt.value,
-                      }));
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+                    }))
+                  }
+                  onFocus={() => setCategoryDropdownOpen(true)}
+                  onBlur={() =>
+                    setTimeout(() => setCategoryDropdownOpen(false), 100)
+                  }
+                  placeholder="Select or type a category"
+                />
+                {categoryDropdownOpen &&
+                  inventoryCategoryOptions.length > 0 && (
+                    <div className="absolute z-10 mt-1 w-full max-h-32 overflow-y-auto bg-white border border-slate-200 rounded-md shadow-sm">
+                      {inventoryCategoryOptions.map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setInventoryForm((prev) => ({
+                              ...prev,
+                              category: opt.value,
+                            }));
+                            setCategoryDropdownOpen(false);
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
               </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Pick an existing category or enter a new one.
+              </p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
