@@ -25,17 +25,10 @@ import {
 import type { Firestore } from "firebase/firestore";
 import { DataTable } from "./components/DataTable";
 import { LoadingSpinner } from "./components/LoadingSpinner";
-import {
-  MessageBox,
-  type MessageBoxHandle,
-} from "./components/MessageBox";
+import { MessageBox, type MessageBoxHandle } from "./components/MessageBox";
 import { Modal } from "./components/Modal";
 import { useCollection } from "./hooks/useCollection";
-import {
-  buildBasePath,
-  jsonSafeParse,
-  parseCsvSimple,
-} from "./utils/helpers";
+import { buildBasePath, jsonSafeParse, parseCsvSimple } from "./utils/helpers";
 
 type PageKey =
   | "inventory"
@@ -738,14 +731,17 @@ const App: React.FC = () => {
       minStockLevel,
     } = inventoryForm;
     if (
+      !modelNumber ||
       !name ||
       !category ||
       !assignedBranchId ||
       !manufactureName ||
-      !manufacturePartNumber
+      !manufacturePartNumber ||
+      minStockLevel === undefined ||
+      amountInInventory === undefined
     ) {
       messageBoxRef.current?.alert(
-        "Fill in all required inventory fields (Name, Category, Manufacture, Manufacture Part Number, Branch)."
+        "Fill in all required inventory fields (Model Number, Name, Category, Manufacture, Manufacture Part Number, Branch, Amount In Inventory, Min Stock Level)."
       );
       return;
     }
@@ -753,7 +749,7 @@ const App: React.FC = () => {
     const ref = doc(collection(db, `${basePath}/inventory`), id);
     const payload: InventoryItem = {
       id,
-      modelNumber: String(modelNumber ?? ""),
+      modelNumber: String(modelNumber),
       name: String(name),
       category: String(category),
       tags: Array.isArray(tags)
@@ -763,13 +759,13 @@ const App: React.FC = () => {
             .map((t) => t.trim())
             .filter(Boolean),
       description: String(description ?? ""),
-      amountInInventory: Number(amountInInventory ?? 0),
+      amountInInventory: Number(amountInInventory),
       numOnOrder: 0,
       manufactureName: String(manufactureName ?? ""),
       manufacturePartNumber: String(manufacturePartNumber ?? ""),
       imageUrl: String(imageUrl ?? ""),
       assignedBranchId: String(assignedBranchId),
-      minStockLevel: Number(minStockLevel ?? 0),
+      minStockLevel: Number(minStockLevel),
     };
     await setDoc(ref, payload);
     await logActivity({
@@ -1390,10 +1386,6 @@ const App: React.FC = () => {
       return;
     }
 
-    if (newStatus === "completed" && transfer.status === "completed") {
-      return;
-    }
-
     if (newStatus === "cancelled") {
       const confirmed = await messageBoxRef.current?.confirm(
         `Cancel transfer ${transfer.transferId}?`
@@ -1769,7 +1761,7 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Model Number
+                Model Number <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
@@ -1784,15 +1776,15 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Part Number <span className="text-red-500">*</span>
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={inventoryForm.manufacturePartNumber ?? ""}
+                value={inventoryForm.name ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
                     ...prev,
-                    manufacturePartNumber: e.target.value,
+                    name: e.target.value,
                   }))
                 }
               />
@@ -1827,22 +1819,10 @@ const App: React.FC = () => {
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
                     ...prev,
-                    tags: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={inventoryForm.name ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    name: e.target.value,
+                    tags: e.target.value
+                      .split(",")
+                      .map((t) => t.trim())
+                      .filter(Boolean),
                   }))
                 }
               />
@@ -1880,6 +1860,21 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
+                Manufacture Part Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                value={inventoryForm.manufacturePartNumber ?? ""}
+                onChange={(e) =>
+                  setInventoryForm((prev) => ({
+                    ...prev,
+                    manufacturePartNumber: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
                 Branch <span className="text-red-500">*</span>
               </label>
               <select
@@ -1902,7 +1897,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Amount In Inventory
+                Amount In Inventory <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -1918,7 +1913,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Min Stock Level
+                Min Stock Level <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
