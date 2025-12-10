@@ -3123,7 +3123,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-sm sm:text-base font-semibold">
-                INVENTORY WMS
+                In Stock - IMS
               </h1>
               <p className="text-[11px] text-white/80">
                 App ID: {appId} · User: {getUserName()}

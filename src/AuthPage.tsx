@@ -53,7 +53,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">Inventory WMS</h1>
+          <h1 className="text-2xl font-bold text-slate-900">In Stock - IMS</h1>
           <p className="text-slate-600 mt-2">
             {isRegistering ? "Create a new account" : "Sign in to your account"}
           </p>
