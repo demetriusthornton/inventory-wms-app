@@ -768,13 +768,6 @@ const App: React.FC = () => {
   useEffect(() => {
     setCategorySearch(inventoryForm.category ?? "");
   }, [inventoryForm.category]);
-  const filteredCategoryOptions = useMemo(
-    () =>
-      inventoryCategoryOptions.filter((opt) =>
-        opt.value.toLowerCase().includes((categorySearch ?? "").toLowerCase())
-      ),
-    [inventoryCategoryOptions, categorySearch]
-  );
 
   const resetInventoryForm = () => {
     setInventoryForm({
