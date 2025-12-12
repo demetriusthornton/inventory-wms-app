@@ -764,11 +764,6 @@ const App: React.FC = () => {
   });
   const [inventoryLookupLoading, setInventoryLookupLoading] = useState(false);
 
-  const [categorySearch, setCategorySearch] = useState("");
-  useEffect(() => {
-    setCategorySearch(inventoryForm.category ?? "");
-  }, [inventoryForm.category]);
-
   const resetInventoryForm = () => {
     setInventoryForm({
       upc: "",
