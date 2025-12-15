@@ -28,7 +28,12 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { MessageBox, type MessageBoxHandle } from "./components/MessageBox";
 import { Modal } from "./components/Modal";
 import { useCollection } from "./hooks/useCollection";
-import { buildBasePath, jsonSafeParse, parseCsvSimple } from "./utils/helpers";
+import {
+  buildBasePath,
+  jsonSafeParse,
+  parseCsvSimple,
+  lookupProductByUpc,
+} from "./utils/helpers";
 
 type PageKey =
   | "inventory"
@@ -49,6 +54,7 @@ interface Warehouse {
 
 interface InventoryItem {
   id: string;
+  upc?: string;
   modelNumber: string;
   name: string;
   category: string;
@@ -64,12 +70,16 @@ interface InventoryItem {
 }
 
 interface PurchaseOrderItem {
+  upc?: string;
   itemName: string;
   modelNumber: string;
   amountOrdered: number;
   category: string;
   orderCost: number;
   amountReceived: number;
+  imageUrl?: string;
+  description?: string;
+  manufactureName?: string;
 }
 
 interface PurchaseOrder {
@@ -100,12 +110,16 @@ const makeEmptyPoForm = (): PoFormState => ({
   receivingWarehouseId: "",
   items: [
     {
+      upc: "",
       itemName: "",
       modelNumber: "",
       amountOrdered: 0,
       category: "",
       orderCost: 0,
       amountReceived: 0,
+      imageUrl: "",
+      description: "",
+      manufactureName: "",
     },
   ],
 });
@@ -562,13 +576,25 @@ const App: React.FC = () => {
     [defaultWarehouseId, enrichedInventory]
   );
 
+  const sortedWarehouses = useMemo(
+    () =>
+      [...warehouses].sort((a, b) =>
+        (a.shortCode || a.name || "").localeCompare(
+          b.shortCode || b.name || "",
+          undefined,
+          { sensitivity: "base" }
+        )
+      ),
+    [warehouses]
+  );
+
   const warehouseSelectOptions = useMemo(
     () =>
-      warehouses.map((w) => ({
+      sortedWarehouses.map((w) => ({
         label: w.shortCode || w.name,
         value: w.id,
       })),
-    [warehouses]
+    [sortedWarehouses]
   );
 
   const inventoryCategoryOptions = useMemo(() => {
@@ -675,6 +701,7 @@ const App: React.FC = () => {
   const [transferModalOpen, setTransferModalOpen] = useState(false);
 
   const [inventoryForm, setInventoryForm] = useState<Partial<InventoryItem>>({
+    upc: "",
     modelNumber: "",
     name: "",
     category: "",
@@ -687,6 +714,7 @@ const App: React.FC = () => {
     assignedBranchId: "",
     minStockLevel: 0,
   });
+  const [inventoryLookupLoading, setInventoryLookupLoading] = useState(false);
 
   const [categorySearch, setCategorySearch] = useState("");
   useEffect(() => {
@@ -702,6 +730,7 @@ const App: React.FC = () => {
 
   const resetInventoryForm = () => {
     setInventoryForm({
+      upc: "",
       modelNumber: "",
       name: "",
       category: "",
@@ -731,6 +760,7 @@ const App: React.FC = () => {
   const handleSaveInventory = async () => {
     if (!db || !basePath) return;
     const {
+      upc,
       modelNumber,
       name,
       category,
@@ -762,6 +792,7 @@ const App: React.FC = () => {
     const ref = doc(collection(db, `${basePath}/inventory`), id);
     const payload: InventoryItem = {
       id,
+      upc: String(upc ?? ""),
       modelNumber: String(modelNumber),
       name: String(name),
       category: String(category),
@@ -793,6 +824,34 @@ const App: React.FC = () => {
     resetInventoryForm();
   };
 
+  const handleInventoryLookupByUpc = async () => {
+    const upc = (inventoryForm.upc ?? "").trim();
+    if (!upc) {
+      messageBoxRef.current?.alert("Enter a UPC to search for product data.");
+      return;
+    }
+    setInventoryLookupLoading(true);
+    const result = await lookupProductByUpc(upc);
+    setInventoryLookupLoading(false);
+    if (!result) {
+      messageBoxRef.current?.alert(
+        "No product data found for that UPC. You can still enter details manually."
+      );
+      return;
+    }
+    setInventoryForm((prev) => ({
+      ...prev,
+      upc,
+      name: prev.name || result.title || "",
+      modelNumber: prev.modelNumber || result.model || upc,
+      manufacturePartNumber: prev.manufacturePartNumber || result.model || upc,
+      manufactureName: prev.manufactureName || result.brand || "",
+      description: prev.description || result.description || "",
+      imageUrl: prev.imageUrl || result.imageUrl || "",
+      category: prev.category || result.category || prev.category,
+    }));
+  };
+
   const handleInventoryCsvImport = async (file: File) => {
     if (!db || !basePath) return;
     const text = await file.text();
@@ -818,6 +877,7 @@ const App: React.FC = () => {
         modelNumber,
         name: row[idx("name")] ?? "",
         category: row[idx("category")] ?? "",
+        upc: row[idx("upc")] ?? "",
         amountInInventory: Number(
           row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0
         ),
@@ -828,6 +888,7 @@ const App: React.FC = () => {
           row[idx("manufacturepartnumber")] ??
           row[idx("manufacturePartNumber")] ??
           "",
+        description: row[idx("description")] ?? "",
         imageUrl: row[idx("imageurl")] ?? row[idx("imageUrl")] ?? "",
         assignedBranchId:
           row[idx("assignedbranchid")] ?? row[idx("assignedBranchId")] ?? "",
@@ -850,6 +911,9 @@ const App: React.FC = () => {
   };
 
   const [poForm, setPoForm] = useState<PoFormState>(makeEmptyPoForm);
+  const [poLookupLoadingIndex, setPoLookupLoadingIndex] = useState<
+    number | null
+  >(null);
 
   const resetPoForm = () => {
     setPoForm(makeEmptyPoForm());
@@ -879,12 +943,16 @@ const App: React.FC = () => {
       items: [
         ...prev.items,
         {
+          upc: "",
           itemName: "",
           modelNumber: "",
           amountOrdered: 0,
           category: "",
           orderCost: 0,
           amountReceived: 0,
+          imageUrl: "",
+          description: "",
+          manufactureName: "",
         },
       ],
     }));
@@ -917,6 +985,47 @@ const App: React.FC = () => {
       const items = [...prev.items];
       items.splice(index, 1);
       return { ...prev, items };
+    });
+  };
+
+  const handleLookupPoLineItem = async (index: number) => {
+    const item = poForm.items?.[index];
+    if (!item) {
+      messageBoxRef.current?.alert("Line item not found.");
+      return;
+    }
+    const upc = (item?.upc ?? "").trim();
+    if (!upc) {
+      messageBoxRef.current?.alert("Enter a UPC on the line to search.");
+      return;
+    }
+    setPoLookupLoadingIndex(index);
+    const result = await lookupProductByUpc(upc);
+    setPoLookupLoadingIndex(null);
+    if (!result) {
+      messageBoxRef.current?.alert(
+        "No product data found for that UPC. Enter the details manually."
+      );
+      return;
+    }
+    setPoForm((prev) => {
+      const items = [...prev.items];
+      const existing = { ...items[index] };
+      items[index] = {
+        ...existing,
+        upc,
+        itemName: existing.itemName || result.title || "",
+        modelNumber: existing.modelNumber || result.model || upc,
+        category: existing.category || result.category || "",
+        imageUrl: existing.imageUrl || result.imageUrl || "",
+        description: existing.description || result.description || "",
+        manufactureName: existing.manufactureName || result.brand || "",
+      };
+      const updated: PoFormState = { ...prev, items };
+      if (!updated.manufacture && result.brand) {
+        updated.manufacture = result.brand;
+      }
+      return updated;
     });
   };
 
@@ -955,12 +1064,16 @@ const App: React.FC = () => {
       manufacture,
       receivingWarehouseId,
       items: items.map((it) => ({
+        upc: it.upc ?? "",
         itemName: it.itemName,
         modelNumber: it.modelNumber,
         amountOrdered: Number(it.amountOrdered),
         category: it.category,
         orderCost: Number(it.orderCost),
         amountReceived: Number(it.amountReceived ?? 0),
+        imageUrl: it.imageUrl ?? "",
+        description: it.description ?? "",
+        manufactureName: it.manufactureName ?? manufacture,
       })),
       status: "pending",
       orderDate: editingPO ? editingPO.orderDate : nowIso,
@@ -1013,36 +1126,51 @@ const App: React.FC = () => {
       if (remaining <= 0) continue;
       const inventoryItem = inventoryItems.find(
         (inv) =>
-          inv.manufacturePartNumber === item.modelNumber &&
-          inv.assignedBranchId === po.receivingWarehouseId
+          inv.assignedBranchId === po.receivingWarehouseId &&
+          (inv.manufacturePartNumber === item.modelNumber ||
+            (!!item.upc && inv.upc === item.upc))
       );
       if (inventoryItem) {
         const invRef = doc(
           collection(db, `${basePath}/inventory`),
           inventoryItem.id
         );
-        batch.update(invRef, {
+        const invUpdate: Partial<InventoryItem> = {
           amountInInventory:
             Number(inventoryItem.amountInInventory) + remaining,
-        });
+        };
+        if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
+        if (item.imageUrl && !inventoryItem.imageUrl)
+          invUpdate.imageUrl = item.imageUrl;
+        if (item.description && !inventoryItem.description)
+          invUpdate.description = item.description;
+        if (item.manufactureName && !inventoryItem.manufactureName)
+          invUpdate.manufactureName = item.manufactureName;
+        if (!inventoryItem.name && item.itemName)
+          invUpdate.name = item.itemName;
+        batch.update(invRef, invUpdate);
       } else {
         const id = crypto.randomUUID();
         const invRef = doc(collection(db, `${basePath}/inventory`), id);
         const template =
           inventoryItems.find(
-            (inv) => inv.manufacturePartNumber === item.modelNumber
+            (inv) =>
+              inv.manufacturePartNumber === item.modelNumber ||
+              (!!item.upc && inv.upc === item.upc)
           ) ?? null;
         const newItem: InventoryItem = {
           id,
+          upc: item.upc ?? template?.upc ?? "",
           modelNumber: item.modelNumber,
           name: item.itemName,
           category: item.category,
           amountInInventory: remaining,
           numOnOrder: 0,
-          manufactureName: po.manufacture,
+          manufactureName: item.manufactureName ?? po.manufacture,
           manufacturePartNumber:
             template?.manufacturePartNumber ?? item.modelNumber,
-          imageUrl: "",
+          description: item.description ?? template?.description ?? "",
+          imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
           assignedBranchId: po.receivingWarehouseId,
           minStockLevel: template?.minStockLevel ?? 0,
         };
@@ -1096,36 +1224,51 @@ const App: React.FC = () => {
       if (applyQty > 0) {
         const inventoryItem = inventoryItems.find(
           (inv) =>
-            inv.manufacturePartNumber === item.modelNumber &&
-            inv.assignedBranchId === po.receivingWarehouseId
+            inv.assignedBranchId === po.receivingWarehouseId &&
+            (inv.manufacturePartNumber === item.modelNumber ||
+              (!!item.upc && inv.upc === item.upc))
         );
         if (inventoryItem) {
           const invRef = doc(
             collection(db, `${basePath}/inventory`),
             inventoryItem.id
           );
-          batch.update(invRef, {
+          const invUpdate: Partial<InventoryItem> = {
             amountInInventory:
               Number(inventoryItem.amountInInventory) + applyQty,
-          });
+          };
+          if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
+          if (item.imageUrl && !inventoryItem.imageUrl)
+            invUpdate.imageUrl = item.imageUrl;
+          if (item.description && !inventoryItem.description)
+            invUpdate.description = item.description;
+          if (item.manufactureName && !inventoryItem.manufactureName)
+            invUpdate.manufactureName = item.manufactureName;
+          if (!inventoryItem.name && item.itemName)
+            invUpdate.name = item.itemName;
+          batch.update(invRef, invUpdate);
         } else {
           const id = crypto.randomUUID();
           const invRef = doc(collection(db, `${basePath}/inventory`), id);
           const template =
             inventoryItems.find(
-              (inv) => inv.manufacturePartNumber === item.modelNumber
+              (inv) =>
+                inv.manufacturePartNumber === item.modelNumber ||
+                (!!item.upc && inv.upc === item.upc)
             ) ?? null;
           const newItem: InventoryItem = {
             id,
+            upc: item.upc ?? template?.upc ?? "",
             modelNumber: item.modelNumber,
             name: item.itemName,
             category: item.category,
             amountInInventory: applyQty,
             numOnOrder: 0,
-            manufactureName: po.manufacture,
+            manufactureName: item.manufactureName ?? po.manufacture,
             manufacturePartNumber:
               template?.manufacturePartNumber ?? item.modelNumber,
-            imageUrl: "",
+            description: item.description ?? template?.description ?? "",
+            imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
             assignedBranchId: po.receivingWarehouseId,
             minStockLevel: template?.minStockLevel ?? 0,
           };
@@ -1452,6 +1595,7 @@ const App: React.FC = () => {
           const destRef = doc(collection(db, `${basePath}/inventory`), id);
           const newItem: InventoryItem = {
             id,
+            upc: sourceTemplate?.upc ?? "",
             modelNumber: sourceTemplate.modelNumber,
             name: sourceTemplate.name,
             category: sourceTemplate.category,
@@ -1555,7 +1699,13 @@ const App: React.FC = () => {
         <DataTable<InventoryItem>
           title="Inventory"
           data={filteredInventory}
-          searchFields={["modelNumber", "name", "category", "manufactureName"]}
+          searchFields={[
+            "modelNumber",
+            "name",
+            "category",
+            "manufactureName",
+            "upc",
+          ]}
           filterFields={[
             {
               key: "assignedBranchId",
@@ -1618,6 +1768,7 @@ const App: React.FC = () => {
                 </div>
               ),
             },
+            { key: "upc", label: "UPC" },
             { key: "category", label: "Category" },
             {
               key: "assignedBranchId",
@@ -1710,6 +1861,18 @@ const App: React.FC = () => {
                   </div>
                   <div className="text-slate-700">{row.modelNumber}</div>
                 </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">UPC</div>
+                  <div className="text-slate-700">{row.upc || "N/A"}</div>
+                </div>
+                <div className="sm:col-span-2">
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Description
+                  </div>
+                  <div className="text-slate-700">
+                    {row.description || "N/A"}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -1772,6 +1935,36 @@ const App: React.FC = () => {
           }
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                UPC
+              </label>
+              <div className="flex gap-2">
+                <input
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  value={inventoryForm.upc ?? ""}
+                  onChange={(e) =>
+                    setInventoryForm((prev) => ({
+                      ...prev,
+                      upc: e.target.value,
+                    }))
+                  }
+                  placeholder="Scan or paste UPC to search"
+                />
+                <button
+                  type="button"
+                  className="px-3 py-2 rounded-md border border-slate-300 text-xs text-slate-700 hover:bg-slate-50"
+                  onClick={handleInventoryLookupByUpc}
+                  disabled={inventoryLookupLoading}
+                >
+                  {inventoryLookupLoading ? "Searching..." : "Lookup"}
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Fetch product details to prefill name, image, manufacture, model
+                and description.
+              </p>
+            </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Model Number
@@ -1822,28 +2015,27 @@ const App: React.FC = () => {
                   }
                   placeholder="Select or type a category"
                 />
-                {categoryDropdownOpen &&
-                  inventoryCategoryOptions.length > 0 && (
-                    <div className="absolute z-10 mt-1 w-full max-h-32 overflow-y-auto bg-white border border-slate-200 rounded-md shadow-sm">
-                      {inventoryCategoryOptions.map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => {
-                            setInventoryForm((prev) => ({
-                              ...prev,
-                              category: opt.value,
-                            }));
-                            setCategoryDropdownOpen(false);
-                          }}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                {categoryDropdownOpen && filteredCategoryOptions.length > 0 && (
+                  <div className="absolute z-10 mt-1 w-full max-h-32 overflow-y-auto bg-white border border-slate-200 rounded-md shadow-sm">
+                    {filteredCategoryOptions.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setInventoryForm((prev) => ({
+                            ...prev,
+                            category: opt.value,
+                          }));
+                          setCategoryDropdownOpen(false);
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
                 Pick an existing category or enter a new one.
@@ -1948,7 +2140,7 @@ const App: React.FC = () => {
                 }
               >
                 <option value="">Select Branch</option>
-                {warehouses.map((w) => (
+                {sortedWarehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.shortCode || w.name}
                   </option>
@@ -2059,7 +2251,7 @@ const App: React.FC = () => {
           <p className="text-sm text-slate-700 mb-2">
             Upload a CSV file with headers such as modelNumber, name, category,
             amountInInventory, manufactureName, manufacturePartNumber, imageUrl,
-            assignedBranchId, minStockLevel.
+            description, upc, assignedBranchId, minStockLevel.
           </p>
           <input
             ref={inventoryCsvInputRef}
@@ -2276,7 +2468,7 @@ const App: React.FC = () => {
                 }
               >
                 <option value="">Select Branch</option>
-                {warehouses.map((w) => (
+                {sortedWarehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.shortCode || w.name}
                   </option>
@@ -2302,9 +2494,12 @@ const App: React.FC = () => {
               <table className="min-w-full text-xs">
                 <thead className="bg-slate-50">
                   <tr>
+                    <th className="px-2 py-2 text-left">UPC</th>
                     <th className="px-2 py-2 text-left">Item Name</th>
                     <th className="px-2 py-2 text-left">Manufacture Part #</th>
                     <th className="px-2 py-2 text-left">Category</th>
+                    <th className="px-2 py-2 text-left">Description</th>
+                    <th className="px-2 py-2 text-left">Image URL</th>
                     <th className="px-2 py-2 text-right">Qty Ordered</th>
                     <th className="px-2 py-2 text-right">Cost</th>
                     <th className="px-2 py-2"></th>
@@ -2313,6 +2508,25 @@ const App: React.FC = () => {
                 <tbody>
                   {(poForm.items ?? []).map((item, idx) => (
                     <tr key={idx} className="border-t border-slate-100">
+                      <td className="px-2 py-1">
+                        <div className="flex gap-1 items-center">
+                          <input
+                            className="w-full border border-slate-200 rounded-md px-2 py-1"
+                            value={item.upc ?? ""}
+                            onChange={(e) =>
+                              handleUpdatePoLineItem(idx, "upc", e.target.value)
+                            }
+                          />
+                          <button
+                            type="button"
+                            className="px-2 py-1 rounded-md border border-slate-200 text-[11px] hover:bg-slate-100 whitespace-nowrap"
+                            onClick={() => handleLookupPoLineItem(idx)}
+                            disabled={poLookupLoadingIndex === idx}
+                          >
+                            {poLookupLoadingIndex === idx ? "..." : "Lookup"}
+                          </button>
+                        </div>
+                      </td>
                       <td className="px-2 py-1">
                         <input
                           className="w-full border border-slate-200 rounded-md px-2 py-1"
@@ -2350,6 +2564,34 @@ const App: React.FC = () => {
                               e.target.value
                             )
                           }
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <textarea
+                          className="w-full border border-slate-200 rounded-md px-2 py-1"
+                          rows={2}
+                          value={item.description ?? ""}
+                          onChange={(e) =>
+                            handleUpdatePoLineItem(
+                              idx,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          className="w-full border border-slate-200 rounded-md px-2 py-1"
+                          value={item.imageUrl ?? ""}
+                          onChange={(e) =>
+                            handleUpdatePoLineItem(
+                              idx,
+                              "imageUrl",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Optional image URL"
                         />
                       </td>
                       <td className="px-2 py-1 text-right">
@@ -2776,7 +3018,7 @@ const App: React.FC = () => {
                 }
               >
                 <option value="">Select Source</option>
-                {warehouses.map((w) => (
+                {sortedWarehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.shortCode || w.name}
                   </option>
@@ -2798,7 +3040,7 @@ const App: React.FC = () => {
                 }
               >
                 <option value="">Select Destination</option>
-                {warehouses.map((w) => (
+                {sortedWarehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.shortCode || w.name}
                   </option>
@@ -2961,7 +3203,7 @@ const App: React.FC = () => {
         </div>
         <DataTable<Warehouse>
           title="Branches"
-          data={warehouses}
+          data={sortedWarehouses}
           searchFields={["shortCode", "name", "city", "state"]}
           filterFields={[
             {
