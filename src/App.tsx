@@ -85,6 +85,7 @@ interface PurchaseOrderItem {
 interface PurchaseOrder {
   id: string;
   orderNumber: string;
+  ipNumber?: string;
   vendor: string;
   manufacture: string;
   receivingWarehouseId: string;
@@ -97,6 +98,7 @@ interface PurchaseOrder {
 
 interface PoFormState {
   orderNumber: string;
+  ipNumber?: string;
   vendor: string;
   manufacture: string;
   receivingWarehouseId: string;
@@ -105,6 +107,7 @@ interface PoFormState {
 
 const makeEmptyPoForm = (): PoFormState => ({
   orderNumber: "",
+  ipNumber: "",
   vendor: "",
   manufacture: "",
   receivingWarehouseId: "",
@@ -136,6 +139,8 @@ interface TransferLine {
 interface Transfer {
   id: string;
   transferId: string;
+  label?: string;
+  trackingNumber?: string;
   sourceBranchId: string;
   destinationBranchId: string;
   dateInitiated: string;
@@ -315,7 +320,7 @@ const App: React.FC = () => {
   const [page, setPage] = useState<PageKey>("inventory");
   const [isDark, setIsDark] = useState(false);
   const [defaultWarehouseId, setDefaultWarehouseId] = useState<string | null>(
-    () => localStorage.getItem("defaultWarehouseId") || null
+    null
   );
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
@@ -335,6 +340,11 @@ const App: React.FC = () => {
     if (email) return email;
     return authUser?.uid || "Unknown User";
   }, [authUser]);
+
+  const getDefaultWarehouseStorageKey = useCallback(
+    (uid?: string | null) => `defaultWarehouseId:${uid ?? "anon"}`,
+    []
+  );
 
   const logActivity = useCallback(
     async (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => {
@@ -382,12 +392,26 @@ const App: React.FC = () => {
   }, [isDark]);
 
   useEffect(() => {
-    if (defaultWarehouseId) {
-      localStorage.setItem("defaultWarehouseId", defaultWarehouseId);
-    } else {
-      localStorage.removeItem("defaultWarehouseId");
+    if (!authInitDone) return;
+    if (!authUser) {
+      setDefaultWarehouseId(null);
+      return;
     }
-  }, [defaultWarehouseId]);
+    const stored = localStorage.getItem(
+      getDefaultWarehouseStorageKey(authUser.uid)
+    );
+    setDefaultWarehouseId(stored || null);
+  }, [authInitDone, authUser, getDefaultWarehouseStorageKey]);
+
+  useEffect(() => {
+    if (!authUser) return;
+    const storageKey = getDefaultWarehouseStorageKey(authUser.uid);
+    if (defaultWarehouseId) {
+      localStorage.setItem(storageKey, defaultWarehouseId);
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+  }, [defaultWarehouseId, authUser, getDefaultWarehouseStorageKey]);
 
   useEffect(() => {
     const w = window as any;
@@ -614,6 +638,14 @@ const App: React.FC = () => {
     return Array.from(set).map((v) => ({ label: v, value: v }));
   }, [purchaseOrders]);
 
+  const poIpNumberOptions = useMemo(() => {
+    const set = new Set<string>();
+    purchaseOrders.forEach((po) => {
+      if (po.ipNumber) set.add(po.ipNumber);
+    });
+    return Array.from(set).map((ip) => ({ label: ip, value: ip }));
+  }, [purchaseOrders]);
+
   const poManufactureOptions = useMemo(() => {
     const set = new Set<string>();
     purchaseOrders.forEach((po) => {
@@ -628,6 +660,14 @@ const App: React.FC = () => {
       if (po.status) set.add(po.status);
     });
     return Array.from(set).map((s) => ({ label: s, value: s }));
+  }, [poHistory]);
+
+  const poHistoryIpNumberOptions = useMemo(() => {
+    const set = new Set<string>();
+    poHistory.forEach((po) => {
+      if (po.ipNumber) set.add(po.ipNumber);
+    });
+    return Array.from(set).map((ip) => ({ label: ip, value: ip }));
   }, [poHistory]);
 
   const transferStatusOptions = useMemo(() => {
@@ -928,6 +968,7 @@ const App: React.FC = () => {
   const openPoModalForEdit = (po: PurchaseOrder) => {
     setPoForm({
       orderNumber: po.orderNumber,
+      ipNumber: po.ipNumber ?? "",
       vendor: po.vendor,
       manufacture: po.manufacture,
       receivingWarehouseId: po.receivingWarehouseId,
@@ -1038,8 +1079,14 @@ const App: React.FC = () => {
       return;
     }
 
-    const { orderNumber, vendor, manufacture, receivingWarehouseId, items } =
-      poForm;
+    const {
+      orderNumber,
+      ipNumber,
+      vendor,
+      manufacture,
+      receivingWarehouseId,
+      items,
+    } = poForm;
 
     if (!orderNumber || !vendor || !manufacture || !receivingWarehouseId) {
       messageBoxRef.current?.alert(
@@ -1060,6 +1107,7 @@ const App: React.FC = () => {
     const po: PurchaseOrder = {
       id,
       orderNumber,
+      ipNumber: ipNumber?.trim() || "",
       vendor,
       manufacture,
       receivingWarehouseId,
@@ -1341,10 +1389,14 @@ const App: React.FC = () => {
   };
 
   const [transferForm, setTransferForm] = useState<{
+    label?: string;
+    trackingNumber?: string;
     sourceBranchId: string;
     destinationBranchId: string;
     lines: { itemId: string; quantity: number }[];
   }>({
+    label: "",
+    trackingNumber: "",
     sourceBranchId: "",
     destinationBranchId: "",
     lines: [],
@@ -1352,6 +1404,8 @@ const App: React.FC = () => {
 
   const resetTransferForm = () => {
     setTransferForm({
+      label: "",
+      trackingNumber: "",
       sourceBranchId: "",
       destinationBranchId: "",
       lines: [],
@@ -1421,6 +1475,8 @@ const App: React.FC = () => {
     }
 
     setTransferForm({
+      label: "",
+      trackingNumber: "",
       sourceBranchId,
       destinationBranchId: "",
       lines: selectedItems.map((it) => ({
@@ -1435,7 +1491,13 @@ const App: React.FC = () => {
 
   const handleSaveTransfer = async () => {
     if (!db || !basePath) return;
-    const { sourceBranchId, destinationBranchId, lines } = transferForm;
+    const {
+      label,
+      trackingNumber,
+      sourceBranchId,
+      destinationBranchId,
+      lines,
+    } = transferForm;
 
     if (
       !sourceBranchId ||
@@ -1456,8 +1518,6 @@ const App: React.FC = () => {
       return;
     }
 
-    const batch = writeBatch(db);
-
     for (const line of lines) {
       if (!line.itemId || !line.quantity || line.quantity <= 0) {
         messageBoxRef.current?.alert(
@@ -1477,17 +1537,6 @@ const App: React.FC = () => {
         );
         return;
       }
-      if (item.amountInInventory < line.quantity) {
-        messageBoxRef.current?.alert(
-          `Quantity for ${item.modelNumber} exceeds available stock.`
-        );
-        return;
-      }
-
-      const sourceRef = doc(collection(db, `${basePath}/inventory`), item.id);
-      batch.update(sourceRef, {
-        amountInInventory: item.amountInInventory - line.quantity,
-      });
     }
 
     const id = crypto.randomUUID();
@@ -1507,6 +1556,8 @@ const App: React.FC = () => {
     const transfer: Transfer = {
       id,
       transferId: id,
+      label: label?.trim() || "",
+      trackingNumber: trackingNumber?.trim() || "",
       sourceBranchId,
       destinationBranchId,
       dateInitiated: nowIso,
@@ -1515,9 +1566,7 @@ const App: React.FC = () => {
       lines: transferLines,
     };
 
-    batch.set(transferRef, transfer);
-
-    await batch.commit();
+    await setDoc(transferRef, transfer);
     setTransferModalOpen(false);
     resetTransferForm();
     setSelectedInventoryIds([]);
@@ -1525,7 +1574,11 @@ const App: React.FC = () => {
       action: "transfer_create",
       collection: "moves",
       docId: id,
-      summary: `Created transfer ${id} from ${sourceBranchId} to ${destinationBranchId}`,
+      summary: `Created transfer ${id} from ${sourceBranchId} to ${destinationBranchId}${
+        label ? ` (${label})` : ""
+      }${
+        trackingNumber ? ` (Tracking: ${trackingNumber})` : ""
+      }`,
     });
   };
 
@@ -1563,7 +1616,7 @@ const App: React.FC = () => {
 
     if (newStatus === "completed") {
       const confirmed = await messageBoxRef.current?.confirm(
-        `Mark transfer ${transfer.transferId} as completed and update destination inventory?`
+        `Mark transfer ${transfer.transferId} as completed and move inventory?`
       );
       if (!confirmed) return;
 
@@ -1572,8 +1625,34 @@ const App: React.FC = () => {
       const lines = transfer.lines ?? [];
 
       for (const line of lines) {
-        const sourceTemplate =
+        const sourceItem =
           inventoryItems.find((inv) => inv.id === line.itemId) ?? null;
+        if (!sourceItem) {
+          messageBoxRef.current?.alert(
+            `Source item for ${line.itemModelNumber} is no longer available.`
+          );
+          return;
+        }
+        if (sourceItem.assignedBranchId !== transfer.sourceBranchId) {
+          messageBoxRef.current?.alert(
+            `Item ${sourceItem.modelNumber} is no longer in the source branch.`
+          );
+          return;
+        }
+        if (sourceItem.amountInInventory < line.quantity) {
+          messageBoxRef.current?.alert(
+            `Insufficient stock to complete transfer item ${sourceItem.modelNumber}.`
+          );
+          return;
+        }
+
+        const sourceRef = doc(
+          collection(db, `${basePath}/inventory`),
+          sourceItem.id
+        );
+        batch.update(sourceRef, {
+          amountInInventory: sourceItem.amountInInventory - line.quantity,
+        });
 
         const destItem =
           inventoryItems.find(
@@ -1590,22 +1669,22 @@ const App: React.FC = () => {
           batch.update(destRef, {
             amountInInventory: destItem.amountInInventory + line.quantity,
           });
-        } else if (sourceTemplate) {
+        } else {
           const id = crypto.randomUUID();
           const destRef = doc(collection(db, `${basePath}/inventory`), id);
           const newItem: InventoryItem = {
             id,
-            upc: sourceTemplate?.upc ?? "",
-            modelNumber: sourceTemplate.modelNumber,
-            name: sourceTemplate.name,
-            category: sourceTemplate.category,
+            upc: sourceItem.upc ?? "",
+            modelNumber: sourceItem.modelNumber,
+            name: sourceItem.name,
+            category: sourceItem.category,
             amountInInventory: line.quantity,
             numOnOrder: 0,
-            manufactureName: sourceTemplate.manufactureName,
-            manufacturePartNumber: sourceTemplate.manufacturePartNumber,
-            imageUrl: sourceTemplate.imageUrl,
+            manufactureName: sourceItem.manufactureName,
+            manufacturePartNumber: sourceItem.manufacturePartNumber,
+            imageUrl: sourceItem.imageUrl,
             assignedBranchId: transfer.destinationBranchId,
-            minStockLevel: sourceTemplate.minStockLevel,
+            minStockLevel: sourceItem.minStockLevel,
           };
           batch.set(destRef, newItem);
         }
@@ -2276,13 +2355,19 @@ const App: React.FC = () => {
         <DataTable<PurchaseOrder>
           title="Purchase Orders (Pending)"
           data={pendingPOs}
-          searchFields={["orderNumber", "vendor", "manufacture"]}
+          searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
           filterFields={[
             {
               key: "receivingWarehouseId",
               label: "Branch",
               type: "select",
               options: warehouseSelectOptions,
+            },
+            {
+              key: "ipNumber",
+              label: "IP Number",
+              type: "select",
+              options: poIpNumberOptions,
             },
             {
               key: "vendor",
@@ -2300,6 +2385,7 @@ const App: React.FC = () => {
           getRowId={(row) => row.id}
           columns={[
             { key: "orderNumber", label: "PO Number" },
+            { key: "ipNumber", label: "IP Number" },
             { key: "vendor", label: "Vendor" },
             { key: "manufacture", label: "Manufacture" },
             {
@@ -2425,6 +2511,22 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
+                IP Number
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                value={poForm.ipNumber ?? ""}
+                onChange={(e) =>
+                  setPoForm((prev) => ({
+                    ...prev,
+                    ipNumber: e.target.value,
+                  }))
+                }
+                placeholder="Optional"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
                 Vendor <span className="text-red-500">*</span>
               </label>
               <input
@@ -2453,7 +2555,7 @@ const App: React.FC = () => {
                 }
               />
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Receiving Branch <span className="text-red-500">*</span>
               </label>
@@ -2753,13 +2855,19 @@ const App: React.FC = () => {
       <DataTable<PurchaseOrder>
         title="Purchase Order History"
         data={filteredPoHistory}
-        searchFields={["orderNumber", "vendor", "manufacture"]}
+        searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
         filterFields={[
           {
             key: "status",
             label: "Status",
             type: "select",
             options: poHistoryStatusOptions,
+          },
+          {
+            key: "ipNumber",
+            label: "IP Number",
+            type: "select",
+            options: poHistoryIpNumberOptions,
           },
           {
             key: "vendor",
@@ -2777,6 +2885,7 @@ const App: React.FC = () => {
         getRowId={(row) => row.id}
         columns={[
           { key: "orderNumber", label: "PO Number" },
+          { key: "ipNumber", label: "IP Number" },
           { key: "vendor", label: "Vendor" },
           { key: "manufacture", label: "Manufacture" },
           {
@@ -2818,6 +2927,8 @@ const App: React.FC = () => {
           data={filteredTransfers}
           searchFields={[
             "transferId",
+            "label",
+            "trackingNumber",
             "sourceBranchId",
             "destinationBranchId",
             "status",
@@ -2845,6 +2956,8 @@ const App: React.FC = () => {
           getRowId={(row) => row.id}
           columns={[
             { key: "transferId", label: "Transfer ID" },
+            { key: "label", label: "Order Label" },
+            { key: "trackingNumber", label: "Tracking #" },
             {
               key: "itemModelNumber",
               label: "First Model #",
@@ -2886,6 +2999,25 @@ const App: React.FC = () => {
           ]}
           actions={(row) => (
             <div className="flex gap-1 justify-end">
+              <button
+                className="px-2 py-1 rounded-md border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!row.trackingNumber) {
+                    messageBoxRef.current?.alert(
+                      "No tracking number is set for this transfer."
+                    );
+                    return;
+                  }
+                  const url = `https://www.google.com/search?q=${encodeURIComponent(
+                    row.trackingNumber
+                  )}`;
+                  window.open(url, "_blank", "noopener,noreferrer");
+                }}
+                disabled={!row.trackingNumber}
+              >
+                Track
+              </button>
               {row.status === "pending" && (
                 <button
                   className="px-2 py-1 rounded-md bg-amber-100 text-xs text-amber-800 hover:bg-amber-200"
@@ -3003,6 +3135,22 @@ const App: React.FC = () => {
           }
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Order Label
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                value={transferForm.label ?? ""}
+                onChange={(e) =>
+                  setTransferForm((prev) => ({
+                    ...prev,
+                    label: e.target.value,
+                  }))
+                }
+                placeholder="Optional name for this transfer"
+              />
+            </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Source Branch <span className="text-red-500">*</span>
@@ -3046,6 +3194,22 @@ const App: React.FC = () => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Tracking Number
+              </label>
+              <input
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                value={transferForm.trackingNumber ?? ""}
+                onChange={(e) =>
+                  setTransferForm((prev) => ({
+                    ...prev,
+                    trackingNumber: e.target.value,
+                  }))
+                }
+                placeholder="Optional shipment tracking number"
+              />
             </div>
           </div>
 

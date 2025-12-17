@@ -10,6 +10,21 @@ export function jsonSafeParse<T = any>(value: any): T | null {
   return value as T;
 }
 
+// Go-UPC API key is provided via Vite env.
+// Support both names for backward compatibility.
+const GO_UPC_KEY =
+  (typeof import.meta !== "undefined" &&
+    ((import.meta as any).env?.VITE_GOUPC_API_KEY ||
+      (import.meta as any).env?.VITE_GO_UPC_KEY)) ||
+  "";
+
+// During local dev, route through Vite proxy to avoid CORS.
+// In production builds, this falls back to direct Go-UPC host.
+const GO_UPC_ENDPOINT =
+  typeof import.meta !== "undefined" && (import.meta as any).env?.DEV
+    ? "/api/goupc/api/v1/code"
+    : "https://go-upc.com/api/v1/code";
+
 export function buildBasePath(appId: string) {
   // Shared data across users; even segments so `${basePath}/collection` is valid
   return `artifacts/${appId}/shared/global`;
@@ -30,15 +45,6 @@ export interface ProductLookupResult {
   category?: string;
 }
 
-const BIG_PD_KEY =
-  (typeof import.meta !== "undefined" &&
-    (import.meta as any).env?.VITE_BIG_PD_KEY) ||
-  (typeof import.meta !== "undefined" &&
-    (import.meta as any).env?.VITE_RAPIDAPI_KEY) ||
-  "";
-const BIG_PD_HOST = "big-product-data.p.rapidapi.com";
-const BIG_PD_ENDPOINT = `https://${BIG_PD_HOST}/lookup`;
-
 // Attempts a basic UPC lookup using public endpoints.
 export async function lookupProductByUpc(
   upcRaw: string
@@ -46,31 +52,27 @@ export async function lookupProductByUpc(
   const upc = (upcRaw || "").replace(/\D/g, "");
   if (!upc) return null;
 
-  // Preferred: Big Product Data on RapidAPI.
-  if (BIG_PD_KEY) {
+  // Preferred: Go-UPC (requires API key via VITE_GO_UPC_KEY).
+  if (GO_UPC_KEY) {
     try {
       const resp = await fetch(
-        `${BIG_PD_ENDPOINT}?barcode=${encodeURIComponent(upc)}`,
+        `${GO_UPC_ENDPOINT}/${encodeURIComponent(upc)}?key=${encodeURIComponent(
+          GO_UPC_KEY
+        )}`,
         {
           headers: {
-            "X-RapidAPI-Key": BIG_PD_KEY,
-            "X-RapidAPI-Host": BIG_PD_HOST,
+            Accept: "application/json",
           },
         }
       );
       if (resp.ok) {
         const json: any = await resp.json();
-        // API sometimes returns { products: [...] } or { product: {...} }
-        const product =
-          json?.products?.[0] ?? json?.product ?? json?.data ?? null;
+        // Go-UPC responds with { product: {...} }
+        const product = json?.product ?? null;
         if (product) {
           return {
             upc,
-            title:
-              product.title ??
-              product.name ??
-              product.product_name ??
-              product.category,
+            title: product.title ?? product.name ?? product.product_name,
             brand: product.brand ?? product.manufacturer ?? product.company,
             model:
               product.model ??
@@ -78,7 +80,10 @@ export async function lookupProductByUpc(
               product.asin ??
               product.part_number ??
               "",
-            description: product.description ?? "",
+            description:
+              product.description ??
+              product.overview ??
+              product.long_description,
             imageUrl:
               Array.isArray(product.images) && product.images.length > 0
                 ? product.images[0]
@@ -86,11 +91,11 @@ export async function lookupProductByUpc(
             category: product.category ?? product.category_name ?? "",
           };
         }
-      } else {
-        console.warn("RapidAPI lookup response", resp.status);
+      } else if (resp.status === 401 || resp.status === 403) {
+        console.warn("Go-UPC unauthorized; check VITE_GO_UPC_KEY");
       }
     } catch (err) {
-      console.error("RapidAPI lookup failed", err);
+      console.error("Go-UPC lookup failed", err);
     }
   }
 
