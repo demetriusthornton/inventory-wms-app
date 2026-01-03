@@ -114,11 +114,12 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-      <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-        <div>
+      <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          {children && <div className="flex flex-wrap gap-2">{children}</div>}
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-end">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
           <input
             className="border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691] focus:border-[#005691]"
             placeholder="Search"
@@ -126,7 +127,7 @@ export function DataTable<T extends Record<string, any>>({
             onChange={(e) => setSearch(e.target.value)}
           />
           {filterFields && filterFields.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 sm:justify-end">
               {filterFields.map((field) => (
                 <select
                   key={String(field.key)}
@@ -149,7 +150,6 @@ export function DataTable<T extends Record<string, any>>({
               ))}
             </div>
           )}
-          {children}
         </div>
       </div>
       <div className="overflow-x-auto px-4 sm:px-6">

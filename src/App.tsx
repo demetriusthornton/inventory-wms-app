@@ -951,10 +951,6 @@ const App: React.FC = () => {
   };
 
   const [poForm, setPoForm] = useState<PoFormState>(makeEmptyPoForm);
-  const [poLookupLoadingIndex, setPoLookupLoadingIndex] = useState<
-    number | null
-  >(null);
-
   const resetPoForm = () => {
     setPoForm(makeEmptyPoForm());
     setEditingPO(null);
@@ -1029,47 +1025,6 @@ const App: React.FC = () => {
     });
   };
 
-  const handleLookupPoLineItem = async (index: number) => {
-    const item = poForm.items?.[index];
-    if (!item) {
-      messageBoxRef.current?.alert("Line item not found.");
-      return;
-    }
-    const upc = (item?.upc ?? "").trim();
-    if (!upc) {
-      messageBoxRef.current?.alert("Enter a UPC on the line to search.");
-      return;
-    }
-    setPoLookupLoadingIndex(index);
-    const result = await lookupProductByUpc(upc);
-    setPoLookupLoadingIndex(null);
-    if (!result) {
-      messageBoxRef.current?.alert(
-        "No product data found for that UPC. Enter the details manually."
-      );
-      return;
-    }
-    setPoForm((prev) => {
-      const items = [...prev.items];
-      const existing = { ...items[index] };
-      items[index] = {
-        ...existing,
-        upc,
-        itemName: existing.itemName || result.title || "",
-        modelNumber: existing.modelNumber || result.model || upc,
-        category: existing.category || result.category || "",
-        imageUrl: existing.imageUrl || result.imageUrl || "",
-        description: existing.description || result.description || "",
-        manufactureName: existing.manufactureName || result.brand || "",
-      };
-      const updated: PoFormState = { ...prev, items };
-      if (!updated.manufacture && result.brand) {
-        updated.manufacture = result.brand;
-      }
-      return updated;
-    });
-  };
-
   const handleSavePurchaseOrder = async () => {
     if (!db || !basePath) {
       console.error("DB or basePath missing, cannot save PO");
@@ -1088,9 +1043,9 @@ const App: React.FC = () => {
       items,
     } = poForm;
 
-    if (!orderNumber || !vendor || !manufacture || !receivingWarehouseId) {
+    if (!orderNumber || !vendor || !receivingWarehouseId) {
       messageBoxRef.current?.alert(
-        "Fill in all required PO fields (PO Number, Vendor, Manufacture, Receiving Branch)."
+        "Fill in all required PO fields (PO Number, Vendor, Receiving Branch)."
       );
       return;
     }
@@ -1489,6 +1444,202 @@ const App: React.FC = () => {
     setTransferModalOpen(true);
   };
 
+  const handleEmailQuoteRequest = () => {
+    if (selectedInventoryIds.length === 0) {
+      messageBoxRef.current?.alert(
+        "Select at least one inventory item to build an email quote."
+      );
+      return;
+    }
+
+    const selectedItems = filteredInventory.filter((it) =>
+      selectedInventoryIds.includes(it.id)
+    );
+
+    if (selectedItems.length === 0) {
+      messageBoxRef.current?.alert("Selected items not found in inventory.");
+      return;
+    }
+
+    const lines = selectedItems.map((item, idx) => {
+      const partNumber =
+        item.manufacturePartNumber || item.modelNumber || "N/A";
+      const name = item.name || item.modelNumber || "Unnamed Item";
+      return `(ADD ORD QTY) - ${name} - ${partNumber}`;
+    });
+
+    const subject = encodeURIComponent("Quote Request");
+    const body = encodeURIComponent(lines.join("\n\n"));
+    const mailto = `mailto:?subject=${subject}&body=${body}`;
+    window.open(mailto, "_blank", "noopener,noreferrer");
+  };
+
+  const openPackingListPrintView = useCallback(
+    (transfer: Transfer) => {
+      // Brand colors from BlueLinx Brand Standards (Colors section)
+      const primary = "#152435"; // Key / Primary
+      const secondary = "#1E9CD8"; // Vibrant Blue / Secondary
+      const gold = "#FFC400"; // Gold / Tertiary
+      const lightBlue = "#F6FAFF"; // Light Blue
+
+      const fromWh = warehouses.find((w) => w.id === transfer.sourceBranchId);
+      const toWh = warehouses.find(
+        (w) => w.id === transfer.destinationBranchId
+      );
+
+      const fromLabel = fromWh
+        ? `${fromWh.shortCode || ""} ${fromWh.name || ""}`.trim()
+        : transfer.sourceBranchId;
+      const toLabel = toWh
+        ? `${toWh.shortCode || ""} ${toWh.name || ""}`.trim()
+        : transfer.destinationBranchId;
+
+      const title = `Packing List - ${transfer.transferId}`;
+      const win = window.open("", "_blank", "noopener,noreferrer");
+      if (!win) {
+        messageBoxRef.current?.alert(
+          "Pop-up blocked. Allow pop-ups for this site to generate the packing list."
+        );
+        return;
+      }
+
+      const safe = (v: any) =>
+        String(v ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;");
+
+      const rowsHtml = (transfer.lines ?? [])
+        .map(
+          (l, idx) => `
+            <tr>
+              <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb;">${
+                idx + 1
+              }</td>
+              <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb;">${safe(
+                l.itemModelNumber
+              )}</td>
+              <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb;">${safe(
+                l.itemName
+              )}</td>
+              <td style="padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:right; font-variant-numeric: tabular-nums;">${safe(
+                l.quantity
+              )}</td>
+            </tr>
+          `
+        )
+        .join("");
+
+      const html = `
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${safe(title)}</title>
+    <style>
+      @page { margin: 16mm; }
+      body { font-family: "Proxima Nova", Helvetica, Arial, sans-serif; color: ${primary}; }
+      .brand-bar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:${primary}; color:#fff; }
+      .logo { font-weight:800; letter-spacing:0.5px; font-style:italic; font-size:20px; }
+      .logo .x { color:${secondary}; }
+      .tag { font-size:11px; opacity:0.95; }
+      .wrap { padding:16px; }
+      h1 { margin: 14px 0 6px; font-size: 18px; }
+      .meta { display:grid; grid-template-columns: 1fr 1fr; gap:10px 20px; margin: 10px 0 16px; font-size: 12px; }
+      .meta .k { color: #334155; font-weight: 600; }
+      .meta .v { color: #0f172a; }
+      .badge { display:inline-block; padding:3px 8px; border-radius:999px; background:${gold}; color:${primary}; font-weight:700; font-size:11px; }
+      table { width:100%; border-collapse: collapse; font-size: 12px; }
+      thead th { text-align:left; padding:10px 12px; background:${lightBlue}; border-bottom:2px solid ${secondary}; color:${primary}; }
+      .right { text-align:right; }
+      .foot { margin-top: 14px; font-size: 11px; color:#475569; display:flex; justify-content:space-between; }
+      .print-hint { margin: 10px 0 0; font-size: 11px; color:#475569; }
+      .no-print { margin-top: 12px; }
+      .btn { display:inline-block; background:${secondary}; color:#fff; border:0; padding:10px 12px; border-radius:8px; font-size:12px; cursor:pointer; }
+      .btn.secondary { background:#fff; color:${primary}; border:1px solid #cbd5e1; }
+      @media print {
+        .no-print { display:none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brand-bar">
+      <div>
+        <div class="logo">BLUE<span class="x">LINX</span></div>
+        <div class="tag">DELIVERING WHAT MATTERS</div>
+      </div>
+      <div class="badge">Packing List</div>
+    </div>
+
+    <div class="wrap">
+      <h1>${safe(title)}</h1>
+      <div class="meta">
+        <div><div class="k">Transfer ID</div><div class="v">${safe(
+          transfer.transferId
+        )}</div></div>
+        <div><div class="k">Created</div><div class="v">${safe(
+          new Date(transfer.dateInitiated).toLocaleString()
+        )}</div></div>
+        <div><div class="k">From Branch</div><div class="v">${safe(
+          fromLabel
+        )}</div></div>
+        <div><div class="k">To Branch</div><div class="v">${safe(
+          toLabel
+        )}</div></div>
+        <div><div class="k">Label</div><div class="v">${safe(
+          transfer.label || ""
+        )}</div></div>
+        <div><div class="k">Tracking</div><div class="v">${safe(
+          transfer.trackingNumber || ""
+        )}</div></div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:44px;">#</th>
+            <th style="width:180px;">Model</th>
+            <th>Item</th>
+            <th class="right" style="width:90px;">Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            rowsHtml ||
+            '<tr><td colspan="4" style="padding:12px; color:#475569;">No line items.</td></tr>'
+          }
+        </tbody>
+      </table>
+
+      <div class="foot">
+        <div>BlueLinx</div>
+        <div>${safe(new Date().toLocaleDateString())}</div>
+      </div>
+
+      <div class="no-print">
+        <div class="print-hint">Use Print. Then select Save as PDF.</div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" onclick="window.print()">Print</button>
+          <button class="btn secondary" onclick="window.close()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      setTimeout(() => { try { window.focus(); window.print(); } catch (e) {} }, 250);
+    </script>
+  </body>
+</html>`;
+
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    },
+    [warehouses]
+  );
+
   const handleSaveTransfer = async () => {
     if (!db || !basePath) return;
     const {
@@ -1567,18 +1718,29 @@ const App: React.FC = () => {
     };
 
     await setDoc(transferRef, transfer);
+
+    const wantsPackingList =
+      (await messageBoxRef.current?.confirm(
+        "Transfer created. Create a packing list?"
+      )) ?? false;
+
+    if (wantsPackingList) {
+      openPackingListPrintView(transfer);
+    }
+
+    // Return user to Transfers screen
     setTransferModalOpen(false);
     resetTransferForm();
     setSelectedInventoryIds([]);
+    setPage("transfers");
+
     await logActivity({
       action: "transfer_create",
       collection: "moves",
       docId: id,
       summary: `Created transfer ${id} from ${sourceBranchId} to ${destinationBranchId}${
         label ? ` (${label})` : ""
-      }${
-        trackingNumber ? ` (Tracking: ${trackingNumber})` : ""
-      }`,
+      }${trackingNumber ? ` (Tracking: ${trackingNumber})` : ""}`,
     });
   };
 
@@ -1976,7 +2138,16 @@ const App: React.FC = () => {
                 handleBuildTransferFromSelected();
               }}
             >
-              Build Transfer from Selected
+              Build Transfer
+            </button>
+            <button
+              className="px-3 py-2 rounded-md bg-indigo-600 text-white text-xs sm:text-sm hover:bg-indigo-700"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEmailQuoteRequest();
+              }}
+            >
+              Request Quote
             </button>
           </div>
         </DataTable>
@@ -2542,21 +2713,6 @@ const App: React.FC = () => {
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                value={poForm.manufacture ?? ""}
-                onChange={(e) =>
-                  setPoForm((prev) => ({
-                    ...prev,
-                    manufacture: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
                 Receiving Branch <span className="text-red-500">*</span>
               </label>
               <select
@@ -2596,7 +2752,6 @@ const App: React.FC = () => {
               <table className="min-w-full text-xs">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-2 py-2 text-left">UPC</th>
                     <th className="px-2 py-2 text-left">Item Name</th>
                     <th className="px-2 py-2 text-left">Manufacture Part #</th>
                     <th className="px-2 py-2 text-left">Category</th>
@@ -2610,25 +2765,6 @@ const App: React.FC = () => {
                 <tbody>
                   {(poForm.items ?? []).map((item, idx) => (
                     <tr key={idx} className="border-t border-slate-100">
-                      <td className="px-2 py-1">
-                        <div className="flex gap-1 items-center">
-                          <input
-                            className="w-full border border-slate-200 rounded-md px-2 py-1"
-                            value={item.upc ?? ""}
-                            onChange={(e) =>
-                              handleUpdatePoLineItem(idx, "upc", e.target.value)
-                            }
-                          />
-                          <button
-                            type="button"
-                            className="px-2 py-1 rounded-md border border-slate-200 text-[11px] hover:bg-slate-100 whitespace-nowrap"
-                            onClick={() => handleLookupPoLineItem(idx)}
-                            disabled={poLookupLoadingIndex === idx}
-                          >
-                            {poLookupLoadingIndex === idx ? "..." : "Lookup"}
-                          </button>
-                        </div>
-                      </td>
                       <td className="px-2 py-1">
                         <input
                           className="w-full border border-slate-200 rounded-md px-2 py-1"
@@ -2738,7 +2874,7 @@ const App: React.FC = () => {
                   {(poForm.items ?? []).length === 0 && (
                     <tr>
                       <td
-                        colSpan={6}
+                        colSpan={8}
                         className="px-2 py-3 text-center text-slate-500"
                       >
                         No line items

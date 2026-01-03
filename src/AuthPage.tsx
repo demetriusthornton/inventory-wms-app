@@ -35,8 +35,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
       console.error("Auth error:", err);
       const authError = err as AuthError;
       let msg = "Authentication failed.";
-      if (authError.code === "auth/invalid-email") msg = "Invalid email address.";
-      if (authError.code === "auth/user-disabled") msg = "User account disabled.";
+      if (authError.code === "auth/invalid-email")
+        msg = "Invalid email address.";
+      if (authError.code === "auth/user-disabled")
+        msg = "User account disabled.";
       if (authError.code === "auth/user-not-found") msg = "User not found.";
       if (authError.code === "auth/wrong-password") msg = "Invalid password.";
       if (authError.code === "auth/email-already-in-use")
@@ -72,7 +74,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
             </label>
             <input
               type="email"
-              required
+              remp
+              eired
               className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#005691] focus:border-transparent"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
