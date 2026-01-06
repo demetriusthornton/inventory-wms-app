@@ -13,9 +13,9 @@
 
 .dark {
   color-scheme: dark;
-  --bg: #111827;
+  --bg: #1e1e1e;
   --fg: #ffffff;
-  --card: #1f2937;
+  --card: #1e1e1e;
   --muted: #e5e7eb;
   --border: #374151;
   --accent: #60a5fa;
@@ -49,6 +49,10 @@ body {
   color: var(--fg) !important;
 }
 
+.dark .row-selected-col1 {
+  color: #000 !important;
+}
+
 .dark .border-slate-200,
 .dark .border-slate-300 {
   border-color: var(--border) !important;
@@ -57,6 +61,10 @@ body {
 .dark a,
 .dark button {
   color: inherit;
+}
+
+.dark .btn-outline:hover {
+  color: #111827 !important;
 }
 
 /* Table row hover text color */
@@ -69,4 +77,16 @@ tr:hover th {
 tr:hover a,
 tr:hover a * {
   color: #111827 !important;
+}
+
+.dark tr:hover,
+.dark tr:hover td,
+.dark tr:hover th {
+  color: var(--fg) !important;
+  background-color: #021627 !important;
+}
+
+.dark tr:hover a,
+.dark tr:hover a * {
+  color: var(--fg) !important;
 }

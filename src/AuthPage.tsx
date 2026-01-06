@@ -4,7 +4,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import type { AuthError } from "firebase/auth";
+import { getAuthErrorMessage } from "./utils/authErrors";
 
 interface AuthPageProps {
   onLoginSuccess: () => void;
@@ -31,21 +31,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
         await signInWithEmailAndPassword(auth, email, password);
       }
       onLoginSuccess();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Auth error:", err);
-      const authError = err as AuthError;
-      let msg = "Authentication failed.";
-      if (authError.code === "auth/invalid-email")
-        msg = "Invalid email address.";
-      if (authError.code === "auth/user-disabled")
-        msg = "User account disabled.";
-      if (authError.code === "auth/user-not-found") msg = "User not found.";
-      if (authError.code === "auth/wrong-password") msg = "Invalid password.";
-      if (authError.code === "auth/email-already-in-use")
-        msg = "Email already in use.";
-      if (authError.code === "auth/weak-password")
-        msg = "Password should be at least 6 characters.";
-      setError(msg);
+      setError(getAuthErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -74,8 +62,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
             </label>
             <input
               type="email"
-              remp
-              eired
+              required
               className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#005691] focus:border-transparent"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
