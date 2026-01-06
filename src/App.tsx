@@ -28,11 +28,7 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { MessageBox, type MessageBoxHandle } from "./components/MessageBox";
 import { Modal } from "./components/Modal";
 import { useCollection } from "./hooks/useCollection";
-import {
-  buildBasePath,
-  jsonSafeParse,
-  parseCsvSimple,
-} from "./utils/helpers";
+import { buildBasePath, jsonSafeParse, parseCsvSimple } from "./utils/helpers";
 
 type PageKey =
   | "inventory"
@@ -923,6 +919,41 @@ const App: React.FC = () => {
     messageBoxRef.current?.alert("Inventory CSV import complete.");
   };
 
+  const handleDownloadInventoryTemplate = () => {
+    const header = [
+      "modelNumber",
+      "name",
+      "category",
+      "amountInInventory",
+      "manufactureName",
+      "manufacturePartNumber",
+      "imageUrl",
+      "description",
+      "assignedBranchId",
+      "minStockLevel",
+    ];
+    const sample = [
+      "ABC-123",
+      "Sample Item",
+      "Lumber",
+      "10",
+      "Acme",
+      "AC-100",
+      "https://example.com/image.jpg",
+      "Sample description",
+      "branch-id",
+      "5",
+    ];
+    const csv = `${header.join(",")}\n${sample.join(",")}\n`;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "inventory-import-template.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const [poForm, setPoForm] = useState<PoFormState>(makeEmptyPoForm);
   const resetPoForm = () => {
     setPoForm(makeEmptyPoForm());
@@ -1444,7 +1475,7 @@ const App: React.FC = () => {
     const subject = encodeURIComponent("Quote Request");
     const body = encodeURIComponent(
       [
-        "Dear <insert Vendor>",
+        "Dear <Vendor>",
         "",
         "Please provide a quote for the following Items. Please feel free to contact me with any questions or concerns.",
         "",
@@ -2480,6 +2511,13 @@ const App: React.FC = () => {
             amountInInventory, manufactureName, manufacturePartNumber, imageUrl,
             description, upc, assignedBranchId, minStockLevel.
           </p>
+          <button
+            type="button"
+            className="btn-outline mb-3 inline-flex items-center px-3 py-2 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+            onClick={handleDownloadInventoryTemplate}
+          >
+            Download CSV Template
+          </button>
           <input
             ref={inventoryCsvInputRef}
             type="file"
