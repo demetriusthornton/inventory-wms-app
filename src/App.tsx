@@ -3136,7 +3136,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-outline px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!row.trackingNumber) {
@@ -3156,7 +3156,7 @@ const App: React.FC = () => {
               </button>
               {row.status === "pending" && (
                 <button
-                  className="px-2 py-1 rounded-md bg-amber-100 text-xs text-amber-800 hover:bg-amber-200"
+                  className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleUpdateTransferStatus(row, "in-transit");
@@ -3167,7 +3167,7 @@ const App: React.FC = () => {
               )}
               {(row.status === "pending" || row.status === "in-transit") && (
                 <button
-                  className="px-2 py-1 rounded-md bg-emerald-100 text-xs text-emerald-800 hover:bg-emerald-200"
+                  className="px-2 py-1 rounded-md bg-emerald-600 text-xs text-white hover:bg-emerald-700"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleUpdateTransferStatus(row, "completed");
@@ -3178,7 +3178,7 @@ const App: React.FC = () => {
               )}
               {(row.status === "pending" || row.status === "in-transit") && (
                 <button
-                  className="px-2 py-1 rounded-md bg-red-100 text-xs text-red-800 hover:bg-red-200"
+                  className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleUpdateTransferStatus(row, "cancelled");
@@ -3536,7 +3536,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+                className="btn-outline px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDefaultWarehouseId(row.id);

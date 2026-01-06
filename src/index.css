@@ -59,6 +59,10 @@ body {
   color: inherit;
 }
 
+.dark .btn-outline:hover {
+  color: #111827 !important;
+}
+
 /* Table row hover text color */
 tr:hover,
 tr:hover td,
