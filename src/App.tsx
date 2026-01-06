@@ -738,6 +738,10 @@ const App: React.FC = () => {
   const warehouseCsvInputRef = useRef<HTMLInputElement | null>(null);
 
   const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [transferTrackingModalOpen, setTransferTrackingModalOpen] =
+    useState(false);
+  const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
+  const [transferTrackingValue, setTransferTrackingValue] = useState("");
 
   const [inventoryForm, setInventoryForm] = useState<Partial<InventoryItem>>({
     upc: "",
@@ -1441,6 +1445,33 @@ const App: React.FC = () => {
     const body = encodeURIComponent(lines.join("\n\n"));
     const mailto = `mailto:?subject=${subject}&body=${body}`;
     window.open(mailto, "_blank", "noopener,noreferrer");
+  };
+
+  const openTransferTrackingEditor = (transfer: Transfer) => {
+    setEditingTransfer(transfer);
+    setTransferTrackingValue(transfer.trackingNumber ?? "");
+    setTransferTrackingModalOpen(true);
+  };
+
+  const handleSaveTransferTracking = async () => {
+    if (!db || !basePath || !editingTransfer) return;
+    const trackingNumber = transferTrackingValue.trim();
+    const transferRef = doc(
+      collection(db, `${basePath}/moves`),
+      editingTransfer.id
+    );
+    await updateDoc(transferRef, { trackingNumber });
+    await logActivity({
+      action: "transfer_tracking_update",
+      collection: "moves",
+      docId: editingTransfer.id,
+      summary: trackingNumber
+        ? `Updated tracking for transfer ${editingTransfer.transferId} (${trackingNumber}).`
+        : `Cleared tracking for transfer ${editingTransfer.transferId}.`,
+    });
+    setTransferTrackingModalOpen(false);
+    setEditingTransfer(null);
+    setTransferTrackingValue("");
   };
 
   const openPackingListPrintView = useCallback(
@@ -3074,6 +3105,15 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
+                className="btn-outline px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openTransferTrackingEditor(row);
+                }}
+              >
+                Edit Tracking
+              </button>
+              <button
                 className="btn-outline px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -3367,6 +3407,53 @@ const App: React.FC = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+        </Modal>
+
+        <Modal
+          open={transferTrackingModalOpen}
+          onClose={() => {
+            setTransferTrackingModalOpen(false);
+            setEditingTransfer(null);
+            setTransferTrackingValue("");
+          }}
+          title={
+            editingTransfer
+              ? `Edit Tracking - ${editingTransfer.transferId}`
+              : "Edit Tracking"
+          }
+          maxWidthClass="max-w-lg"
+          footer={
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                onClick={() => {
+                  setTransferTrackingModalOpen(false);
+                  setEditingTransfer(null);
+                  setTransferTrackingValue("");
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                onClick={handleSaveTransferTracking}
+              >
+                Save
+              </button>
+            </div>
+          }
+        >
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Tracking Number
+            </label>
+            <input
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+              value={transferTrackingValue}
+              onChange={(e) => setTransferTrackingValue(e.target.value)}
+              placeholder="Optional shipment tracking number"
+            />
           </div>
         </Modal>
       </div>
