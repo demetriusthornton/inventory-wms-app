@@ -1442,7 +1442,15 @@ const App: React.FC = () => {
     });
 
     const subject = encodeURIComponent("Quote Request");
-    const body = encodeURIComponent(lines.join("\n\n"));
+    const body = encodeURIComponent(
+      [
+        "Dear <insert Vendor>",
+        "",
+        "Please provide a quote for the following Items. Please feel free to contact me with any questions or concerns.",
+        "",
+        lines.join("\n"),
+      ].join("\n")
+    );
     const mailto = `mailto:?subject=${subject}&body=${body}`;
     window.open(mailto, "_blank", "noopener,noreferrer");
   };
