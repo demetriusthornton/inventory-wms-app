@@ -32,7 +32,6 @@ import {
   buildBasePath,
   jsonSafeParse,
   parseCsvSimple,
-  lookupProductByUpc,
 } from "./utils/helpers";
 
 type PageKey =
@@ -754,8 +753,6 @@ const App: React.FC = () => {
     assignedBranchId: "",
     minStockLevel: 0,
   });
-  const [inventoryLookupLoading, setInventoryLookupLoading] = useState(false);
-
   const [categorySearch, setCategorySearch] = useState("");
   useEffect(() => {
     setCategorySearch(inventoryForm.category ?? "");
@@ -862,34 +859,6 @@ const App: React.FC = () => {
     });
     setInventoryModalOpen(false);
     resetInventoryForm();
-  };
-
-  const handleInventoryLookupByUpc = async () => {
-    const upc = (inventoryForm.upc ?? "").trim();
-    if (!upc) {
-      messageBoxRef.current?.alert("Enter a UPC to search for product data.");
-      return;
-    }
-    setInventoryLookupLoading(true);
-    const result = await lookupProductByUpc(upc);
-    setInventoryLookupLoading(false);
-    if (!result) {
-      messageBoxRef.current?.alert(
-        "No product data found for that UPC. You can still enter details manually."
-      );
-      return;
-    }
-    setInventoryForm((prev) => ({
-      ...prev,
-      upc,
-      name: prev.name || result.title || "",
-      modelNumber: prev.modelNumber || result.model || upc,
-      manufacturePartNumber: prev.manufacturePartNumber || result.model || upc,
-      manufactureName: prev.manufactureName || result.brand || "",
-      description: prev.description || result.description || "",
-      imageUrl: prev.imageUrl || result.imageUrl || "",
-      category: prev.category || result.category || prev.category,
-    }));
   };
 
   const handleInventoryCsvImport = async (file: File) => {
@@ -2009,7 +1978,6 @@ const App: React.FC = () => {
                 </div>
               ),
             },
-            { key: "upc", label: "UPC" },
             { key: "category", label: "Category" },
             {
               key: "assignedBranchId",
@@ -2185,36 +2153,6 @@ const App: React.FC = () => {
           }
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                UPC
-              </label>
-              <div className="flex gap-2">
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.upc ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      upc: e.target.value,
-                    }))
-                  }
-                  placeholder="Scan or paste UPC to search"
-                />
-                <button
-                  type="button"
-                  className="px-3 py-2 rounded-md border border-slate-300 text-xs text-slate-700 hover:bg-slate-50"
-                  onClick={handleInventoryLookupByUpc}
-                  disabled={inventoryLookupLoading}
-                >
-                  {inventoryLookupLoading ? "Searching..." : "Lookup"}
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Fetch product details to prefill name, image, manufacture, model
-                and description.
-              </p>
-            </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Model Number
