@@ -3700,7 +3700,7 @@ const App: React.FC = () => {
             />
             <button
               type="button"
-              className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10 flex items-center gap-1"
+              className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
               onClick={() => setIsDark((prev) => !prev)}
               aria-pressed={isDark}
               aria-label="Toggle dark mode"
