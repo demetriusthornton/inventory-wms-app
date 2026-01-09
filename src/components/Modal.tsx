@@ -22,14 +22,14 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
       <div
-        className={`bg-white rounded-lg shadow-xl w-full ${maxWidthClass} max-h-[90vh] flex flex-col`}
+        className={`bg-[var(--modal-bg)] rounded-lg shadow-xl w-full ${maxWidthClass} max-h-[90vh] flex flex-col border border-[var(--modal-border)]`}
       >
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-[var(--modal-border)]">
+          <h2 className="text-lg font-semibold text-[var(--fg)]">
             {title ?? ""}
           </h2>
           <button
-            className="text-slate-500 hover:text-slate-800 text-xl leading-none"
+            className="text-[var(--muted)] hover:text-[var(--fg)] text-xl leading-none"
             onClick={onClose}
           >
             ×
@@ -37,7 +37,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
         <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
         {footer && (
-          <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <div className="px-6 py-4 border-t border-[var(--modal-border)] bg-[var(--modal-footer)]">
             {footer}
           </div>
         )}

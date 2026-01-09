@@ -113,15 +113,15 @@ export function DataTable<T extends Record<string, any>>({
   ]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-      <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-col gap-3">
+    <div className="bg-[var(--card)] rounded-xl shadow-sm border border-[var(--border)]">
+      <div className="px-4 sm:px-6 py-4 border-b border-[var(--border)] flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-lg font-semibold text-[var(--fg)]">{title}</h2>
           {children && <div className="flex flex-wrap gap-2">{children}</div>}
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
           <input
-            className="border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691] focus:border-[#005691]"
+            className="border border-[var(--input-border)] rounded-md px-3 py-1.5 text-sm bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-[#0ea5e9]"
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -131,7 +131,7 @@ export function DataTable<T extends Record<string, any>>({
               {filterFields.map((field) => (
                 <select
                   key={String(field.key)}
-                  className="border border-slate-300 rounded-md px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="border border-[var(--input-border)] rounded-md px-2 py-1 text-xs bg-[var(--input-bg)] text-[var(--input-fg)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                   value={filters[String(field.key)] ?? ""}
                   onChange={(e) =>
                     setFilters((prev) => ({
@@ -154,12 +154,12 @@ export function DataTable<T extends Record<string, any>>({
       </div>
       <div className="overflow-x-auto px-4 sm:px-6">
         <table className="min-w-full text-sm">
-          <thead className="bg-slate-50">
+          <thead className="bg-[var(--surface-1)]">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="px-3 py-2 text-left text-xs font-semibold text-slate-600 cursor-pointer select-none"
+                  className="px-3 py-2 text-left text-xs font-semibold text-[var(--fg)] cursor-pointer select-none"
                   onClick={() => handleSort(col.key)}
                 >
                   <div className="flex items-center gap-1">
@@ -173,7 +173,7 @@ export function DataTable<T extends Record<string, any>>({
                 </th>
               ))}
               {actions && (
-                <th className="px-3 py-2 text-right text-xs font-semibold text-slate-600">
+                <th className="px-3 py-2 text-right text-xs font-semibold text-[var(--fg)]">
                   Actions
                 </th>
               )}
@@ -184,7 +184,7 @@ export function DataTable<T extends Record<string, any>>({
               <tr>
                 <td
                   colSpan={columns.length + (actions ? 1 : 0)}
-                  className="px-3 py-6 text-center text-slate-500"
+                  className="px-3 py-6 text-center text-[var(--muted)]"
                 >
                   No records
                 </td>
@@ -197,7 +197,7 @@ export function DataTable<T extends Record<string, any>>({
               return (
                 <React.Fragment key={rowId}>
                   <tr
-                    className="border-t border-slate-100 hover:bg-slate-50"
+                    className="border-t border-[var(--border)] odd:bg-[var(--row-odd)] even:bg-[var(--row-even)] hover:bg-[var(--row-hover)]"
                     onClick={() => {
                       if (!expandable) return;
                       setExpandedRowId((prev) =>
@@ -222,7 +222,7 @@ export function DataTable<T extends Record<string, any>>({
                     <tr>
                       <td
                         colSpan={columns.length + (actions ? 1 : 0)}
-                        className="px-3 py-4 bg-slate-50"
+                        className="px-3 py-4 bg-[var(--surface-1)]"
                       >
                         {renderExpandedRow(row)}
                       </td>

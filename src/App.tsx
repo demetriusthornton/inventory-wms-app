@@ -234,14 +234,14 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       footer={
         <div className="flex justify-end gap-3">
           <button
-            className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+            className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
             onClick={onClose}
             disabled={saving}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+            className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
             onClick={handleSave}
             disabled={saving}
           >
@@ -256,7 +256,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             Short Code <span className="text-red-500">*</span>
           </label>
           <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
             value={shortCode}
             onChange={(e) => setShortCode(e.target.value)}
           />
@@ -266,7 +266,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             Name <span className="text-red-500">*</span>
           </label>
           <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -276,7 +276,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             Street Address
           </label>
           <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
             value={streetAddress}
             onChange={(e) => setStreetAddress(e.target.value)}
           />
@@ -286,7 +286,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             City
           </label>
           <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
             value={city}
             onChange={(e) => setCity(e.target.value)}
           />
@@ -296,7 +296,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             State
           </label>
           <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
             value={stateVal}
             onChange={(e) => setStateVal(e.target.value)}
           />
@@ -341,6 +341,23 @@ const App: React.FC = () => {
     []
   );
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("wms-theme");
+    if (savedTheme) {
+      setIsDark(savedTheme === "dark");
+      return;
+    }
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    setIsDark(prefersDark);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+    localStorage.setItem("wms-theme", isDark ? "dark" : "light");
+  }, [isDark]);
+
   const logActivity = useCallback(
     async (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => {
       if (!db || !basePath || !authUser) return;
@@ -367,24 +384,6 @@ const App: React.FC = () => {
     console.log("DEBUG appId", appId);
     console.log("DEBUG authUser uid", authUser?.uid);
   }, [basePath, appId, authUser]);
-
-  // Theme Init: Runs once on mount
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("wms-theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      setIsDark(true);
-    }
-  }, []);
-
-  // Theme Application: Runs whenever isDark changes
-  useEffect(() => {
-    if (isDark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-    localStorage.setItem("wms-theme", isDark ? "dark" : "light");
-  }, [isDark]);
 
   useEffect(() => {
     if (!authInitDone) return;
@@ -856,6 +855,31 @@ const App: React.FC = () => {
       summary: `${
         editingInventoryItem ? "Updated" : "Added"
       } inventory ${name} (${modelNumber})`,
+    });
+    setInventoryModalOpen(false);
+    resetInventoryForm();
+  };
+
+  const handleDeleteInventory = async () => {
+    if (!db || !basePath || !editingInventoryItem) return;
+    const label =
+      editingInventoryItem.name ||
+      editingInventoryItem.modelNumber ||
+      editingInventoryItem.id;
+    const confirmed = await messageBoxRef.current?.confirm(
+      `Delete inventory item ${label}?`
+    );
+    if (!confirmed) return;
+    const ref = doc(
+      collection(db, `${basePath}/inventory`),
+      editingInventoryItem.id
+    );
+    await deleteDoc(ref);
+    await logActivity({
+      action: "inventory_delete",
+      collection: "inventory",
+      docId: editingInventoryItem.id,
+      summary: `Deleted inventory ${label}`,
     });
     setInventoryModalOpen(false);
     resetInventoryForm();
@@ -2090,7 +2114,7 @@ const App: React.FC = () => {
           ]}
           actions={(row) => (
             <button
-              className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e] hover:text-white"
+              className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7] hover:text-white"
               onClick={(e) => {
                 e.stopPropagation();
                 openInventoryModalForEdit(row);
@@ -2158,13 +2182,13 @@ const App: React.FC = () => {
         >
           <div className="flex flex-wrap gap-2">
             <button
-              className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
+              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
               onClick={openInventoryModalForNew}
             >
               Add Inventory
             </button>
             <button
-              className="px-3 py-2 rounded-md border border-[#005691] text-[#005691] text-xs sm:text-sm hover:bg-[#005691]/5"
+              className="px-3 py-2 rounded-md border border-[#0ea5e9] text-[#0ea5e9] text-xs sm:text-sm hover:bg-[#0ea5e9]/5"
               onClick={() => setInventoryCsvModalOpen(true)}
             >
               Import Inventory (CSV)
@@ -2206,14 +2230,22 @@ const App: React.FC = () => {
                 Quick Add Branch
               </button>
               <div className="flex gap-3">
+                {editingInventoryItem && (
+                  <button
+                    className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
+                    onClick={handleDeleteInventory}
+                  >
+                    Delete
+                  </button>
+                )}
                 <button
-                  className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                  className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
                   onClick={() => setInventoryModalOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                  className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
                   onClick={handleSaveInventory}
                 >
                   Save
@@ -2228,7 +2260,7 @@ const App: React.FC = () => {
                 Model Number
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.modelNumber ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2243,7 +2275,7 @@ const App: React.FC = () => {
                 Manufacture Part Number <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.manufacturePartNumber ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2259,7 +2291,7 @@ const App: React.FC = () => {
               </label>
               <div className="relative">
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                   value={inventoryForm.category ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2304,7 +2336,7 @@ const App: React.FC = () => {
                 Tags
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 placeholder="Comma separated"
                 value={
                   Array.isArray(inventoryForm.tags)
@@ -2327,7 +2359,7 @@ const App: React.FC = () => {
                 Name <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.name ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2342,7 +2374,7 @@ const App: React.FC = () => {
                 Description
               </label>
               <textarea
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 rows={3}
                 value={inventoryForm.description ?? ""}
                 onChange={(e) =>
@@ -2358,7 +2390,7 @@ const App: React.FC = () => {
                 Manufacture <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.manufactureName ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2373,7 +2405,7 @@ const App: React.FC = () => {
                 Manufacture Part Number <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.manufacturePartNumber ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2388,7 +2420,7 @@ const App: React.FC = () => {
                 Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.assignedBranchId ?? ""}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2411,7 +2443,7 @@ const App: React.FC = () => {
               </label>
               <input
                 type="number"
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.amountInInventory ?? 0}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2427,7 +2459,7 @@ const App: React.FC = () => {
               </label>
               <input
                 type="number"
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={inventoryForm.minStockLevel ?? 0}
                 onChange={(e) =>
                   setInventoryForm((prev) => ({
@@ -2443,7 +2475,7 @@ const App: React.FC = () => {
               </label>
               <div className="flex gap-2">
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                   value={inventoryForm.imageUrl ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2494,7 +2526,7 @@ const App: React.FC = () => {
           title="Import Inventory from CSV"
           footer={
             <button
-              className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+              className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
               onClick={() => {
                 if (inventoryCsvInputRef.current) {
                   inventoryCsvInputRef.current.value = "";
@@ -2600,7 +2632,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
+                className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7]"
                 onClick={(e) => {
                   e.stopPropagation();
                   openPoModalForEdit(row);
@@ -2618,7 +2650,7 @@ const App: React.FC = () => {
                 Receive
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                className="px-2 py-1 rounded-md bg-[#dc2626] text-xs text-white hover:bg-[#b91c1c]"
                 onClick={(e) => {
                   e.stopPropagation();
                   openPartialReceiveModal(row);
@@ -2627,7 +2659,7 @@ const App: React.FC = () => {
                 Partial
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                className="px-2 py-1 rounded-md bg-[#dc2626] text-xs text-white hover:bg-[#b91c1c]"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCancelPo(row);
@@ -2640,7 +2672,7 @@ const App: React.FC = () => {
         >
           <div className="flex gap-2">
             <button
-              className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
+              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
               onClick={openPoModalForNew}
             >
               Add New PO
@@ -2664,13 +2696,13 @@ const App: React.FC = () => {
               </button>
               <div className="flex gap-3">
                 <button
-                  className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                  className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
                   onClick={() => setPoModalOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                  className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
                   onClick={handleSavePurchaseOrder}
                 >
                   Save
@@ -2685,7 +2717,7 @@ const App: React.FC = () => {
                 PO Number <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={poForm.orderNumber ?? ""}
                 onChange={(e) =>
                   setPoForm((prev) => ({
@@ -2700,7 +2732,7 @@ const App: React.FC = () => {
                 IP Number
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={poForm.ipNumber ?? ""}
                 onChange={(e) =>
                   setPoForm((prev) => ({
@@ -2716,7 +2748,7 @@ const App: React.FC = () => {
                 Vendor <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={poForm.vendor ?? ""}
                 onChange={(e) =>
                   setPoForm((prev) => ({
@@ -2731,7 +2763,7 @@ const App: React.FC = () => {
                 Receiving Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={poForm.receivingWarehouseId ?? ""}
                 onChange={(e) =>
                   setPoForm((prev) => ({
@@ -2757,7 +2789,7 @@ const App: React.FC = () => {
               </h3>
               <button
                 type="button"
-                className="px-2 py-1 rounded-md bg-slate-100 text-xs hover:bg-slate-200"
+                className="btn-outline px-2 py-1 rounded-md text-xs"
                 onClick={handleAddPoLineItem}
               >
                 Add Line
@@ -2765,7 +2797,7 @@ const App: React.FC = () => {
             </div>
             <div className="border border-slate-200 rounded-md overflow-x-auto">
               <table className="min-w-full text-xs">
-                <thead className="bg-slate-50">
+                <thead className="bg-[var(--surface-1)] text-[var(--fg)]">
                   <tr>
                     <th className="px-2 py-2 text-left">Item Name</th>
                     <th className="px-2 py-2 text-left">Manufacture Part #</th>
@@ -2779,7 +2811,10 @@ const App: React.FC = () => {
                 </thead>
                 <tbody>
                   {(poForm.items ?? []).map((item, idx) => (
-                    <tr key={idx} className="border-t border-slate-100">
+                    <tr
+                      key={idx}
+                      className="border-t border-slate-200 odd:bg-[var(--row-odd)] even:bg-[var(--row-even)]"
+                    >
                       <td className="px-2 py-1">
                         <input
                           className="w-full border border-slate-200 rounded-md px-2 py-1"
@@ -2878,7 +2913,7 @@ const App: React.FC = () => {
                       <td className="px-2 py-1 text-right">
                         <button
                           type="button"
-                          className="px-2 py-1 rounded-md bg-red-100 text-red-800 hover:bg-red-200"
+                          className="px-2 py-1 rounded-md bg-[#dc2626] text-white hover:bg-[#b91c1c]"
                           onClick={() => handleRemovePoLineItem(idx)}
                         >
                           ×
@@ -2890,7 +2925,7 @@ const App: React.FC = () => {
                     <tr>
                       <td
                         colSpan={8}
-                        className="px-2 py-3 text-center text-slate-500"
+                        className="px-2 py-3 text-center text-[var(--muted)]"
                       >
                         No line items
                       </td>
@@ -2917,7 +2952,7 @@ const App: React.FC = () => {
                 .
               </p>
               <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
                 onClick={() => handleReceivePoFull(poReceiveMode.po)}
               >
                 Confirm Receive
@@ -2934,13 +2969,13 @@ const App: React.FC = () => {
           footer={
             <div className="flex justify-end gap-3">
               <button
-                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
                 onClick={() => setPoReceiveMode(null)}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
                 onClick={handleSubmitPartialReceive}
               >
                 Save
@@ -2951,7 +2986,7 @@ const App: React.FC = () => {
           {poReceiveMode && (
             <div className="overflow-x-auto">
               <table className="min-w-full text-xs">
-                <thead className="bg-slate-50">
+                <thead className="bg-[var(--surface-1)] text-[var(--fg)]">
                   <tr>
                     <th className="px-2 py-2 text-left">Item</th>
                     <th className="px-2 py-2 text-left">Model #</th>
@@ -2966,7 +3001,10 @@ const App: React.FC = () => {
                     const remaining =
                       item.amountOrdered - (item.amountReceived ?? 0);
                     return (
-                      <tr key={idx} className="border-t border-slate-100">
+                      <tr
+                        key={idx}
+                        className="border-t border-slate-200 odd:bg-[var(--row-odd)] even:bg-[var(--row-even)]"
+                      >
                         <td className="px-2 py-1">{item.itemName}</td>
                         <td className="px-2 py-1">{item.modelNumber}</td>
                         <td className="px-2 py-1 text-right">
@@ -3151,7 +3189,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="btn-outline px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+                className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7]"
                 onClick={(e) => {
                   e.stopPropagation();
                   openTransferTrackingEditor(row);
@@ -3179,15 +3217,7 @@ const App: React.FC = () => {
                 Track
               </button>
               {row.status === "pending" && (
-                <button
-                  className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleUpdateTransferStatus(row, "in-transit");
-                  }}
-                >
-                  In-Transit
-                </button>
+                null
               )}
               {(row.status === "pending" || row.status === "in-transit") && (
                 <button
@@ -3202,7 +3232,7 @@ const App: React.FC = () => {
               )}
               {(row.status === "pending" || row.status === "in-transit") && (
                 <button
-                  className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                  className="px-2 py-1 rounded-md bg-[#dc2626] text-xs text-white hover:bg-[#b91c1c]"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleUpdateTransferStatus(row, "cancelled");
@@ -3224,26 +3254,26 @@ const App: React.FC = () => {
                 (b.timestamp || "").localeCompare(a.timestamp || "")
               );
             return (
-              <div className="bg-slate-50 rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
+              <div className="bg-[var(--surface-1)] rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
                 {entries.length === 0 && (
-                  <p className="text-xs text-slate-500">No activity yet.</p>
+                  <p className="text-xs text-[var(--muted)]">No activity yet.</p>
                 )}
                 {entries.map((entry) => (
                   <div
                     key={entry.id}
-                    className="text-xs text-slate-700 border-b border-slate-200 last:border-0 pb-2 last:pb-0"
+                    className="text-xs text-[var(--muted)] border-b border-slate-200 last:border-0 pb-2 last:pb-0"
                   >
-                    <div className="font-semibold text-slate-800">
+                    <div className="font-semibold text-[var(--fg)]">
                       {entry.action}
                     </div>
-                    <div className="text-slate-600">
+                    <div className="text-[var(--muted)]">
                       {(entry.userName || getUserName()) ?? "Unknown"} ·{" "}
                       {entry.timestamp
                         ? new Date(entry.timestamp).toLocaleString()
                         : "—"}
                     </div>
                     {entry.summary && (
-                      <div className="text-slate-600">{entry.summary}</div>
+                      <div className="text-[var(--muted)]">{entry.summary}</div>
                     )}
                   </div>
                 ))}
@@ -3253,7 +3283,7 @@ const App: React.FC = () => {
         >
           <div className="flex gap-2">
             <button
-              className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
+              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
               onClick={() => {
                 resetTransferForm();
                 setTransferModalOpen(true);
@@ -3279,13 +3309,13 @@ const App: React.FC = () => {
               </button>
               <div className="flex gap-3">
                 <button
-                  className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                  className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
                   onClick={() => setTransferModalOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                  className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
                   onClick={handleSaveTransfer}
                 >
                   Save
@@ -3300,7 +3330,7 @@ const App: React.FC = () => {
                 Order Label
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={transferForm.label ?? ""}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3316,7 +3346,7 @@ const App: React.FC = () => {
                 Source Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={transferForm.sourceBranchId}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3338,7 +3368,7 @@ const App: React.FC = () => {
                 Destination Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={transferForm.destinationBranchId}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3360,7 +3390,7 @@ const App: React.FC = () => {
                 Tracking Number
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={transferForm.trackingNumber ?? ""}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3380,7 +3410,7 @@ const App: React.FC = () => {
               </h3>
               <button
                 type="button"
-                className="px-2 py-1 rounded-md bg-slate-100 text-xs hover:bg-slate-200"
+                className="btn-outline px-2 py-1 rounded-md text-xs"
                 onClick={addTransferLine}
               >
                 Add Line
@@ -3388,7 +3418,7 @@ const App: React.FC = () => {
             </div>
             <div className="border border-slate-200 rounded-md overflow-x-auto">
               <table className="min-w-full text-xs">
-                <thead className="bg-slate-50">
+                <thead className="bg-[var(--surface-1)] text-[var(--fg)]">
                   <tr>
                     <th className="px-2 py-2 text-left">
                       Item <span className="text-red-500">*</span>
@@ -3404,14 +3434,17 @@ const App: React.FC = () => {
                     <tr>
                       <td
                         colSpan={3}
-                        className="px-2 py-3 text-center text-slate-500"
+                        className="px-2 py-3 text-center text-[var(--muted)]"
                       >
                         No transfer lines
                       </td>
                     </tr>
                   )}
                   {transferForm.lines.map((line, idx) => (
-                    <tr key={idx} className="border-t border-slate-100">
+                    <tr
+                      key={idx}
+                      className="border-t border-slate-200 odd:bg-[var(--row-odd)] even:bg-[var(--row-even)]"
+                    >
                       <td className="px-2 py-1">
                         <select
                           className="w-full border border-slate-300 rounded-md px-2 py-1 text-xs"
@@ -3442,7 +3475,7 @@ const App: React.FC = () => {
                       <td className="px-2 py-1 text-right">
                         <button
                           type="button"
-                          className="px-2 py-1 rounded-md bg-red-100 text-red-800 hover:bg-red-200"
+                          className="px-2 py-1 rounded-md bg-[#dc2626] text-white hover:bg-[#b91c1c]"
                           onClick={() => removeTransferLine(idx)}
                         >
                           ×
@@ -3472,7 +3505,7 @@ const App: React.FC = () => {
           footer={
             <div className="flex justify-end gap-3">
               <button
-                className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
                 onClick={() => {
                   setTransferTrackingModalOpen(false);
                   setEditingTransfer(null);
@@ -3482,7 +3515,7 @@ const App: React.FC = () => {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
                 onClick={handleSaveTransferTracking}
               >
                 Save
@@ -3495,7 +3528,7 @@ const App: React.FC = () => {
               Tracking Number
             </label>
             <input
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
               value={transferTrackingValue}
               onChange={(e) => setTransferTrackingValue(e.target.value)}
               placeholder="Optional shipment tracking number"
@@ -3607,7 +3640,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="btn-outline px-2 py-1 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+                className="px-2 py-1 rounded-md border text-xs bg-[#f8fafc] text-[#0f172a] border-[#94a3b8] hover:bg-[#e2e8f0]"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDefaultWarehouseId(row.id);
@@ -3617,7 +3650,7 @@ const App: React.FC = () => {
                 {row.id === defaultWarehouseId ? "Default" : "Set Default"}
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
+                className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7]"
                 onClick={(e) => {
                   e.stopPropagation();
                   setEditingWarehouse(row);
@@ -3627,7 +3660,7 @@ const App: React.FC = () => {
                 Edit
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
+                className="px-2 py-1 rounded-md bg-[#dc2626] text-xs text-white hover:bg-[#b91c1c]"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeleteWarehouse(row);
@@ -3640,7 +3673,7 @@ const App: React.FC = () => {
         >
           <div className="flex gap-2">
             <button
-              className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
+              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
               onClick={() => {
                 setEditingWarehouse(null);
                 setWarehouseModalMainOpen(true);
@@ -3649,7 +3682,7 @@ const App: React.FC = () => {
               Add Warehouse
             </button>
             <button
-              className="px-3 py-2 rounded-md border border-[#005691] text-[#005691] text-xs sm:text-sm hover:bg-[#005691]/5"
+              className="px-3 py-2 rounded-md border border-[#0ea5e9] text-[#0ea5e9] text-xs sm:text-sm hover:bg-[#0ea5e9]/5"
               onClick={() => setWarehouseCsvModalOpen(true)}
             >
               Import Warehouses (CSV)
@@ -3673,7 +3706,7 @@ const App: React.FC = () => {
           title="Import Warehouses from CSV"
           footer={
             <button
-              className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+              className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
               onClick={() => {
                 if (warehouseCsvInputRef.current) {
                   warehouseCsvInputRef.current.value = "";
@@ -3708,7 +3741,7 @@ const App: React.FC = () => {
 
   if (!authInitDone || !firebaseApp) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
         <LoadingSpinner />
       </div>
     );
@@ -3720,16 +3753,16 @@ const App: React.FC = () => {
 
   if (!db || !basePath) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col">
-      <header className="bg-[#005691] text-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] flex flex-col">
+      <header className="bg-[var(--header-bg)] text-[var(--header-fg)] shadow-sm">
+        <div className="w-[90%] mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-bold">
               BLX
@@ -3738,12 +3771,10 @@ const App: React.FC = () => {
               <h1 className="text-sm sm:text-base font-semibold">
                 In Stock - IMS
               </h1>
-              <p className="text-[11px] text-white/80">
-                App ID: {appId} · User: {getUserName()}
-              </p>
+              <p className="text-[11px] opacity-80">Operations Console</p>
             </div>
           </div>
-          <nav className="flex gap-1 sm:gap-2 items-center text-xs sm:text-sm">
+          <nav className="flex-1 flex justify-center gap-1 sm:gap-2 items-center text-xs sm:text-sm">
             <NavButton
               label="Inventory"
               active={page === "inventory"}
@@ -3769,27 +3800,47 @@ const App: React.FC = () => {
               active={page === "warehouses"}
               onClick={() => setPage("warehouses")}
             />
+          </nav>
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
+              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
               onClick={() => setIsDark((prev) => !prev)}
               aria-pressed={isDark}
               aria-label="Toggle dark mode"
             >
-              <span aria-hidden>{isDark ? "☀️" : "🌙"}</span>
-              <span className="sr-only">Toggle theme</span>
+              {isDark ? "Light Mode" : "Dark Mode"}
             </button>
             <button
-              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
+              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
               onClick={handleSignOut}
             >
               Sign Out
             </button>
-          </nav>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-4 space-y-4">
+      <div className="bg-[var(--status-bg)] text-[var(--status-fg)] text-xs sm:text-sm">
+        <div className="w-[90%] mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <span>System: {appId}</span>
+            <span>User: {getUserName()}</span>
+            <span>
+              Default Branch:{" "}
+              {defaultWarehouseId
+                ? warehouses.find((w) => w.id === defaultWarehouseId)?.name ||
+                  defaultWarehouseId
+                : "None"}
+            </span>
+          </div>
+          <div className="text-[var(--status-muted)]">
+            Status: {db ? "Connected" : "Offline"}
+          </div>
+        </div>
+      </div>
+
+      <main className="flex-1 w-[90%] mx-auto px-4 sm:px-6 py-4 space-y-4">
         {(loadingInventory ||
           loadingWarehouses ||
           loadingPOs ||
@@ -3827,7 +3878,7 @@ interface NavButtonProps {
 const NavButton: React.FC<NavButtonProps> = ({ label, active, onClick }) => (
   <button
     className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
-      active ? "bg-white text-[#005691]" : "text-white/80 hover:bg-white/10"
+      active ? "bg-[#0ea5e9] text-white" : "text-white/80 hover:bg-white/10"
     }`}
     onClick={onClick}
   >
