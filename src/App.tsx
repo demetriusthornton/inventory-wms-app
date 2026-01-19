@@ -2578,6 +2578,56 @@ const App: React.FC = () => {
           title="Purchase Orders (Pending)"
           data={pendingPOs}
           searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
+          expandable
+          renderExpandedRow={(row) => (
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-4 text-xs text-slate-600">
+                <div>
+                  <span className="font-semibold text-slate-700">PO #:</span>{" "}
+                  {row.orderNumber || "—"}
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-700">IP #:</span>{" "}
+                  {row.ipNumber || "—"}
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-xs">
+                  <thead className="text-slate-500">
+                    <tr>
+                      <th className="text-left font-semibold py-1 pr-3">
+                        Item #
+                      </th>
+                      <th className="text-left font-semibold py-1 pr-3">
+                        Description
+                      </th>
+                      <th className="text-left font-semibold py-1">Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-slate-700">
+                    {(row.items || []).map((item, idx) => (
+                      <tr key={`${item.modelNumber}-${idx}`}>
+                        <td className="py-1 pr-3">
+                          {item.modelNumber || "—"}
+                        </td>
+                        <td className="py-1 pr-3">
+                          {item.description || item.itemName || "—"}
+                        </td>
+                        <td className="py-1">{item.amountOrdered ?? 0}</td>
+                      </tr>
+                    ))}
+                    {(row.items || []).length === 0 && (
+                      <tr>
+                        <td colSpan={3} className="py-2 text-slate-500">
+                          No items on this PO.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
           filterFields={[
             {
               key: "receivingWarehouseId",
