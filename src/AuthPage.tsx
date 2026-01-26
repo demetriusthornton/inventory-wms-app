@@ -3,6 +3,8 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signOut,
 } from "firebase/auth";
 import type { AuthError } from "firebase/auth";
 
@@ -26,9 +28,38 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
 
     try {
       if (isRegistering) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const normalizedEmail = email.trim().toLowerCase();
+        if (!normalizedEmail.endsWith("@bluelinxco.com")) {
+          setError("Please use your @bluelinxco.com email address.");
+          return;
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          normalizedEmail,
+          password
+        );
+        await sendEmailVerification(userCredential.user);
+        await signOut(auth);
+        setError(
+          "Verification email sent. Please check your inbox to complete registration."
+        );
+        setIsRegistering(false);
+        return;
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email.trim(),
+          password
+        );
+        if (!userCredential.user.emailVerified) {
+          await sendEmailVerification(userCredential.user);
+          await signOut(auth);
+          setError(
+            "Please verify your email before signing in. We sent you a new verification email."
+          );
+          return;
+        }
       }
       onLoginSuccess();
     } catch (err: any) {
@@ -76,8 +107,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
             </label>
             <input
               type="email"
-              remp
-              eired
+              required
               className="w-full border border-[var(--input-border)] rounded-lg px-4 py-2 bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

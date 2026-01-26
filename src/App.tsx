@@ -2970,6 +2970,14 @@ const App: React.FC = () => {
           getRowId={(row) => row.id}
           columns={[
             { key: "transferId", label: "Transfer ID" },
+            {
+              key: "dateInitiated",
+              label: "Date Created",
+              render: (row) =>
+                row.dateInitiated
+                  ? new Date(row.dateInitiated).toLocaleDateString()
+                  : "",
+            },
             { key: "label", label: "Order Label" },
             {
               key: "trackingNumber",
