@@ -68,15 +68,6 @@
   --error-border: #7f1d1d;
   --error-fg: #fecaca;
   color-scheme: dark;
-<<<<<<< HEAD
-=======
-  --bg: #1e1e1e;
-  --fg: #ffffff;
-  --card: #1e1e1e;
-  --muted: #e5e7eb;
-  --border: #374151;
-  --accent: #60a5fa;
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
 }
 
 /* Optional small global tweaks */
@@ -125,7 +116,6 @@ select option {
   color: var(--fg) !important;
 }
 
-<<<<<<< HEAD
 .text-slate-700,
 .text-slate-600,
 .text-slate-500 {
@@ -135,15 +125,11 @@ select option {
 .border-slate-100,
 .border-slate-200,
 .border-slate-300 {
-=======
-.dark .row-selected-col1 {
-  color: #000 !important;
+  border-color: var(--border) !important;
 }
 
-.dark .border-slate-200,
-.dark .border-slate-300 {
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
-  border-color: var(--border) !important;
+.dark .row-selected-col1 {
+  color: #000 !important;
 }
 
 .hover\\:bg-slate-50:hover {

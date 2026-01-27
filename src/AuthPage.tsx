@@ -96,11 +96,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
             <input
               type="email"
               required
-<<<<<<< HEAD
               className="w-full border border-[var(--input-border)] rounded-lg px-4 py-2 bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
-=======
-              className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#005691] focus:border-transparent"
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"

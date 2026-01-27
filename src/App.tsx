@@ -28,7 +28,12 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { MessageBox, type MessageBoxHandle } from "./components/MessageBox";
 import { Modal } from "./components/Modal";
 import { useCollection } from "./hooks/useCollection";
-import { buildBasePath, jsonSafeParse, parseCsvSimple } from "./utils/helpers";
+import {
+  buildBasePath,
+  jsonSafeParse,
+  parseCsvSimple,
+  lookupProductByUpc,
+} from "./utils/helpers";
 
 type PageKey =
   | "inventory"
@@ -163,7 +168,7 @@ interface AddWarehouseModalProps {
   basePath: string;
   existing?: Warehouse | null;
   onLogActivity: (
-    entry: Omit<ActivityLog, "id" | "timestamp" | "userName">
+    entry: Omit<ActivityLog, "id" | "timestamp" | "userName">,
   ) => Promise<void>;
 }
 
@@ -326,7 +331,7 @@ const App: React.FC = () => {
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
   const [defaultWarehouseId, setDefaultWarehouseId] = useState<string | null>(
-    null
+    null,
   );
 
   const [darkMode, setDarkMode] = useState<boolean>(getInitialDarkMode());
@@ -346,12 +351,12 @@ const App: React.FC = () => {
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
   const [selectedInventoryIds, setSelectedInventoryIds] = useState<string[]>(
-    []
+    [],
   );
 
   const basePath = useMemo(
     () => (appId ? buildBasePath(appId) : null),
-    [appId]
+    [appId],
   );
 
   const getUserName = useCallback(() => {
@@ -364,25 +369,8 @@ const App: React.FC = () => {
 
   const getDefaultWarehouseStorageKey = useCallback(
     (uid?: string | null) => `defaultWarehouseId:${uid ?? "anon"}`,
-    []
+    [],
   );
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("wms-theme");
-    if (savedTheme) {
-      setIsDark(savedTheme === "dark");
-      return;
-    }
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    setIsDark(prefersDark);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem("wms-theme", isDark ? "dark" : "light");
-  }, [isDark]);
 
   const logActivity = useCallback(
     async (entry: Omit<ActivityLog, "id" | "timestamp" | "userName">) => {
@@ -396,13 +384,13 @@ const App: React.FC = () => {
       try {
         await setDoc(
           doc(collection(db, `${basePath}/activityHistory`), payload.id),
-          payload
+          payload,
         );
       } catch (err) {
         console.error("Failed to log activity", err);
       }
     },
-    [db, basePath, authUser, getUserName]
+    [db, basePath, authUser, getUserName],
   );
 
   useEffect(() => {
@@ -418,7 +406,7 @@ const App: React.FC = () => {
       return;
     }
     const stored = localStorage.getItem(
-      getDefaultWarehouseStorageKey(authUser.uid)
+      getDefaultWarehouseStorageKey(authUser.uid),
     );
     setDefaultWarehouseId(stored || null);
   }, [authInitDone, authUser, getDefaultWarehouseStorageKey]);
@@ -551,20 +539,20 @@ const App: React.FC = () => {
     () =>
       defaultWarehouseId
         ? purchaseOrders.filter(
-            (po) => po.receivingWarehouseId === defaultWarehouseId
+            (po) => po.receivingWarehouseId === defaultWarehouseId,
           )
         : purchaseOrders,
-    [defaultWarehouseId, purchaseOrders]
+    [defaultWarehouseId, purchaseOrders],
   );
 
   const filteredPoHistory = useMemo(
     () =>
       defaultWarehouseId
         ? poHistory.filter(
-            (po) => po.receivingWarehouseId === defaultWarehouseId
+            (po) => po.receivingWarehouseId === defaultWarehouseId,
           )
         : poHistory,
-    [defaultWarehouseId, poHistory]
+    [defaultWarehouseId, poHistory],
   );
 
   const filteredTransfers = useMemo(
@@ -573,15 +561,15 @@ const App: React.FC = () => {
         ? transfers.filter(
             (t) =>
               t.sourceBranchId === defaultWarehouseId ||
-              t.destinationBranchId === defaultWarehouseId
+              t.destinationBranchId === defaultWarehouseId,
           )
         : transfers,
-    [defaultWarehouseId, transfers]
+    [defaultWarehouseId, transfers],
   );
 
   const pendingPOs = useMemo(
     () => filteredPurchaseOrders.filter((po) => po.status === "pending"),
-    [filteredPurchaseOrders]
+    [filteredPurchaseOrders],
   );
 
   const onOrderMap = useMemo(() => {
@@ -604,20 +592,20 @@ const App: React.FC = () => {
         ...item,
         numOnOrder:
           onOrderMap.get(
-            `${item.assignedBranchId}:${item.manufacturePartNumber}`
+            `${item.assignedBranchId}:${item.manufacturePartNumber}`,
           ) ?? 0,
       })),
-    [inventoryItems, onOrderMap]
+    [inventoryItems, onOrderMap],
   );
 
   const filteredInventory = useMemo(
     () =>
       defaultWarehouseId
         ? enrichedInventory.filter(
-            (item) => item.assignedBranchId === defaultWarehouseId
+            (item) => item.assignedBranchId === defaultWarehouseId,
           )
         : enrichedInventory,
-    [defaultWarehouseId, enrichedInventory]
+    [defaultWarehouseId, enrichedInventory],
   );
 
   const sortedWarehouses = useMemo(
@@ -626,10 +614,10 @@ const App: React.FC = () => {
         (a.shortCode || a.name || "").localeCompare(
           b.shortCode || b.name || "",
           undefined,
-          { sensitivity: "base" }
-        )
+          { sensitivity: "base" },
+        ),
       ),
-    [warehouses]
+    [warehouses],
   );
 
   const warehouseSelectOptions = useMemo(
@@ -638,7 +626,7 @@ const App: React.FC = () => {
         label: w.shortCode || w.name,
         value: w.id,
       })),
-    [sortedWarehouses]
+    [sortedWarehouses],
   );
 
   const inventoryCategoryOptions = useMemo(() => {
@@ -741,7 +729,7 @@ const App: React.FC = () => {
   const [warehouseModalQuickOpen, setWarehouseModalQuickOpen] = useState(false);
   const [warehouseModalMainOpen, setWarehouseModalMainOpen] = useState(false);
   const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
-    null
+    null,
   );
 
   const [poModalOpen, setPoModalOpen] = useState(false);
@@ -778,21 +766,19 @@ const App: React.FC = () => {
     assignedBranchId: "",
     minStockLevel: 0,
   });
-<<<<<<< HEAD
   const [categorySearch, setCategorySearch] = useState("");
+  const [inventoryLookupLoading, setInventoryLookupLoading] = useState(false);
+
   useEffect(() => {
     setCategorySearch(inventoryForm.category ?? "");
   }, [inventoryForm.category]);
   const filteredCategoryOptions = useMemo(
     () =>
       inventoryCategoryOptions.filter((opt) =>
-        opt.value.toLowerCase().includes((categorySearch ?? "").toLowerCase())
+        opt.value.toLowerCase().includes((categorySearch ?? "").toLowerCase()),
       ),
-    [inventoryCategoryOptions, categorySearch]
+    [inventoryCategoryOptions, categorySearch],
   );
-=======
-  const [inventoryLookupLoading, setInventoryLookupLoading] = useState(false);
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
 
   const resetInventoryForm = () => {
     setInventoryForm({
@@ -850,7 +836,7 @@ const App: React.FC = () => {
       amountInInventory === undefined
     ) {
       messageBoxRef.current?.alert(
-        "Fill in all required inventory fields (Model Number, Name, Category, Manufacture, Manufacture Part Number, Branch, Amount In Inventory, Min Stock Level)."
+        "Fill in all required inventory fields (Model Number, Name, Category, Manufacture, Manufacture Part Number, Branch, Amount In Inventory, Min Stock Level).",
       );
       return;
     }
@@ -890,6 +876,38 @@ const App: React.FC = () => {
     resetInventoryForm();
   };
 
+  const handleInventoryLookupByUpc = async () => {
+    const upc = String(inventoryForm.upc ?? "").trim();
+    if (!upc) {
+      messageBoxRef.current?.alert("Enter a UPC to search.");
+      return;
+    }
+    setInventoryLookupLoading(true);
+    try {
+      const result = await lookupProductByUpc(upc);
+      if (!result) {
+        messageBoxRef.current?.alert("No product found for that UPC.");
+        return;
+      }
+      setInventoryForm((prev) => ({
+        ...prev,
+        upc: result.upc || prev.upc,
+        name: prev.name || result.title || "",
+        manufactureName: prev.manufactureName || result.brand || "",
+        manufacturePartNumber: prev.manufacturePartNumber || result.model || "",
+        modelNumber: prev.modelNumber || result.model || "",
+        description: prev.description || result.description || "",
+        imageUrl: prev.imageUrl || result.imageUrl || "",
+        category: prev.category || result.category || "",
+      }));
+    } catch (err) {
+      console.error("UPC lookup failed", err);
+      messageBoxRef.current?.alert("UPC lookup failed. Try again.");
+    } finally {
+      setInventoryLookupLoading(false);
+    }
+  };
+
   const handleDeleteInventory = async () => {
     if (!db || !basePath || !editingInventoryItem) return;
     const label =
@@ -897,12 +915,12 @@ const App: React.FC = () => {
       editingInventoryItem.modelNumber ||
       editingInventoryItem.id;
     const confirmed = await messageBoxRef.current?.confirm(
-      `Delete inventory item ${label}?`
+      `Delete inventory item ${label}?`,
     );
     if (!confirmed) return;
     const ref = doc(
       collection(db, `${basePath}/inventory`),
-      editingInventoryItem.id
+      editingInventoryItem.id,
     );
     await deleteDoc(ref);
     await logActivity({
@@ -942,7 +960,7 @@ const App: React.FC = () => {
         category: row[idx("category")] ?? "",
         upc: row[idx("upc")] ?? "",
         amountInInventory: Number(
-          row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0
+          row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0,
         ),
         numOnOrder: 0,
         manufactureName:
@@ -956,7 +974,7 @@ const App: React.FC = () => {
         assignedBranchId:
           row[idx("assignedbranchid")] ?? row[idx("assignedBranchId")] ?? "",
         minStockLevel: Number(
-          row[idx("minstocklevel")] ?? row[idx("minStockLevel")] ?? 0
+          row[idx("minstocklevel")] ?? row[idx("minStockLevel")] ?? 0,
         ),
       };
       batch.set(ref, item);
@@ -967,7 +985,7 @@ const App: React.FC = () => {
       collection: "inventory",
       summary: `Imported ${Math.max(
         rows.length - 1,
-        0
+        0,
       )} inventory rows from CSV`,
     });
     messageBoxRef.current?.alert("Inventory CSV import complete.");
@@ -1056,7 +1074,7 @@ const App: React.FC = () => {
   const handleUpdatePoLineItem = (
     index: number,
     field: keyof PurchaseOrderItem,
-    value: any
+    value: any,
   ) => {
     setPoForm((prev) => {
       const items = [...prev.items];
@@ -1087,7 +1105,7 @@ const App: React.FC = () => {
     if (!db || !basePath) {
       console.error("DB or basePath missing, cannot save PO");
       messageBoxRef.current?.alert(
-        "Internal configuration error. Database is not ready."
+        "Internal configuration error. Database is not ready.",
       );
       return;
     }
@@ -1103,7 +1121,7 @@ const App: React.FC = () => {
 
     if (!orderNumber || !vendor || !receivingWarehouseId) {
       messageBoxRef.current?.alert(
-        "Fill in all required PO fields (PO Number, Vendor, Receiving Branch)."
+        "Fill in all required PO fields (PO Number, Vendor, Receiving Branch).",
       );
       return;
     }
@@ -1151,7 +1169,7 @@ const App: React.FC = () => {
       "Saving purchase order:",
       po,
       "to",
-      `${basePath}/purchaseOrders/${id}`
+      `${basePath}/purchaseOrders/${id}`,
     );
 
     try {
@@ -1169,7 +1187,7 @@ const App: React.FC = () => {
     } catch (err) {
       console.error("Failed to save purchase order", err);
       messageBoxRef.current?.alert(
-        "Failed to save purchase order. Open the browser console for error details."
+        "Failed to save purchase order. Open the browser console for error details.",
       );
     }
   };
@@ -1177,7 +1195,7 @@ const App: React.FC = () => {
   const handleReceivePoFull = async (po: PurchaseOrder) => {
     if (!db || !basePath) return;
     const confirmed = await messageBoxRef.current?.confirm(
-      `Receive remaining items in full for PO ${po.orderNumber}?`
+      `Receive remaining items in full for PO ${po.orderNumber}?`,
     );
     if (!confirmed) return;
 
@@ -1189,12 +1207,12 @@ const App: React.FC = () => {
         (inv) =>
           inv.assignedBranchId === po.receivingWarehouseId &&
           (inv.manufacturePartNumber === item.modelNumber ||
-            (!!item.upc && inv.upc === item.upc))
+            (!!item.upc && inv.upc === item.upc)),
       );
       if (inventoryItem) {
         const invRef = doc(
           collection(db, `${basePath}/inventory`),
-          inventoryItem.id
+          inventoryItem.id,
         );
         const invUpdate: Partial<InventoryItem> = {
           amountInInventory:
@@ -1217,7 +1235,7 @@ const App: React.FC = () => {
           inventoryItems.find(
             (inv) =>
               inv.manufacturePartNumber === item.modelNumber ||
-              (!!item.upc && inv.upc === item.upc)
+              (!!item.upc && inv.upc === item.upc),
           ) ?? null;
         const newItem: InventoryItem = {
           id,
@@ -1287,12 +1305,12 @@ const App: React.FC = () => {
           (inv) =>
             inv.assignedBranchId === po.receivingWarehouseId &&
             (inv.manufacturePartNumber === item.modelNumber ||
-              (!!item.upc && inv.upc === item.upc))
+              (!!item.upc && inv.upc === item.upc)),
         );
         if (inventoryItem) {
           const invRef = doc(
             collection(db, `${basePath}/inventory`),
-            inventoryItem.id
+            inventoryItem.id,
           );
           const invUpdate: Partial<InventoryItem> = {
             amountInInventory:
@@ -1315,7 +1333,7 @@ const App: React.FC = () => {
             inventoryItems.find(
               (inv) =>
                 inv.manufacturePartNumber === item.modelNumber ||
-                (!!item.upc && inv.upc === item.upc)
+                (!!item.upc && inv.upc === item.upc),
             ) ?? null;
           const newItem: InventoryItem = {
             id,
@@ -1343,7 +1361,7 @@ const App: React.FC = () => {
     });
 
     const allReceived = updatedItems.every(
-      (it) => it.amountReceived >= it.amountOrdered
+      (it) => it.amountReceived >= it.amountOrdered,
     );
 
     const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
@@ -1378,7 +1396,7 @@ const App: React.FC = () => {
   const handleCancelPo = async (po: PurchaseOrder) => {
     if (!db || !basePath) return;
     const confirmed = await messageBoxRef.current?.confirm(
-      `Cancel PO ${po.orderNumber}?`
+      `Cancel PO ${po.orderNumber}?`,
     );
     if (!confirmed) return;
     const batch = writeBatch(db);
@@ -1435,7 +1453,7 @@ const App: React.FC = () => {
   const updateTransferLine = (
     index: number,
     field: "itemId" | "quantity",
-    value: any
+    value: any,
   ) => {
     setTransferForm((prev) => {
       const lines = [...prev.lines];
@@ -1461,13 +1479,13 @@ const App: React.FC = () => {
   const handleBuildTransferFromSelected = () => {
     if (selectedInventoryIds.length === 0) {
       messageBoxRef.current?.alert(
-        "Select at least one inventory item to build a transfer."
+        "Select at least one inventory item to build a transfer.",
       );
       return;
     }
 
     const selectedItems = filteredInventory.filter((it) =>
-      selectedInventoryIds.includes(it.id)
+      selectedInventoryIds.includes(it.id),
     );
 
     if (selectedItems.length === 0) {
@@ -1477,12 +1495,12 @@ const App: React.FC = () => {
 
     const sourceBranchId = selectedItems[0].assignedBranchId;
     const sameSource = selectedItems.every(
-      (it) => it.assignedBranchId === sourceBranchId
+      (it) => it.assignedBranchId === sourceBranchId,
     );
 
     if (!sameSource) {
       messageBoxRef.current?.alert(
-        "All selected items must use the same source branch to build a transfer."
+        "All selected items must use the same source branch to build a transfer.",
       );
       return;
     }
@@ -1505,13 +1523,13 @@ const App: React.FC = () => {
   const handleEmailQuoteRequest = () => {
     if (selectedInventoryIds.length === 0) {
       messageBoxRef.current?.alert(
-        "Select at least one inventory item to build an email quote."
+        "Select at least one inventory item to build an email quote.",
       );
       return;
     }
 
     const selectedItems = filteredInventory.filter((it) =>
-      selectedInventoryIds.includes(it.id)
+      selectedInventoryIds.includes(it.id),
     );
 
     if (selectedItems.length === 0) {
@@ -1534,7 +1552,7 @@ const App: React.FC = () => {
         "Please provide a quote for the following Items. Please feel free to contact me with any questions or concerns.",
         "",
         lines.join("\n"),
-      ].join("\n")
+      ].join("\n"),
     );
     const mailto = `mailto:?subject=${subject}&body=${body}`;
     window.open(mailto, "_blank", "noopener,noreferrer");
@@ -1551,7 +1569,7 @@ const App: React.FC = () => {
     const trackingNumber = transferTrackingValue.trim();
     const transferRef = doc(
       collection(db, `${basePath}/moves`),
-      editingTransfer.id
+      editingTransfer.id,
     );
     await updateDoc(transferRef, { trackingNumber });
     await logActivity({
@@ -1584,14 +1602,14 @@ const App: React.FC = () => {
       lines.length === 0
     ) {
       messageBoxRef.current?.alert(
-        "Fill in required transfer fields (Source, Destination, at least one line item)."
+        "Fill in required transfer fields (Source, Destination, at least one line item).",
       );
       return;
     }
 
     if (sourceBranchId === destinationBranchId) {
       messageBoxRef.current?.alert(
-        "Source and destination branches must be different."
+        "Source and destination branches must be different.",
       );
       return;
     }
@@ -1599,7 +1617,7 @@ const App: React.FC = () => {
     for (const line of lines) {
       if (!line.itemId || !line.quantity || line.quantity <= 0) {
         messageBoxRef.current?.alert(
-          "Each transfer line must have an item and a quantity greater than zero."
+          "Each transfer line must have an item and a quantity greater than zero.",
         );
         return;
       }
@@ -1611,7 +1629,7 @@ const App: React.FC = () => {
       }
       if (item.assignedBranchId !== sourceBranchId) {
         messageBoxRef.current?.alert(
-          `Item ${item.modelNumber} is not in the selected source branch.`
+          `Item ${item.modelNumber} is not in the selected source branch.`,
         );
         return;
       }
@@ -1664,7 +1682,7 @@ const App: React.FC = () => {
 
   const handleUpdateTransferStatus = async (
     transfer: Transfer,
-    newStatus: TransferStatus
+    newStatus: TransferStatus,
   ) => {
     if (!db || !basePath) return;
     if (transfer.status === "completed") {
@@ -1677,7 +1695,7 @@ const App: React.FC = () => {
 
     if (newStatus === "cancelled") {
       const confirmed = await messageBoxRef.current?.confirm(
-        `Cancel transfer ${transfer.transferId}?`
+        `Cancel transfer ${transfer.transferId}?`,
       );
       if (!confirmed) return;
       const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
@@ -1696,7 +1714,7 @@ const App: React.FC = () => {
 
     if (newStatus === "completed") {
       const confirmed = await messageBoxRef.current?.confirm(
-        `Mark transfer ${transfer.transferId} as completed and move inventory?`
+        `Mark transfer ${transfer.transferId} as completed and move inventory?`,
       );
       if (!confirmed) return;
 
@@ -1709,26 +1727,26 @@ const App: React.FC = () => {
           inventoryItems.find((inv) => inv.id === line.itemId) ?? null;
         if (!sourceItem) {
           messageBoxRef.current?.alert(
-            `Source item for ${line.itemModelNumber} is no longer available.`
+            `Source item for ${line.itemModelNumber} is no longer available.`,
           );
           return;
         }
         if (sourceItem.assignedBranchId !== transfer.sourceBranchId) {
           messageBoxRef.current?.alert(
-            `Item ${sourceItem.modelNumber} is no longer in the source branch.`
+            `Item ${sourceItem.modelNumber} is no longer in the source branch.`,
           );
           return;
         }
         if (sourceItem.amountInInventory < line.quantity) {
           messageBoxRef.current?.alert(
-            `Insufficient stock to complete transfer item ${sourceItem.modelNumber}.`
+            `Insufficient stock to complete transfer item ${sourceItem.modelNumber}.`,
           );
           return;
         }
 
         const sourceRef = doc(
           collection(db, `${basePath}/inventory`),
-          sourceItem.id
+          sourceItem.id,
         );
         batch.update(sourceRef, {
           amountInInventory: sourceItem.amountInInventory - line.quantity,
@@ -1738,13 +1756,13 @@ const App: React.FC = () => {
           inventoryItems.find(
             (inv) =>
               inv.modelNumber === line.itemModelNumber &&
-              inv.assignedBranchId === transfer.destinationBranchId
+              inv.assignedBranchId === transfer.destinationBranchId,
           ) ?? null;
 
         if (destItem) {
           const destRef = doc(
             collection(db, `${basePath}/inventory`),
-            destItem.id
+            destItem.id,
           );
           batch.update(destRef, {
             amountInInventory: destItem.amountInInventory + line.quantity,
@@ -1801,7 +1819,7 @@ const App: React.FC = () => {
   const handleDeleteWarehouse = async (warehouse: Warehouse) => {
     if (!db || !basePath) return;
     const confirmed = await messageBoxRef.current?.confirm(
-      `Delete branch ${warehouse.name}?`
+      `Delete branch ${warehouse.name}?`,
     );
     if (!confirmed) return;
     const ref = doc(collection(db, `${basePath}/warehouses`), warehouse.id);
@@ -1927,7 +1945,7 @@ const App: React.FC = () => {
                       setSelectedInventoryIds((prev) =>
                         e.target.checked
                           ? [...prev, row.id]
-                          : prev.filter((id) => id !== row.id)
+                          : prev.filter((id) => id !== row.id),
                       );
                     }}
                   />
@@ -1968,7 +1986,7 @@ const App: React.FC = () => {
                 label: "Branch",
                 render: (row) => {
                   const wh = warehouses.find(
-                    (w) => w.id === row.assignedBranchId
+                    (w) => w.id === row.assignedBranchId,
                   );
                   return wh ? wh.shortCode || wh.name : row.assignedBranchId;
                 },
@@ -2029,81 +2047,12 @@ const App: React.FC = () => {
                     </div>
                   )}
                 </div>
-<<<<<<< HEAD
-              ),
-            },
-            { key: "category", label: "Category" },
-            {
-              key: "assignedBranchId",
-              label: "Branch",
-              render: (row) => {
-                const wh = warehouses.find(
-                  (w) => w.id === row.assignedBranchId
-                );
-                return wh ? wh.shortCode || wh.name : row.assignedBranchId;
-              },
-            },
-            {
-              key: "amountInInventory",
-              label: "On Hand",
-            },
-            {
-              key: "numOnOrder",
-              label: "On Order",
-            },
-            {
-              key: "minStockLevel",
-              label: "Stock Level (Min)",
-              render: (row) => {
-                const ratio = `${row.amountInInventory} / ${row.minStockLevel}`;
-                let color = "bg-green-100 text-green-800";
-                if (row.amountInInventory < row.minStockLevel) {
-                  color = "bg-red-100 text-red-800";
-                } else if (row.amountInInventory === row.minStockLevel) {
-                  color = "bg-yellow-100 text-yellow-800";
-                }
-                return (
-                  <span
-                    className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${color}`}
-                  >
-                    {ratio}
-                  </span>
-                );
-              },
-            },
-          ]}
-          actions={(row) => (
-            <button
-              className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7] hover:text-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                openInventoryModalForEdit(row);
-              }}
-            >
-              Edit
-            </button>
-          )}
-          expandable
-          renderExpandedRow={(row) => (
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="w-full sm:w-40 flex-shrink-0">
-                {row.imageUrl ? (
-                  <img
-                    src={row.imageUrl}
-                    alt={row.name || row.modelNumber}
-                    className="w-full h-40 object-cover rounded-md border border-slate-200"
-                  />
-                ) : (
-                  <div className="w-full h-40 rounded-md bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">
-                    No Image
-=======
                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
                     <div className="font-semibold text-slate-800 mb-1">
                       Name
                     </div>
                     <div className="text-slate-700">{row.name}</div>
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
                   </div>
                   <div>
                     <div className="font-semibold text-slate-800 mb-1">
@@ -2139,19 +2088,16 @@ const App: React.FC = () => {
                   </div>
                 </div>
               </div>
-<<<<<<< HEAD
-            </div>
-          )}
-        >
-          <div className="flex flex-wrap gap-2">
+            )}
+          >
             <button
-              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
+              className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
               onClick={openInventoryModalForNew}
             >
               Add Inventory
             </button>
             <button
-              className="px-3 py-2 rounded-md border border-[#0ea5e9] text-[#0ea5e9] text-xs sm:text-sm hover:bg-[#0ea5e9]/5"
+              className="px-3 py-2 rounded-md border border-[#005691] text-[#005691] text-xs sm:text-sm hover:bg-[#005691]/5"
               onClick={() => setInventoryCsvModalOpen(true)}
             >
               Import Inventory (CSV)
@@ -2174,131 +2120,6 @@ const App: React.FC = () => {
             >
               Request Quote
             </button>
-          </div>
-        </DataTable>
-
-        <Modal
-          open={inventoryModalOpen}
-          onClose={() => setInventoryModalOpen(false)}
-          title={
-            editingInventoryItem ? "Edit Inventory Item" : "Add Inventory Item"
-          }
-          footer={
-            <div className="flex justify-between gap-3">
-=======
-            )}
-          >
-            <div className="flex flex-wrap gap-2">
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
-              <button
-                type="button"
-                className={
-                  darkMode
-                    ? "px-3 py-2 rounded-md border border-slate-500 text-white dark-hover"
-                    : "px-3 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
-                }
-                onClick={() => setDarkMode((v) => !v)}
-                title="Toggle dark mode"
-              >
-                {darkMode ? "Dark: On" : "Dark: Off"}
-              </button>
-              <button
-                className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
-                onClick={openInventoryModalForNew}
-              >
-                Add Inventory
-              </button>
-              <button
-                className="px-3 py-2 rounded-md border border-[#005691] text-[#005691] text-xs sm:text-sm hover:bg-[#005691]/5"
-                onClick={() => setInventoryCsvModalOpen(true)}
-              >
-                Import Inventory (CSV)
-              </button>
-              <button
-                className="px-3 py-2 rounded-md bg-emerald-600 text-white text-xs sm:text-sm hover:bg-emerald-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleBuildTransferFromSelected();
-                }}
-              >
-                Build Transfer
-              </button>
-              <button
-                className="px-3 py-2 rounded-md bg-indigo-600 text-white text-xs sm:text-sm hover:bg-indigo-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEmailQuoteRequest();
-                }}
-              >
-                Request Quote
-              </button>
-<<<<<<< HEAD
-              <div className="flex gap-3">
-                {editingInventoryItem && (
-                  <button
-                    className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
-                    onClick={handleDeleteInventory}
-                  >
-                    Delete
-                  </button>
-                )}
-                <button
-                  className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
-                  onClick={() => setInventoryModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
-                  onClick={handleSaveInventory}
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          }
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Model Number
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.modelNumber ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    modelNumber: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture Part Number <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.manufacturePartNumber ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    manufacturePartNumber: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Category <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                  value={inventoryForm.category ?? ""}
-=======
-            </div>
           </DataTable>
 
           <Modal
@@ -2319,6 +2140,14 @@ const App: React.FC = () => {
                   Quick Add Branch
                 </button>
                 <div className="flex gap-3">
+                  {editingInventoryItem && (
+                    <button
+                      className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
+                      onClick={handleDeleteInventory}
+                    >
+                      Delete
+                    </button>
+                  )}
                   <button
                     className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
                     onClick={() => setInventoryModalOpen(false)}
@@ -2368,32 +2197,15 @@ const App: React.FC = () => {
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Model Number
+                  Model Number <span className="text-red-500">*</span>
                 </label>
                 <input
                   className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
                   value={inventoryForm.modelNumber ?? ""}
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
                       ...prev,
                       modelNumber: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Manufacture Part Number{" "}
-                  <span className="text-red-500">*</span>
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.manufacturePartNumber ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      manufacturePartNumber: e.target.value,
                     }))
                   }
                 />
@@ -2455,7 +2267,7 @@ const App: React.FC = () => {
                   value={
                     Array.isArray(inventoryForm.tags)
                       ? inventoryForm.tags.join(", ")
-                      : inventoryForm.tags ?? ""
+                      : (inventoryForm.tags ?? "")
                   }
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2623,205 +2435,6 @@ const App: React.FC = () => {
                             ...prev,
                             imageUrl: result,
                           }));
-<<<<<<< HEAD
-                          setCategoryDropdownOpen(false);
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Pick an existing category or enter a new one.
-              </p>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Tags
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                placeholder="Comma separated"
-                value={
-                  Array.isArray(inventoryForm.tags)
-                    ? inventoryForm.tags.join(", ")
-                    : inventoryForm.tags ?? ""
-                }
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    tags: e.target.value
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter(Boolean),
-                  }))
-                }
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.name ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    name: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Description
-              </label>
-              <textarea
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                rows={3}
-                value={inventoryForm.description ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.manufactureName ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    manufactureName: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Manufacture Part Number <span className="text-red-500">*</span>
-              </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.manufacturePartNumber ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    manufacturePartNumber: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Branch <span className="text-red-500">*</span>
-              </label>
-              <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.assignedBranchId ?? ""}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    assignedBranchId: e.target.value,
-                  }))
-                }
-              >
-                <option value="">Select Branch</option>
-                {sortedWarehouses.map((w) => (
-                  <option key={w.id} value={w.id}>
-                    {w.shortCode || w.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Amount In Inventory <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.amountInInventory ?? 0}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    amountInInventory: Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Min Stock Level <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={inventoryForm.minStockLevel ?? 0}
-                onChange={(e) =>
-                  setInventoryForm((prev) => ({
-                    ...prev,
-                    minStockLevel: Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Image URL
-              </label>
-              <div className="flex gap-2">
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                  value={inventoryForm.imageUrl ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      imageUrl: e.target.value,
-                    }))
-                  }
-                  placeholder="Paste image URL or upload below"
-                />
-                <button
-                  type="button"
-                  className="px-3 py-2 rounded-md border border-slate-300 text-xs text-slate-700 hover:bg-slate-50"
-                  onClick={() => inventoryImageInputRef.current?.click()}
-                >
-                  Upload
-                </button>
-                <input
-                  ref={inventoryImageInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      const result = reader.result;
-                      if (typeof result === "string") {
-                        setInventoryForm((prev) => ({
-                          ...prev,
-                          imageUrl: result,
-                        }));
-                      }
-                    };
-                    reader.readAsDataURL(file);
-                    // clear input so same file can be reselected
-                    e.target.value = "";
-                  }}
-                />
-=======
                         }
                       };
                       reader.readAsDataURL(file);
@@ -2830,57 +2443,10 @@ const App: React.FC = () => {
                     }}
                   />
                 </div>
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
               </div>
             </div>
           </Modal>
 
-<<<<<<< HEAD
-        <Modal
-          open={inventoryCsvModalOpen}
-          onClose={() => setInventoryCsvModalOpen(false)}
-          title="Import Inventory from CSV"
-          footer={
-            <button
-              className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
-              onClick={() => {
-                if (inventoryCsvInputRef.current) {
-                  inventoryCsvInputRef.current.value = "";
-                  inventoryCsvInputRef.current.click();
-                }
-              }}
-            >
-              Select CSV File
-            </button>
-          }
-        >
-          <p className="text-sm text-slate-700 mb-2">
-            Upload a CSV file with headers such as modelNumber, name, category,
-            amountInInventory, manufactureName, manufacturePartNumber, imageUrl,
-            description, upc, assignedBranchId, minStockLevel.
-          </p>
-          <button
-            type="button"
-            className="btn-outline mb-3 inline-flex items-center px-3 py-2 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
-            onClick={handleDownloadInventoryTemplate}
-          >
-            Download CSV Template
-          </button>
-          <input
-            ref={inventoryCsvInputRef}
-            type="file"
-            accept=".csv,text/csv"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                handleInventoryCsvImport(file);
-              }
-            }}
-          />
-        </Modal>
-      </div>
-=======
           <Modal
             open={inventoryCsvModalOpen}
             onClose={() => setInventoryCsvModalOpen(false)}
@@ -2905,6 +2471,13 @@ const App: React.FC = () => {
               manufacturePartNumber, imageUrl, description, upc,
               assignedBranchId, minStockLevel.
             </p>
+            <button
+              type="button"
+              className="btn-outline mb-3 inline-flex items-center px-3 py-2 rounded-md border border-slate-300 text-xs hover:bg-slate-50"
+              onClick={handleDownloadInventoryTemplate}
+            >
+              Download CSV Template
+            </button>
             <input
               ref={inventoryCsvInputRef}
               type="file"
@@ -2920,7 +2493,6 @@ const App: React.FC = () => {
           </Modal>
         </div>
       </>
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
     );
   };
 
@@ -2960,9 +2532,7 @@ const App: React.FC = () => {
                   <tbody className="text-slate-700">
                     {(row.items || []).map((item, idx) => (
                       <tr key={`${item.modelNumber}-${idx}`}>
-                        <td className="py-1 pr-3">
-                          {item.modelNumber || "—"}
-                        </td>
+                        <td className="py-1 pr-3">{item.modelNumber || "—"}</td>
                         <td className="py-1 pr-3">
                           {item.description || item.itemName || "—"}
                         </td>
@@ -3018,7 +2588,7 @@ const App: React.FC = () => {
               label: "Receiving Branch",
               render: (row) => {
                 const wh = warehouses.find(
-                  (w) => w.id === row.receivingWarehouseId
+                  (w) => w.id === row.receivingWarehouseId,
                 );
                 return wh ? wh.shortCode || wh.name : row.receivingWarehouseId;
               },
@@ -3230,7 +2800,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "itemName",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -3243,7 +2813,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "modelNumber",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -3256,7 +2826,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "category",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -3270,7 +2840,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "description",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -3283,7 +2853,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "imageUrl",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           placeholder="Optional image URL"
@@ -3298,7 +2868,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "amountOrdered",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -3312,7 +2882,7 @@ const App: React.FC = () => {
                             handleUpdatePoLineItem(
                               idx,
                               "orderCost",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -3481,9 +3051,7 @@ const App: React.FC = () => {
                 <tbody className="text-slate-700">
                   {(row.items || []).map((item, idx) => (
                     <tr key={`${item.modelNumber}-${idx}`}>
-                      <td className="py-1 pr-3">
-                        {item.modelNumber || "—"}
-                      </td>
+                      <td className="py-1 pr-3">{item.modelNumber || "—"}</td>
                       <td className="py-1 pr-3">
                         {item.description || item.itemName || "—"}
                       </td>
@@ -3618,7 +3186,7 @@ const App: React.FC = () => {
                 row.trackingNumber ? (
                   <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(
-                      row.trackingNumber
+                      row.trackingNumber,
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -3654,7 +3222,7 @@ const App: React.FC = () => {
               label: "Destination",
               render: (row) => {
                 const wh = warehouses.find(
-                  (w) => w.id === row.destinationBranchId
+                  (w) => w.id === row.destinationBranchId,
                 );
                 return wh ? wh.shortCode || wh.name : row.destinationBranchId;
               },
@@ -3681,9 +3249,7 @@ const App: React.FC = () => {
               >
                 Edit Tracking
               </button>
-              {row.status === "pending" && (
-                null
-              )}
+              {row.status === "pending" && null}
               {(row.status === "pending" || row.status === "in-transit") && (
                 <button
                   className="px-2 py-1 rounded-md bg-emerald-600 text-xs text-white hover:bg-emerald-700"
@@ -3713,15 +3279,17 @@ const App: React.FC = () => {
             const entries = activityHistory
               .filter(
                 (entry) =>
-                  entry.collection === "moves" && entry.docId === row.id
+                  entry.collection === "moves" && entry.docId === row.id,
               )
               .sort((a, b) =>
-                (b.timestamp || "").localeCompare(a.timestamp || "")
+                (b.timestamp || "").localeCompare(a.timestamp || ""),
               );
             return (
               <div className="bg-[var(--surface-1)] rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
                 {entries.length === 0 && (
-                  <p className="text-xs text-[var(--muted)]">No activity yet.</p>
+                  <p className="text-xs text-[var(--muted)]">
+                    No activity yet.
+                  </p>
                 )}
                 {entries.map((entry) => (
                   <div
@@ -4007,9 +3575,9 @@ const App: React.FC = () => {
   const activityHistorySorted = useMemo(
     () =>
       [...activityHistory].sort((a, b) =>
-        (b.timestamp || "").localeCompare(a.timestamp || "")
+        (b.timestamp || "").localeCompare(a.timestamp || ""),
       ),
-    [activityHistory]
+    [activityHistory],
   );
 
   const renderActivityHistoryPage = () => {
@@ -4268,20 +3836,16 @@ const App: React.FC = () => {
           </nav>
           <div className="flex items-center gap-2">
             <button
-<<<<<<< HEAD
               type="button"
               className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
-              onClick={() => setIsDark((prev) => !prev)}
-              aria-pressed={isDark}
+              onClick={() => setDarkMode((prev) => !prev)}
+              aria-pressed={darkMode}
               aria-label="Toggle dark mode"
             >
-              {isDark ? "Light Mode" : "Dark Mode"}
+              {darkMode ? "Light Mode" : "Dark Mode"}
             </button>
             <button
               className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
-=======
-              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
               onClick={handleSignOut}
             >
               Sign Out
