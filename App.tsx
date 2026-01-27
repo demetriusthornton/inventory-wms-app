@@ -306,18 +306,6 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
   );
 };
 
-const THEME_STORAGE_KEY = "ui:darkMode";
-
-const getInitialDarkMode = (): boolean => {
-  try {
-    const raw = localStorage.getItem(THEME_STORAGE_KEY);
-    if (raw === null) return false;
-    return raw === "true";
-  } catch {
-    return false;
-  }
-};
-
 const App: React.FC = () => {
   const [firebaseApp, setFirebaseApp] = useState<FirebaseApp | null>(null);
   const [db, setDb] = useState<Firestore | null>(null);
@@ -325,24 +313,10 @@ const App: React.FC = () => {
   const [appId, setAppId] = useState<string>("wms-app-prod");
   const [authInitDone, setAuthInitDone] = useState(false);
   const [page, setPage] = useState<PageKey>("inventory");
+  const [isDark, setIsDark] = useState(false);
   const [defaultWarehouseId, setDefaultWarehouseId] = useState<string | null>(
     null
   );
-
-  const [darkMode, setDarkMode] = useState<boolean>(getInitialDarkMode());
-
-  useEffect(() => {
-    try {
-      if (darkMode) {
-        document.body.classList.add("dark");
-      } else {
-        document.body.classList.remove("dark");
-      }
-      localStorage.setItem(THEME_STORAGE_KEY, String(darkMode));
-    } catch {
-      // ignore
-    }
-  }, [darkMode]);
 
   const messageBoxRef = useRef<MessageBoxHandle>(null);
   const [selectedInventoryIds, setSelectedInventoryIds] = useState<string[]>(
@@ -778,7 +752,6 @@ const App: React.FC = () => {
     assignedBranchId: "",
     minStockLevel: 0,
   });
-<<<<<<< HEAD
   const [categorySearch, setCategorySearch] = useState("");
   useEffect(() => {
     setCategorySearch(inventoryForm.category ?? "");
@@ -790,9 +763,6 @@ const App: React.FC = () => {
       ),
     [inventoryCategoryOptions, categorySearch]
   );
-=======
-  const [inventoryLookupLoading, setInventoryLookupLoading] = useState(false);
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
 
   const resetInventoryForm = () => {
     setInventoryForm({
@@ -1519,7 +1489,7 @@ const App: React.FC = () => {
       return;
     }
 
-    const lines = selectedItems.map((item) => {
+    const lines = selectedItems.map((item, idx) => {
       const partNumber =
         item.manufacturePartNumber || item.modelNumber || "N/A";
       const name = item.name || item.modelNumber || "Unnamed Item";
@@ -1854,182 +1824,77 @@ const App: React.FC = () => {
 
   const renderInventoryPage = () => {
     return (
-      <>
-        <style>{`
-        body.dark {
-          background-color: #1e1e1e;
-          color: #ffffff;
-        }
-        /* Make common surfaces readable in dark mode */
-        body.dark .bg-white { background-color: #111827 !important; }
-        body.dark .text-slate-900 { color: #ffffff !important; }
-        body.dark .text-slate-800 { color: #e5e7eb !important; }
-        body.dark .text-slate-700 { color: #d1d5db !important; }
-        body.dark .text-slate-600 { color: #cbd5e1 !important; }
-        body.dark .border-slate-200 { border-color: #334155 !important; }
-        body.dark .border-slate-300 { border-color: #475569 !important; }
-
-        /* Requested hover color in dark mode */
-        body.dark .dark-hover:hover { background-color: #021627 !important; }
-
-        /* Ensure inputs/selects are readable in dark mode */
-        body.dark input,
-        body.dark select,
-        body.dark textarea {
-          background-color: #0b1220;
-          color: #ffffff;
-          border-color: #475569;
-        }
-        body.dark input::placeholder,
-        body.dark textarea::placeholder {
-          color: #94a3b8;
-        }
-      `}</style>
-        <div
-          className="space-y-4"
-          style={{ backgroundColor: "transparent", color: "inherit" }}
-        >
-          <DataTable<InventoryItem>
-            title="Inventory"
-            data={filteredInventory}
-            searchFields={[
-              "modelNumber",
-              "name",
-              "category",
-              "manufactureName",
-              "upc",
-            ]}
-            filterFields={[
-              {
-                key: "assignedBranchId",
-                label: "Branch",
-                type: "select",
-                options: warehouseSelectOptions,
-              },
-              {
-                key: "category",
-                label: "Category",
-                type: "select",
-                options: inventoryCategoryOptions,
-              },
-            ]}
-            getRowId={(row) => row.id}
-            columns={[
-              {
-                key: "select",
-                label: "",
-                render: (row) => (
-                  <input
-                    type="checkbox"
-                    checked={selectedInventoryIds.includes(row.id)}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {
-                      setSelectedInventoryIds((prev) =>
-                        e.target.checked
-                          ? [...prev, row.id]
-                          : prev.filter((id) => id !== row.id)
-                      );
-                    }}
-                  />
-                ),
-              },
-              {
-                key: "modelNumber",
-                label: "Item",
-                render: (row) => (
-                  <div className="flex items-center gap-3">
-                    {row.imageUrl ? (
-                      <img
-                        src={row.imageUrl}
-                        alt={row.name || row.modelNumber}
-                        className="w-10 h-10 rounded-md object-cover border border-slate-200"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600">
-                        {(row.modelNumber || "").slice(0, 2).toUpperCase()}
-                      </div>
-                    )}
-                    <div className="flex flex-col">
-                      <span className="text-xs font-semibold text-slate-900">
-                        {row.modelNumber}
-                      </span>
-                      <span className="text-[11px] text-slate-600">
-                        {row.name}
-                      </span>
-                    </div>
-                  </div>
-                ),
-              },
-              { key: "upc", label: "UPC" },
-              { key: "category", label: "Category" },
-              {
-                key: "assignedBranchId",
-                label: "Branch",
-                render: (row) => {
-                  const wh = warehouses.find(
-                    (w) => w.id === row.assignedBranchId
-                  );
-                  return wh ? wh.shortCode || wh.name : row.assignedBranchId;
-                },
-              },
-              {
-                key: "amountInInventory",
-                label: "On Hand",
-              },
-              {
-                key: "numOnOrder",
-                label: "On Order",
-              },
-              {
-                key: "minStockLevel",
-                label: "Stock Level (Min)",
-                render: (row) => {
-                  const ratio = `${row.amountInInventory} / ${row.minStockLevel}`;
-                  let color = "bg-green-100 text-green-800";
-                  if (row.amountInInventory < row.minStockLevel) {
-                    color = "bg-red-100 text-red-800";
-                  } else if (row.amountInInventory === row.minStockLevel) {
-                    color = "bg-yellow-100 text-yellow-800";
-                  }
-                  return (
-                    <span
-                      className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${color}`}
-                    >
-                      {ratio}
-                    </span>
-                  );
-                },
-              },
-            ]}
-            actions={(row) => (
-              <button
-                className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e] hover:text-white"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openInventoryModalForEdit(row);
-                }}
-              >
-                Edit
-              </button>
-            )}
-            expandable
-            renderExpandedRow={(row) => (
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="w-full sm:w-40 flex-shrink-0">
+      <div className="space-y-4">
+        <DataTable<InventoryItem>
+          title="Inventory"
+          data={filteredInventory}
+          searchFields={[
+            "modelNumber",
+            "name",
+            "category",
+            "manufactureName",
+            "upc",
+          ]}
+          filterFields={[
+            {
+              key: "assignedBranchId",
+              label: "Branch",
+              type: "select",
+              options: warehouseSelectOptions,
+            },
+            {
+              key: "category",
+              label: "Category",
+              type: "select",
+              options: inventoryCategoryOptions,
+            },
+          ]}
+          getRowId={(row) => row.id}
+          columns={[
+            {
+              key: "select",
+              label: "",
+              render: (row) => (
+                <input
+                  type="checkbox"
+                  checked={selectedInventoryIds.includes(row.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    setSelectedInventoryIds((prev) =>
+                      e.target.checked
+                        ? [...prev, row.id]
+                        : prev.filter((id) => id !== row.id)
+                    );
+                  }}
+                />
+              ),
+            },
+            {
+              key: "modelNumber",
+              label: "Item",
+              render: (row) => (
+                <div className="flex items-center gap-3">
                   {row.imageUrl ? (
                     <img
                       src={row.imageUrl}
                       alt={row.name || row.modelNumber}
-                      className="w-full h-40 object-cover rounded-md border border-slate-200"
+                      className="w-10 h-10 rounded-md object-cover border border-slate-200"
+                      onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
-                    <div className="w-full h-40 rounded-md bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">
-                      No Image
+                    <div className="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600">
+                      {(row.modelNumber || "").slice(0, 2).toUpperCase()}
                     </div>
                   )}
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-slate-900">
+                      {row.modelNumber}
+                    </span>
+                    <span className="text-[11px] text-slate-600">
+                      {row.name}
+                    </span>
+                  </div>
                 </div>
-<<<<<<< HEAD
               ),
             },
             { key: "category", label: "Category" },
@@ -2096,50 +1961,47 @@ const App: React.FC = () => {
                 ) : (
                   <div className="w-full h-40 rounded-md bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">
                     No Image
-=======
-                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <div className="font-semibold text-slate-800 mb-1">
-                      Name
-                    </div>
-                    <div className="text-slate-700">{row.name}</div>
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
                   </div>
-                  <div>
-                    <div className="font-semibold text-slate-800 mb-1">
-                      Manufacture
-                    </div>
-                    <div className="text-slate-700">{row.manufactureName}</div>
+                )}
+              </div>
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">Name</div>
+                  <div className="text-slate-700">{row.name}</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Manufacture
                   </div>
-                  <div>
-                    <div className="font-semibold text-slate-800 mb-1">
-                      Manufacture Part Number
-                    </div>
-                    <div className="text-slate-700">
-                      {row.manufacturePartNumber || "N/A"}
-                    </div>
+                  <div className="text-slate-700">{row.manufactureName}</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Manufacture Part Number
                   </div>
-                  <div>
-                    <div className="font-semibold text-slate-800 mb-1">
-                      Model Number
-                    </div>
-                    <div className="text-slate-700">{row.modelNumber}</div>
+                  <div className="text-slate-700">
+                    {row.manufacturePartNumber || "N/A"}
                   </div>
-                  <div>
-                    <div className="font-semibold text-slate-800 mb-1">UPC</div>
-                    <div className="text-slate-700">{row.upc || "N/A"}</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Model Number
                   </div>
-                  <div className="sm:col-span-2">
-                    <div className="font-semibold text-slate-800 mb-1">
-                      Description
-                    </div>
-                    <div className="text-slate-700">
-                      {row.description || "N/A"}
-                    </div>
+                  <div className="text-slate-700">{row.modelNumber}</div>
+                </div>
+                <div>
+                  <div className="font-semibold text-slate-800 mb-1">UPC</div>
+                  <div className="text-slate-700">{row.upc || "N/A"}</div>
+                </div>
+                <div className="sm:col-span-2">
+                  <div className="font-semibold text-slate-800 mb-1">
+                    Description
+                  </div>
+                  <div className="text-slate-700">
+                    {row.description || "N/A"}
                   </div>
                 </div>
               </div>
-<<<<<<< HEAD
             </div>
           )}
         >
@@ -2185,54 +2047,13 @@ const App: React.FC = () => {
           }
           footer={
             <div className="flex justify-between gap-3">
-=======
-            )}
-          >
-            <div className="flex flex-wrap gap-2">
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
               <button
                 type="button"
-                className={
-                  darkMode
-                    ? "px-3 py-2 rounded-md border border-slate-500 text-white dark-hover"
-                    : "px-3 py-2 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
-                }
-                onClick={() => setDarkMode((v) => !v)}
-                title="Toggle dark mode"
+                className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
+                onClick={() => setWarehouseModalQuickOpen(true)}
               >
-                {darkMode ? "Dark: On" : "Dark: Off"}
+                Quick Add Branch
               </button>
-              <button
-                className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
-                onClick={openInventoryModalForNew}
-              >
-                Add Inventory
-              </button>
-              <button
-                className="px-3 py-2 rounded-md border border-[#005691] text-[#005691] text-xs sm:text-sm hover:bg-[#005691]/5"
-                onClick={() => setInventoryCsvModalOpen(true)}
-              >
-                Import Inventory (CSV)
-              </button>
-              <button
-                className="px-3 py-2 rounded-md bg-emerald-600 text-white text-xs sm:text-sm hover:bg-emerald-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleBuildTransferFromSelected();
-                }}
-              >
-                Build Transfer
-              </button>
-              <button
-                className="px-3 py-2 rounded-md bg-indigo-600 text-white text-xs sm:text-sm hover:bg-indigo-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEmailQuoteRequest();
-                }}
-              >
-                Request Quote
-              </button>
-<<<<<<< HEAD
               <div className="flex gap-3">
                 {editingInventoryItem && (
                   <button
@@ -2297,333 +2118,31 @@ const App: React.FC = () => {
                 <input
                   className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                   value={inventoryForm.category ?? ""}
-=======
-            </div>
-          </DataTable>
-
-          <Modal
-            open={inventoryModalOpen}
-            onClose={() => setInventoryModalOpen(false)}
-            title={
-              editingInventoryItem
-                ? "Edit Inventory Item"
-                : "Add Inventory Item"
-            }
-            footer={
-              <div className="flex justify-between gap-3">
-                <button
-                  type="button"
-                  className="px-3 py-2 rounded-md border border-slate-300 text-xs sm:text-sm text-slate-700 hover:bg-slate-50"
-                  onClick={() => setWarehouseModalQuickOpen(true)}
-                >
-                  Quick Add Branch
-                </button>
-                <div className="flex gap-3">
-                  <button
-                    className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
-                    onClick={() => setInventoryModalOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
-                    onClick={handleSaveInventory}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            }
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  UPC
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                    value={inventoryForm.upc ?? ""}
-                    onChange={(e) =>
-                      setInventoryForm((prev) => ({
-                        ...prev,
-                        upc: e.target.value,
-                      }))
-                    }
-                    placeholder="Scan or paste UPC to search"
-                  />
-                  <button
-                    type="button"
-                    className="px-3 py-2 rounded-md border border-slate-300 text-xs text-slate-700 hover:bg-slate-50"
-                    onClick={handleInventoryLookupByUpc}
-                    disabled={inventoryLookupLoading}
-                  >
-                    {inventoryLookupLoading ? "Searching..." : "Lookup"}
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Fetch product details to prefill name, image, manufacture,
-                  model and description.
-                </p>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Model Number
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.modelNumber ?? ""}
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
                       ...prev,
-                      modelNumber: e.target.value,
+                      category: e.target.value,
                     }))
                   }
+                  onFocus={() => setCategoryDropdownOpen(true)}
+                  onBlur={() =>
+                    setTimeout(() => setCategoryDropdownOpen(false), 100)
+                  }
+                  placeholder="Select or type a category"
                 />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Manufacture Part Number{" "}
-                  <span className="text-red-500">*</span>
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.manufacturePartNumber ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      manufacturePartNumber: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                    value={inventoryForm.category ?? ""}
-                    onChange={(e) =>
-                      setInventoryForm((prev) => ({
-                        ...prev,
-                        category: e.target.value,
-                      }))
-                    }
-                    onFocus={() => setCategoryDropdownOpen(true)}
-                    onBlur={() =>
-                      setTimeout(() => setCategoryDropdownOpen(false), 100)
-                    }
-                    placeholder="Select or type a category"
-                  />
-                  {categoryDropdownOpen &&
-                    filteredCategoryOptions.length > 0 && (
-                      <div className="absolute z-10 mt-1 w-full max-h-32 overflow-y-auto bg-white border border-slate-200 rounded-md shadow-sm">
-                        {filteredCategoryOptions.map((opt) => (
-                          <button
-                            key={opt.value}
-                            type="button"
-                            className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                              setInventoryForm((prev) => ({
-                                ...prev,
-                                category: opt.value,
-                              }));
-                              setCategoryDropdownOpen(false);
-                            }}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                </div>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Pick an existing category or enter a new one.
-                </p>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Tags
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  placeholder="Comma separated"
-                  value={
-                    Array.isArray(inventoryForm.tags)
-                      ? inventoryForm.tags.join(", ")
-                      : inventoryForm.tags ?? ""
-                  }
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      tags: e.target.value
-                        .split(",")
-                        .map((t) => t.trim())
-                        .filter(Boolean),
-                    }))
-                  }
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.name ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Description
-                </label>
-                <textarea
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  rows={3}
-                  value={inventoryForm.description ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Manufacture <span className="text-red-500">*</span>
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.manufactureName ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      manufactureName: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Manufacture Part Number{" "}
-                  <span className="text-red-500">*</span>
-                </label>
-                <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.manufacturePartNumber ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      manufacturePartNumber: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Branch <span className="text-red-500">*</span>
-                </label>
-                <select
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.assignedBranchId ?? ""}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      assignedBranchId: e.target.value,
-                    }))
-                  }
-                >
-                  <option value="">Select Branch</option>
-                  {sortedWarehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.shortCode || w.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Amount In Inventory <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.amountInInventory ?? 0}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      amountInInventory: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Min Stock Level <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                  value={inventoryForm.minStockLevel ?? 0}
-                  onChange={(e) =>
-                    setInventoryForm((prev) => ({
-                      ...prev,
-                      minStockLevel: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Image URL
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
-                    value={inventoryForm.imageUrl ?? ""}
-                    onChange={(e) =>
-                      setInventoryForm((prev) => ({
-                        ...prev,
-                        imageUrl: e.target.value,
-                      }))
-                    }
-                    placeholder="Paste image URL or upload below"
-                  />
-                  <button
-                    type="button"
-                    className="px-3 py-2 rounded-md border border-slate-300 text-xs text-slate-700 hover:bg-slate-50"
-                    onClick={() => inventoryImageInputRef.current?.click()}
-                  >
-                    Upload
-                  </button>
-                  <input
-                    ref={inventoryImageInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = () => {
-                        const result = reader.result;
-                        if (typeof result === "string") {
+                {categoryDropdownOpen && filteredCategoryOptions.length > 0 && (
+                  <div className="absolute z-10 mt-1 w-full max-h-32 overflow-y-auto bg-white border border-slate-200 rounded-md shadow-sm">
+                    {filteredCategoryOptions.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-xs hover:bg-slate-50"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
                           setInventoryForm((prev) => ({
                             ...prev,
-                            imageUrl: result,
+                            category: opt.value,
                           }));
-<<<<<<< HEAD
                           setCategoryDropdownOpen(false);
                         }}
                       >
@@ -2821,21 +2340,11 @@ const App: React.FC = () => {
                     e.target.value = "";
                   }}
                 />
-=======
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                      // clear input so same file can be reselected
-                      e.target.value = "";
-                    }}
-                  />
-                </div>
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
               </div>
             </div>
-          </Modal>
+          </div>
+        </Modal>
 
-<<<<<<< HEAD
         <Modal
           open={inventoryCsvModalOpen}
           onClose={() => setInventoryCsvModalOpen(false)}
@@ -2880,47 +2389,6 @@ const App: React.FC = () => {
           />
         </Modal>
       </div>
-=======
-          <Modal
-            open={inventoryCsvModalOpen}
-            onClose={() => setInventoryCsvModalOpen(false)}
-            title="Import Inventory from CSV"
-            footer={
-              <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
-                onClick={() => {
-                  if (inventoryCsvInputRef.current) {
-                    inventoryCsvInputRef.current.value = "";
-                    inventoryCsvInputRef.current.click();
-                  }
-                }}
-              >
-                Select CSV File
-              </button>
-            }
-          >
-            <p className="text-sm text-slate-700 mb-2">
-              Upload a CSV file with headers such as modelNumber, name,
-              category, amountInInventory, manufactureName,
-              manufacturePartNumber, imageUrl, description, upc,
-              assignedBranchId, minStockLevel.
-            </p>
-            <input
-              ref={inventoryCsvInputRef}
-              type="file"
-              accept=".csv,text/csv"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  handleInventoryCsvImport(file);
-                }
-              }}
-            />
-          </Modal>
-        </div>
-      </>
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
     );
   };
 
@@ -2931,56 +2399,6 @@ const App: React.FC = () => {
           title="Purchase Orders (Pending)"
           data={pendingPOs}
           searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
-          expandable
-          renderExpandedRow={(row) => (
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-4 text-xs text-slate-600">
-                <div>
-                  <span className="font-semibold text-slate-700">PO #:</span>{" "}
-                  {row.orderNumber || "—"}
-                </div>
-                <div>
-                  <span className="font-semibold text-slate-700">IP #:</span>{" "}
-                  {row.ipNumber || "—"}
-                </div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-xs">
-                  <thead className="text-slate-500">
-                    <tr>
-                      <th className="text-left font-semibold py-1 pr-3">
-                        Item #
-                      </th>
-                      <th className="text-left font-semibold py-1 pr-3">
-                        Description
-                      </th>
-                      <th className="text-left font-semibold py-1">Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-slate-700">
-                    {(row.items || []).map((item, idx) => (
-                      <tr key={`${item.modelNumber}-${idx}`}>
-                        <td className="py-1 pr-3">
-                          {item.modelNumber || "—"}
-                        </td>
-                        <td className="py-1 pr-3">
-                          {item.description || item.itemName || "—"}
-                        </td>
-                        <td className="py-1">{item.amountOrdered ?? 0}</td>
-                      </tr>
-                    ))}
-                    {(row.items || []).length === 0 && (
-                      <tr>
-                        <td colSpan={3} className="py-2 text-slate-500">
-                          No items on this PO.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
           filterFields={[
             {
               key: "receivingWarehouseId",
@@ -3452,56 +2870,6 @@ const App: React.FC = () => {
         title="Purchase Order History"
         data={filteredPoHistory}
         searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
-        expandable
-        renderExpandedRow={(row) => (
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-4 text-xs text-slate-600">
-              <div>
-                <span className="font-semibold text-slate-700">PO #:</span>{" "}
-                {row.orderNumber || "—"}
-              </div>
-              <div>
-                <span className="font-semibold text-slate-700">IP #:</span>{" "}
-                {row.ipNumber || "—"}
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-xs">
-                <thead className="text-slate-500">
-                  <tr>
-                    <th className="text-left font-semibold py-1 pr-3">
-                      Item #
-                    </th>
-                    <th className="text-left font-semibold py-1 pr-3">
-                      Description
-                    </th>
-                    <th className="text-left font-semibold py-1">Qty</th>
-                  </tr>
-                </thead>
-                <tbody className="text-slate-700">
-                  {(row.items || []).map((item, idx) => (
-                    <tr key={`${item.modelNumber}-${idx}`}>
-                      <td className="py-1 pr-3">
-                        {item.modelNumber || "—"}
-                      </td>
-                      <td className="py-1 pr-3">
-                        {item.description || item.itemName || "—"}
-                      </td>
-                      <td className="py-1">{item.amountOrdered ?? 0}</td>
-                    </tr>
-                  ))}
-                  {(row.items || []).length === 0 && (
-                    <tr>
-                      <td colSpan={3} className="py-2 text-slate-500">
-                        No items on this PO.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
         filterFields={[
           {
             key: "status",
@@ -4268,7 +3636,6 @@ const App: React.FC = () => {
           </nav>
           <div className="flex items-center gap-2">
             <button
-<<<<<<< HEAD
               type="button"
               className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
               onClick={() => setIsDark((prev) => !prev)}
@@ -4279,9 +3646,6 @@ const App: React.FC = () => {
             </button>
             <button
               className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
-=======
-              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/80 hover:bg-white/10"
->>>>>>> fe6b620bbc6965be31bfd02930083444bf63219c
               onClick={handleSignOut}
             >
               Sign Out
