@@ -3809,6 +3809,11 @@ const App: React.FC = () => {
           </div>
           <nav className="flex-1 flex justify-center gap-1 sm:gap-2 items-center text-xs sm:text-sm">
             <NavButton
+              label="Warehouses"
+              active={page === "warehouses"}
+              onClick={() => setPage("warehouses")}
+            />
+            <NavButton
               label="Inventory"
               active={page === "inventory"}
               onClick={() => setPage("inventory")}
@@ -3827,11 +3832,6 @@ const App: React.FC = () => {
               label="Transfers"
               active={page === "transfers"}
               onClick={() => setPage("transfers")}
-            />
-            <NavButton
-              label="Warehouses"
-              active={page === "warehouses"}
-              onClick={() => setPage("warehouses")}
             />
           </nav>
           <div className="flex items-center gap-2">
