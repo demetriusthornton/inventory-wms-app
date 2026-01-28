@@ -313,15 +313,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
 
 const THEME_STORAGE_KEY = "ui:darkMode";
 
-const getInitialDarkMode = (): boolean => {
-  try {
-    const raw = localStorage.getItem(THEME_STORAGE_KEY);
-    if (raw === null) return false;
-    return raw === "true";
-  } catch {
-    return false;
-  }
-};
+const getInitialDarkMode = (): boolean => false;
 
 const App: React.FC = () => {
   const [firebaseApp, setFirebaseApp] = useState<FirebaseApp | null>(null);
