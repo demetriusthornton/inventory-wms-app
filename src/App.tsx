@@ -2494,6 +2494,8 @@ const App: React.FC = () => {
         <DataTable<PurchaseOrder>
           title="Purchase Orders (Pending)"
           data={pendingPOs}
+          defaultSortKey="orderDate"
+          defaultSortDir="desc"
           searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
           expandable
           renderExpandedRow={(row) => (
@@ -3013,6 +3015,8 @@ const App: React.FC = () => {
       <DataTable<PurchaseOrder>
         title="Purchase Order History"
         data={filteredPoHistory}
+        defaultSortKey="orderDate"
+        defaultSortDir="desc"
         searchFields={["orderNumber", "ipNumber", "vendor", "manufacture"]}
         expandable
         renderExpandedRow={(row) => (
@@ -3131,6 +3135,8 @@ const App: React.FC = () => {
         <DataTable<Transfer>
           title="Transfers"
           data={filteredTransfers}
+          defaultSortKey="dateInitiated"
+          defaultSortDir="desc"
           searchFields={[
             "transferId",
             "label",
@@ -3578,6 +3584,8 @@ const App: React.FC = () => {
         <DataTable<ActivityLog>
           title="Activity History"
           data={activityHistorySorted}
+          defaultSortKey="timestamp"
+          defaultSortDir="desc"
           searchFields={[
             "summary",
             "action",

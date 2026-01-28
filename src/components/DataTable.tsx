@@ -26,6 +26,8 @@ export interface DataTableProps<T> {
   children?: ReactNode;
   expandable?: boolean;
   renderExpandedRow?: (row: T) => ReactNode;
+  defaultSortKey?: string;
+  defaultSortDir?: "asc" | "desc";
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -39,10 +41,16 @@ export function DataTable<T extends Record<string, any>>({
   children,
   expandable,
   renderExpandedRow,
+  defaultSortKey,
+  defaultSortDir,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [sortKey, setSortKey] = useState<string | null>(
+    defaultSortKey ?? null,
+  );
+  const [sortDir, setSortDir] = useState<"asc" | "desc">(
+    defaultSortDir ?? "asc",
+  );
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
 
