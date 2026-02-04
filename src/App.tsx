@@ -33,6 +33,7 @@ import {
   jsonSafeParse,
   parseCsvSimple,
   lookupProductByUpc,
+  sanitizeImageUrl,
 } from "./utils/helpers";
 
 type PageKey =
@@ -386,9 +387,7 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log("DEBUG basePath", basePath);
-    console.log("DEBUG appId", appId);
-    console.log("DEBUG authUser uid", authUser?.uid);
+    // Auth state tracking - basePath and appId are set based on authenticated user
   }, [basePath, appId, authUser]);
 
   useEffect(() => {
@@ -876,7 +875,8 @@ const App: React.FC = () => {
     }
     setInventoryLookupLoading(true);
     try {
-      const result = await lookupProductByUpc(upc);
+      const result = await lookupProductByUpc(upc, firebaseApp ?? undefined);
+      console.log("UPC Lookup Result:", result); // Debug log
       if (!result) {
         messageBoxRef.current?.alert("No product found for that UPC.");
         return;
@@ -927,60 +927,67 @@ const App: React.FC = () => {
 
   const handleInventoryCsvImport = async (file: File) => {
     if (!db || !basePath) return;
-    const text = await file.text();
-    const rows = parseCsvSimple(text);
-    if (rows.length < 2) {
-      messageBoxRef.current?.alert("CSV has no data rows.");
-      return;
-    }
-    const header = rows[0].map((h) => h.toLowerCase());
-    const idx = (name: string) => header.indexOf(name.toLowerCase());
+    try {
+      const text = await file.text();
+      const rows = parseCsvSimple(text);
+      if (rows.length < 2) {
+        messageBoxRef.current?.alert("CSV has no data rows.");
+        return;
+      }
+      const header = rows[0].map((h) => h.toLowerCase());
+      const idx = (name: string) => header.indexOf(name.toLowerCase());
 
-    const batch = writeBatch(db);
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (row.length === 0) continue;
-      const modelNumber =
-        row[idx("modelnumber")] ?? row[idx("modelNumber".toLowerCase())];
-      if (!modelNumber) continue;
-      const id = crypto.randomUUID();
-      const ref = doc(collection(db, `${basePath}/inventory`), id);
-      const item: InventoryItem = {
-        id,
-        modelNumber,
-        name: row[idx("name")] ?? "",
-        category: row[idx("category")] ?? "",
-        upc: row[idx("upc")] ?? "",
-        amountInInventory: Number(
-          row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0,
-        ),
-        numOnOrder: 0,
-        manufactureName:
-          row[idx("manufacturename")] ?? row[idx("manufactureName")] ?? "",
-        manufacturePartNumber:
-          row[idx("manufacturepartnumber")] ??
-          row[idx("manufacturePartNumber")] ??
-          "",
-        description: row[idx("description")] ?? "",
-        imageUrl: row[idx("imageurl")] ?? row[idx("imageUrl")] ?? "",
-        assignedBranchId:
-          row[idx("assignedbranchid")] ?? row[idx("assignedBranchId")] ?? "",
-        minStockLevel: Number(
-          row[idx("minstocklevel")] ?? row[idx("minStockLevel")] ?? 0,
-        ),
-      };
-      batch.set(ref, item);
+      const batch = writeBatch(db);
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.length === 0) continue;
+        const modelNumber =
+          row[idx("modelnumber")] ?? row[idx("modelNumber".toLowerCase())];
+        if (!modelNumber) continue;
+        const id = crypto.randomUUID();
+        const ref = doc(collection(db, `${basePath}/inventory`), id);
+        const item: InventoryItem = {
+          id,
+          modelNumber,
+          name: row[idx("name")] ?? "",
+          category: row[idx("category")] ?? "",
+          upc: row[idx("upc")] ?? "",
+          amountInInventory: Number(
+            row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0,
+          ),
+          numOnOrder: 0,
+          manufactureName:
+            row[idx("manufacturename")] ?? row[idx("manufactureName")] ?? "",
+          manufacturePartNumber:
+            row[idx("manufacturepartnumber")] ??
+            row[idx("manufacturePartNumber")] ??
+            "",
+          description: row[idx("description")] ?? "",
+          imageUrl: row[idx("imageurl")] ?? row[idx("imageUrl")] ?? "",
+          assignedBranchId:
+            row[idx("assignedbranchid")] ?? row[idx("assignedBranchId")] ?? "",
+          minStockLevel: Number(
+            row[idx("minstocklevel")] ?? row[idx("minStockLevel")] ?? 0,
+          ),
+        };
+        batch.set(ref, item);
+      }
+      await batch.commit();
+      await logActivity({
+        action: "inventory_import",
+        collection: "inventory",
+        summary: `Imported ${Math.max(
+          rows.length - 1,
+          0,
+        )} inventory rows from CSV`,
+      });
+      messageBoxRef.current?.alert("Inventory CSV import complete.");
+    } catch (err) {
+      console.error("Failed to import inventory CSV:", err);
+      messageBoxRef.current?.alert(
+        "Failed to import inventory CSV. Please check the file format and try again."
+      );
     }
-    await batch.commit();
-    await logActivity({
-      action: "inventory_import",
-      collection: "inventory",
-      summary: `Imported ${Math.max(
-        rows.length - 1,
-        0,
-      )} inventory rows from CSV`,
-    });
-    messageBoxRef.current?.alert("Inventory CSV import complete.");
   };
 
   const handleDownloadInventoryTemplate = () => {
@@ -1157,16 +1164,8 @@ const App: React.FC = () => {
       po.deletedDate = editingPO.deletedDate;
     }
 
-    console.log(
-      "Saving purchase order:",
-      po,
-      "to",
-      `${basePath}/purchaseOrders/${id}`,
-    );
-
     try {
       await setDoc(ref, po);
-      console.log("PO saved successfully");
       await logActivity({
         action: editingPO ? "purchase_order_update" : "purchase_order_create",
         collection: "purchaseOrders",
@@ -1191,108 +1190,11 @@ const App: React.FC = () => {
     );
     if (!confirmed) return;
 
-    const batch = writeBatch(db);
-    for (const item of po.items) {
-      const remaining = item.amountOrdered - (item.amountReceived ?? 0);
-      if (remaining <= 0) continue;
-      const inventoryItem = inventoryItems.find(
-        (inv) =>
-          inv.assignedBranchId === po.receivingWarehouseId &&
-          (inv.manufacturePartNumber === item.modelNumber ||
-            (!!item.upc && inv.upc === item.upc)),
-      );
-      if (inventoryItem) {
-        const invRef = doc(
-          collection(db, `${basePath}/inventory`),
-          inventoryItem.id,
-        );
-        const invUpdate: Partial<InventoryItem> = {
-          amountInInventory:
-            Number(inventoryItem.amountInInventory) + remaining,
-        };
-        if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
-        if (item.imageUrl && !inventoryItem.imageUrl)
-          invUpdate.imageUrl = item.imageUrl;
-        if (item.description && !inventoryItem.description)
-          invUpdate.description = item.description;
-        if (item.manufactureName && !inventoryItem.manufactureName)
-          invUpdate.manufactureName = item.manufactureName;
-        if (!inventoryItem.name && item.itemName)
-          invUpdate.name = item.itemName;
-        batch.update(invRef, invUpdate);
-      } else {
-        const id = crypto.randomUUID();
-        const invRef = doc(collection(db, `${basePath}/inventory`), id);
-        const template =
-          inventoryItems.find(
-            (inv) =>
-              inv.manufacturePartNumber === item.modelNumber ||
-              (!!item.upc && inv.upc === item.upc),
-          ) ?? null;
-        const newItem: InventoryItem = {
-          id,
-          upc: item.upc ?? template?.upc ?? "",
-          modelNumber: item.modelNumber,
-          name: item.itemName,
-          category: item.category,
-          amountInInventory: remaining,
-          numOnOrder: 0,
-          manufactureName: item.manufactureName ?? po.manufacture,
-          manufacturePartNumber:
-            template?.manufacturePartNumber ?? item.modelNumber,
-          description: item.description ?? template?.description ?? "",
-          imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
-          assignedBranchId: po.receivingWarehouseId,
-          minStockLevel: template?.minStockLevel ?? 0,
-        };
-        batch.set(invRef, newItem);
-      }
-    }
-
-    const nowIso = new Date().toISOString();
-    const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
-    const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
-    const poReceived: PurchaseOrder = {
-      ...po,
-      status: "received",
-      receivedDate: nowIso,
-      items: po.items.map((it) => ({
-        ...it,
-        amountReceived: it.amountOrdered,
-      })),
-    };
-    batch.set(historyRef, poReceived);
-    batch.delete(poRef);
-    await batch.commit();
-    await logActivity({
-      action: "purchase_order_receive_full",
-      collection: "purchaseOrders",
-      docId: po.id,
-      summary: `Fully received PO ${po.orderNumber}`,
-    });
-  };
-
-  const openPartialReceiveModal = (po: PurchaseOrder) => {
-    const values: Record<string, number> = {};
-    po.items.forEach((item, idx) => {
-      const remaining = item.amountOrdered - (item.amountReceived ?? 0);
-      values[String(idx)] = remaining > 0 ? remaining : 0;
-    });
-    setPartialReceiveValues(values);
-    setPoReceiveMode({ po, mode: "partial" });
-  };
-
-  const handleSubmitPartialReceive = async () => {
-    if (!db || !basePath || !poReceiveMode) return;
-    const po = poReceiveMode.po;
-    const batch = writeBatch(db);
-
-    const updatedItems: PurchaseOrderItem[] = po.items.map((item, idx) => {
-      const key = String(idx);
-      const receiveQty = Number(partialReceiveValues[key] ?? 0);
-      const remaining = item.amountOrdered - (item.amountReceived ?? 0);
-      const applyQty = receiveQty > remaining ? remaining : receiveQty;
-      if (applyQty > 0) {
+    try {
+      const batch = writeBatch(db);
+      for (const item of po.items) {
+        const remaining = item.amountOrdered - (item.amountReceived ?? 0);
+        if (remaining <= 0) continue;
         const inventoryItem = inventoryItems.find(
           (inv) =>
             inv.assignedBranchId === po.receivingWarehouseId &&
@@ -1306,7 +1208,7 @@ const App: React.FC = () => {
           );
           const invUpdate: Partial<InventoryItem> = {
             amountInInventory:
-              Number(inventoryItem.amountInInventory) + applyQty,
+              Number(inventoryItem.amountInInventory) + remaining,
           };
           if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
           if (item.imageUrl && !inventoryItem.imageUrl)
@@ -1333,7 +1235,7 @@ const App: React.FC = () => {
             modelNumber: item.modelNumber,
             name: item.itemName,
             category: item.category,
-            amountInInventory: applyQty,
+            amountInInventory: remaining,
             numOnOrder: 0,
             manufactureName: item.manufactureName ?? po.manufacture,
             manufacturePartNumber:
@@ -1346,43 +1248,154 @@ const App: React.FC = () => {
           batch.set(invRef, newItem);
         }
       }
-      return {
-        ...item,
-        amountReceived: (item.amountReceived ?? 0) + applyQty,
-      };
-    });
 
-    const allReceived = updatedItems.every(
-      (it) => it.amountReceived >= it.amountOrdered,
-    );
-
-    const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
-
-    if (allReceived) {
       const nowIso = new Date().toISOString();
       const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
+      const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
       const poReceived: PurchaseOrder = {
         ...po,
-        items: updatedItems,
         status: "received",
         receivedDate: nowIso,
+        items: po.items.map((it) => ({
+          ...it,
+          amountReceived: it.amountOrdered,
+        })),
       };
       batch.set(historyRef, poReceived);
       batch.delete(poRef);
-    } else {
-      batch.update(poRef, {
-        items: updatedItems,
+      await batch.commit();
+      await logActivity({
+        action: "purchase_order_receive_full",
+        collection: "purchaseOrders",
+        docId: po.id,
+        summary: `Fully received PO ${po.orderNumber}`,
       });
+    } catch (err) {
+      console.error("Failed to receive purchase order:", err);
+      messageBoxRef.current?.alert(
+        "Failed to receive purchase order. Please try again."
+      );
     }
+  };
 
-    await batch.commit();
-    setPoReceiveMode(null);
-    await logActivity({
-      action: "purchase_order_receive_partial",
-      collection: "purchaseOrders",
-      docId: po.id,
-      summary: `Partially received PO ${po.orderNumber}`,
+  const openPartialReceiveModal = (po: PurchaseOrder) => {
+    const values: Record<string, number> = {};
+    po.items.forEach((item, idx) => {
+      const remaining = item.amountOrdered - (item.amountReceived ?? 0);
+      values[String(idx)] = remaining > 0 ? remaining : 0;
     });
+    setPartialReceiveValues(values);
+    setPoReceiveMode({ po, mode: "partial" });
+  };
+
+  const handleSubmitPartialReceive = async () => {
+    if (!db || !basePath || !poReceiveMode) return;
+    const po = poReceiveMode.po;
+    try {
+      const batch = writeBatch(db);
+
+      const updatedItems: PurchaseOrderItem[] = po.items.map((item, idx) => {
+        const key = String(idx);
+        const receiveQty = Number(partialReceiveValues[key] ?? 0);
+        const remaining = item.amountOrdered - (item.amountReceived ?? 0);
+        const applyQty = receiveQty > remaining ? remaining : receiveQty;
+        if (applyQty > 0) {
+          const inventoryItem = inventoryItems.find(
+            (inv) =>
+              inv.assignedBranchId === po.receivingWarehouseId &&
+              (inv.manufacturePartNumber === item.modelNumber ||
+                (!!item.upc && inv.upc === item.upc)),
+          );
+          if (inventoryItem) {
+            const invRef = doc(
+              collection(db, `${basePath}/inventory`),
+              inventoryItem.id,
+            );
+            const invUpdate: Partial<InventoryItem> = {
+              amountInInventory:
+                Number(inventoryItem.amountInInventory) + applyQty,
+            };
+            if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
+            if (item.imageUrl && !inventoryItem.imageUrl)
+              invUpdate.imageUrl = item.imageUrl;
+            if (item.description && !inventoryItem.description)
+              invUpdate.description = item.description;
+            if (item.manufactureName && !inventoryItem.manufactureName)
+              invUpdate.manufactureName = item.manufactureName;
+            if (!inventoryItem.name && item.itemName)
+              invUpdate.name = item.itemName;
+            batch.update(invRef, invUpdate);
+          } else {
+            const id = crypto.randomUUID();
+            const invRef = doc(collection(db, `${basePath}/inventory`), id);
+            const template =
+              inventoryItems.find(
+                (inv) =>
+                  inv.manufacturePartNumber === item.modelNumber ||
+                  (!!item.upc && inv.upc === item.upc),
+              ) ?? null;
+            const newItem: InventoryItem = {
+              id,
+              upc: item.upc ?? template?.upc ?? "",
+              modelNumber: item.modelNumber,
+              name: item.itemName,
+              category: item.category,
+              amountInInventory: applyQty,
+              numOnOrder: 0,
+              manufactureName: item.manufactureName ?? po.manufacture,
+              manufacturePartNumber:
+                template?.manufacturePartNumber ?? item.modelNumber,
+              description: item.description ?? template?.description ?? "",
+              imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
+              assignedBranchId: po.receivingWarehouseId,
+              minStockLevel: template?.minStockLevel ?? 0,
+            };
+            batch.set(invRef, newItem);
+          }
+        }
+        return {
+          ...item,
+          amountReceived: (item.amountReceived ?? 0) + applyQty,
+        };
+      });
+
+      const allReceived = updatedItems.every(
+        (it) => it.amountReceived >= it.amountOrdered,
+      );
+
+      const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
+
+      if (allReceived) {
+        const nowIso = new Date().toISOString();
+        const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
+        const poReceived: PurchaseOrder = {
+          ...po,
+          items: updatedItems,
+          status: "received",
+          receivedDate: nowIso,
+        };
+        batch.set(historyRef, poReceived);
+        batch.delete(poRef);
+      } else {
+        batch.update(poRef, {
+          items: updatedItems,
+        });
+      }
+
+      await batch.commit();
+      setPoReceiveMode(null);
+      await logActivity({
+        action: "purchase_order_receive_partial",
+        collection: "purchaseOrders",
+        docId: po.id,
+        summary: `Partially received PO ${po.orderNumber}`,
+      });
+    } catch (err) {
+      console.error("Failed to receive purchase order:", err);
+      messageBoxRef.current?.alert(
+        "Failed to receive purchase order. Please try again."
+      );
+    }
   };
 
   const handleCancelPo = async (po: PurchaseOrder) => {
@@ -1391,24 +1404,31 @@ const App: React.FC = () => {
       `Cancel PO ${po.orderNumber}?`,
     );
     if (!confirmed) return;
-    const batch = writeBatch(db);
-    const nowIso = new Date().toISOString();
-    const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
-    const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
-    const poDeleted: PurchaseOrder = {
-      ...po,
-      status: "deleted",
-      deletedDate: nowIso,
-    };
-    batch.set(historyRef, poDeleted);
-    batch.delete(poRef);
-    await batch.commit();
-    await logActivity({
-      action: "purchase_order_cancel",
-      collection: "purchaseOrders",
-      docId: po.id,
-      summary: `Cancelled PO ${po.orderNumber}`,
-    });
+    try {
+      const batch = writeBatch(db);
+      const nowIso = new Date().toISOString();
+      const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
+      const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
+      const poDeleted: PurchaseOrder = {
+        ...po,
+        status: "deleted",
+        deletedDate: nowIso,
+      };
+      batch.set(historyRef, poDeleted);
+      batch.delete(poRef);
+      await batch.commit();
+      await logActivity({
+        action: "purchase_order_cancel",
+        collection: "purchaseOrders",
+        docId: po.id,
+        summary: `Cancelled PO ${po.orderNumber}`,
+      });
+    } catch (err) {
+      console.error("Failed to cancel purchase order:", err);
+      messageBoxRef.current?.alert(
+        "Failed to cancel purchase order. Please try again."
+      );
+    }
   };
 
   const [transferForm, setTransferForm] = useState<{
@@ -1710,89 +1730,96 @@ const App: React.FC = () => {
       );
       if (!confirmed) return;
 
-      const nowIso = new Date().toISOString();
-      const batch = writeBatch(db);
-      const lines = transfer.lines ?? [];
+      try {
+        const nowIso = new Date().toISOString();
+        const batch = writeBatch(db);
+        const lines = transfer.lines ?? [];
 
-      for (const line of lines) {
-        const sourceItem =
-          inventoryItems.find((inv) => inv.id === line.itemId) ?? null;
-        if (!sourceItem) {
-          messageBoxRef.current?.alert(
-            `Source item for ${line.itemModelNumber} is no longer available.`,
-          );
-          return;
-        }
-        if (sourceItem.assignedBranchId !== transfer.sourceBranchId) {
-          messageBoxRef.current?.alert(
-            `Item ${sourceItem.modelNumber} is no longer in the source branch.`,
-          );
-          return;
-        }
-        if (sourceItem.amountInInventory < line.quantity) {
-          messageBoxRef.current?.alert(
-            `Insufficient stock to complete transfer item ${sourceItem.modelNumber}.`,
-          );
-          return;
-        }
+        for (const line of lines) {
+          const sourceItem =
+            inventoryItems.find((inv) => inv.id === line.itemId) ?? null;
+          if (!sourceItem) {
+            messageBoxRef.current?.alert(
+              `Source item for ${line.itemModelNumber} is no longer available.`,
+            );
+            return;
+          }
+          if (sourceItem.assignedBranchId !== transfer.sourceBranchId) {
+            messageBoxRef.current?.alert(
+              `Item ${sourceItem.modelNumber} is no longer in the source branch.`,
+            );
+            return;
+          }
+          if (sourceItem.amountInInventory < line.quantity) {
+            messageBoxRef.current?.alert(
+              `Insufficient stock to complete transfer item ${sourceItem.modelNumber}.`,
+            );
+            return;
+          }
 
-        const sourceRef = doc(
-          collection(db, `${basePath}/inventory`),
-          sourceItem.id,
-        );
-        batch.update(sourceRef, {
-          amountInInventory: sourceItem.amountInInventory - line.quantity,
-        });
-
-        const destItem =
-          inventoryItems.find(
-            (inv) =>
-              inv.modelNumber === line.itemModelNumber &&
-              inv.assignedBranchId === transfer.destinationBranchId,
-          ) ?? null;
-
-        if (destItem) {
-          const destRef = doc(
+          const sourceRef = doc(
             collection(db, `${basePath}/inventory`),
-            destItem.id,
+            sourceItem.id,
           );
-          batch.update(destRef, {
-            amountInInventory: destItem.amountInInventory + line.quantity,
+          batch.update(sourceRef, {
+            amountInInventory: sourceItem.amountInInventory - line.quantity,
           });
-        } else {
-          const id = crypto.randomUUID();
-          const destRef = doc(collection(db, `${basePath}/inventory`), id);
-          const newItem: InventoryItem = {
-            id,
-            upc: sourceItem.upc ?? "",
-            modelNumber: sourceItem.modelNumber,
-            name: sourceItem.name,
-            category: sourceItem.category,
-            amountInInventory: line.quantity,
-            numOnOrder: 0,
-            manufactureName: sourceItem.manufactureName,
-            manufacturePartNumber: sourceItem.manufacturePartNumber,
-            imageUrl: sourceItem.imageUrl,
-            assignedBranchId: transfer.destinationBranchId,
-            minStockLevel: sourceItem.minStockLevel,
-          };
-          batch.set(destRef, newItem);
-        }
-      }
 
-      const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
-      batch.update(transferRef, {
-        status: "completed",
-        dateCompleted: nowIso,
-        statusUpdatedAt: nowIso,
-      });
-      await batch.commit();
-      await logActivity({
-        action: "transfer_complete",
-        collection: "moves",
-        docId: transfer.id,
-        summary: `Completed transfer ${transfer.transferId}`,
-      });
+          const destItem =
+            inventoryItems.find(
+              (inv) =>
+                inv.modelNumber === line.itemModelNumber &&
+                inv.assignedBranchId === transfer.destinationBranchId,
+            ) ?? null;
+
+          if (destItem) {
+            const destRef = doc(
+              collection(db, `${basePath}/inventory`),
+              destItem.id,
+            );
+            batch.update(destRef, {
+              amountInInventory: destItem.amountInInventory + line.quantity,
+            });
+          } else {
+            const id = crypto.randomUUID();
+            const destRef = doc(collection(db, `${basePath}/inventory`), id);
+            const newItem: InventoryItem = {
+              id,
+              upc: sourceItem.upc ?? "",
+              modelNumber: sourceItem.modelNumber,
+              name: sourceItem.name,
+              category: sourceItem.category,
+              amountInInventory: line.quantity,
+              numOnOrder: 0,
+              manufactureName: sourceItem.manufactureName,
+              manufacturePartNumber: sourceItem.manufacturePartNumber,
+              imageUrl: sourceItem.imageUrl,
+              assignedBranchId: transfer.destinationBranchId,
+              minStockLevel: sourceItem.minStockLevel,
+            };
+            batch.set(destRef, newItem);
+          }
+        }
+
+        const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
+        batch.update(transferRef, {
+          status: "completed",
+          dateCompleted: nowIso,
+          statusUpdatedAt: nowIso,
+        });
+        await batch.commit();
+        await logActivity({
+          action: "transfer_complete",
+          collection: "moves",
+          docId: transfer.id,
+          summary: `Completed transfer ${transfer.transferId}`,
+        });
+      } catch (err) {
+        console.error("Failed to complete transfer:", err);
+        messageBoxRef.current?.alert(
+          "Failed to complete transfer. Please try again."
+        );
+      }
     } else {
       const transferRef = doc(collection(db, `${basePath}/moves`), transfer.id);
       await updateDoc(transferRef, {
@@ -1950,7 +1977,7 @@ const App: React.FC = () => {
                   <div className="flex items-center gap-3">
                     {row.imageUrl ? (
                       <img
-                        src={row.imageUrl}
+                        src={sanitizeImageUrl(row.imageUrl)}
                         alt={row.name || row.modelNumber}
                         className="w-10 h-10 rounded-md object-cover border border-slate-200"
                         onClick={(e) => e.stopPropagation()}
@@ -2029,7 +2056,7 @@ const App: React.FC = () => {
                 <div className="w-full sm:w-40 flex-shrink-0">
                   {row.imageUrl ? (
                     <img
-                      src={row.imageUrl}
+                      src={sanitizeImageUrl(row.imageUrl)}
                       alt={row.name || row.modelNumber}
                       className="w-full h-40 object-cover rounded-md border border-slate-200"
                     />
@@ -2525,7 +2552,7 @@ const App: React.FC = () => {
                   </thead>
                   <tbody className="text-slate-700">
                     {(row.items || []).map((item, idx) => (
-                      <tr key={`${item.modelNumber}-${idx}`}>
+                      <tr key={`${item.modelNumber}-${item.upc || ''}-${idx}`}>
                         <td className="py-1 pr-3">{item.modelNumber || "—"}</td>
                         <td className="py-1 pr-3">
                           {item.description || item.itemName || "—"}
@@ -2783,7 +2810,7 @@ const App: React.FC = () => {
                 <tbody>
                   {(poForm.items ?? []).map((item, idx) => (
                     <tr
-                      key={idx}
+                      key={`${item.modelNumber}-${item.upc || ''}-${idx}`}
                       className="border-t border-slate-200 odd:bg-[var(--row-odd)] even:bg-[var(--row-even)]"
                     >
                       <td className="px-2 py-1">
@@ -2973,7 +3000,7 @@ const App: React.FC = () => {
                       item.amountOrdered - (item.amountReceived ?? 0);
                     return (
                       <tr
-                        key={idx}
+                        key={`${item.modelNumber}-${item.upc || ''}-${idx}`}
                         className="border-t border-slate-200 odd:bg-[var(--row-odd)] even:bg-[var(--row-even)]"
                       >
                         <td className="px-2 py-1">{item.itemName}</td>
@@ -3046,7 +3073,7 @@ const App: React.FC = () => {
                 </thead>
                 <tbody className="text-slate-700">
                   {(row.items || []).map((item, idx) => (
-                    <tr key={`${item.modelNumber}-${idx}`}>
+                    <tr key={`${item.modelNumber}-${item.upc || ''}-${idx}`}>
                       <td className="py-1 pr-3">{item.modelNumber || "—"}</td>
                       <td className="py-1 pr-3">
                         {item.description || item.itemName || "—"}
@@ -3473,7 +3500,7 @@ const App: React.FC = () => {
                   )}
                   {transferForm.lines.map((line, idx) => (
                     <tr
-                      key={idx}
+                      key={`${line.itemId || 'new'}-${idx}`}
                       className="border-t border-slate-200 odd:bg-[var(--row-odd)] even:bg-[var(--row-even)]"
                     >
                       <td className="px-2 py-1">

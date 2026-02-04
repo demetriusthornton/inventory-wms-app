@@ -29,8 +29,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
     try {
       if (isRegistering) {
         const normalizedEmail = email.trim().toLowerCase();
-        if (!normalizedEmail.endsWith("@bluelinxco.com")) {
-          setError("Please use your @bluelinxco.com email address.");
+
+        // Optional email domain restriction via environment variable
+        const allowedDomain = import.meta.env?.VITE_ALLOWED_EMAIL_DOMAIN;
+        if (allowedDomain && !normalizedEmail.endsWith(`@${allowedDomain}`)) {
+          setError(`Please use your @${allowedDomain} email address.`);
           return;
         }
 
