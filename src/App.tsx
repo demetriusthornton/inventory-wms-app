@@ -627,6 +627,19 @@ const App: React.FC = () => {
     });
     return Array.from(set).map((c) => ({ label: c, value: c }));
   }, [enrichedInventory]);
+
+  const inventoryTagOptions = useMemo(() => {
+    const tagSet = new Set<string>();
+    enrichedInventory.forEach((item) => {
+      (item.tags ?? []).forEach((tag) => {
+        if (tag) tagSet.add(tag);
+      });
+    });
+    return Array.from(tagSet)
+      .sort()
+      .map((tag) => ({ label: tag, value: tag }));
+  }, [enrichedInventory]);
+
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   const poVendorOptions = useMemo(() => {
@@ -951,6 +964,10 @@ const App: React.FC = () => {
           modelNumber,
           name: row[idx("name")] ?? "",
           category: row[idx("category")] ?? "",
+          tags: (row[idx("tags")] ?? "")
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
           upc: row[idx("upc")] ?? "",
           amountInInventory: Number(
             row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0,
@@ -995,6 +1012,7 @@ const App: React.FC = () => {
       "modelNumber",
       "name",
       "category",
+      "tags",
       "amountInInventory",
       "manufactureName",
       "manufacturePartNumber",
@@ -1007,6 +1025,7 @@ const App: React.FC = () => {
       "ABC-123",
       "Sample Item",
       "Lumber",
+      "Fragile, High-Value",
       "10",
       "Acme",
       "AC-100",
@@ -1949,6 +1968,12 @@ const App: React.FC = () => {
                 type: "select",
                 options: inventoryCategoryOptions,
               },
+              {
+                key: "tags",
+                label: "Tag",
+                type: "select",
+                options: inventoryTagOptions,
+              },
             ]}
             getRowId={(row) => row.id}
             columns={[
@@ -2486,7 +2511,7 @@ const App: React.FC = () => {
           >
             <p className="text-sm text-slate-700 mb-2">
               Upload a CSV file with headers such as modelNumber, name,
-              category, amountInInventory, manufactureName,
+              category, tags, amountInInventory, manufactureName,
               manufacturePartNumber, imageUrl, description, upc,
               assignedBranchId, minStockLevel.
             </p>
