@@ -33,6 +33,9 @@
   --error-bg: #fee2e2;
   --error-border: #fecaca;
   --error-fg: #991b1b;
+  --timeline-up: #10b981;
+  --timeline-down: #ef4444;
+  --timeline-neutral: #0ea5e9;
   color-scheme: light;
 }
 
@@ -67,6 +70,9 @@
   --error-bg: #3b0a0a;
   --error-border: #7f1d1d;
   --error-fg: #fecaca;
+  --timeline-up: #34d399;
+  --timeline-down: #f87171;
+  --timeline-neutral: #38bdf8;
   color-scheme: dark;
 }
 

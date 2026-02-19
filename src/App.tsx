@@ -35,8 +35,17 @@ import {
   lookupProductByUpc,
   sanitizeImageUrl,
 } from "./utils/helpers";
+import type { ToastMessage, AdjustUndoPayload } from "./types";
+import { Toast } from "./components/Toast";
+import { GlobalSearch } from "./components/GlobalSearch";
+import { AdjustQuantityModal } from "./features/inventory/AdjustQuantityModal";
+import { DashboardPage } from "./features/dashboard/DashboardPage";
+import { ItemDetailPage } from "./features/inventory/ItemDetailPage";
+import { ActivityHistoryPage } from "./features/activityHistory/ActivityHistoryPage";
 
 type PageKey =
+  | "dashboard"
+  | "itemDetail"
   | "inventory"
   | "pos"
   | "poHistory"
@@ -159,6 +168,13 @@ interface ActivityLog {
   collection: string;
   docId?: string;
   summary: string;
+  // PRD audit fields
+  itemId?: string;
+  delta?: number;
+  resultingQuantity?: number;
+  reason?: string;
+  locationId?: string;
+  undoOf?: string;
 }
 
 interface AddWarehouseModalProps {
@@ -322,7 +338,7 @@ const App: React.FC = () => {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [appId, setAppId] = useState<string>("wms-app-prod");
   const [authInitDone, setAuthInitDone] = useState(false);
-  const [page, setPage] = useState<PageKey>("inventory");
+  const [page, setPage] = useState<PageKey>("dashboard");
   const [defaultWarehouseId, setDefaultWarehouseId] = useState<string | null>(
     null,
   );
@@ -509,22 +525,6 @@ const App: React.FC = () => {
       setDefaultWarehouseId(null);
     }
   }, [defaultWarehouseId, warehouses]);
-
-  const activityFilterOptions = useMemo(() => {
-    const actionSet = new Set<string>();
-    const userSet = new Set<string>();
-    activityHistory.forEach((entry) => {
-      if (entry.action) actionSet.add(entry.action);
-      if (entry.userName) userSet.add(entry.userName);
-    });
-    return {
-      actions: Array.from(actionSet).map((value) => ({
-        label: value,
-        value,
-      })),
-      users: Array.from(userSet).map((value) => ({ label: value, value })),
-    };
-  }, [activityHistory]);
 
   const filteredPurchaseOrders = useMemo(
     () =>
@@ -755,6 +755,71 @@ const App: React.FC = () => {
     useState(false);
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
   const [transferTrackingValue, setTransferTrackingValue] = useState("");
+
+  // PRD: New state for dashboard / item detail / adjust / search / toasts
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [adjustItem, setAdjustItem] = useState<InventoryItem | null>(null);
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+
+  // Keyboard shortcut for global search (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Toast helpers
+  const addToast = useCallback((msg: Omit<ToastMessage, "id">) => {
+    const id = crypto.randomUUID();
+    setToasts((prev) => [...prev, { ...msg, id }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const handleUndoAdjust = useCallback(
+    async (payload: AdjustUndoPayload) => {
+      if (!db || !basePath) return;
+      try {
+        const itemRef = doc(db, `${basePath}/inventory/${payload.itemId}`);
+        await updateDoc(itemRef, { amountInInventory: payload.previousQuantity });
+        await logActivity({
+          action: "inventory_adjust_undo",
+          collection: "inventory",
+          docId: payload.itemId,
+          summary: `Undid adjustment, reverted to ${payload.previousQuantity}`,
+          itemId: payload.itemId,
+          resultingQuantity: payload.previousQuantity,
+          undoOf: payload.activityLogId,
+        });
+        addToast({ message: "Adjustment undone.", type: "info" });
+      } catch (err) {
+        console.error("Undo failed:", err);
+        addToast({ message: "Undo failed. Please try again.", type: "error" });
+      }
+    },
+    [db, basePath, logActivity, addToast],
+  );
+
+  // Navigation helpers for item detail
+  const navigateToItem = useCallback((item: InventoryItem) => {
+    setSelectedItemId(item.id);
+    setPage("itemDetail");
+  }, []);
+
+  const navigateBack = useCallback(() => {
+    setSelectedItemId(null);
+    setPage("inventory");
+  }, []);
 
   const [inventoryForm, setInventoryForm] = useState<Partial<InventoryItem>>({
     upc: "",
@@ -3622,64 +3687,6 @@ const App: React.FC = () => {
     );
   };
 
-  const activityHistorySorted = useMemo(
-    () =>
-      [...activityHistory].sort((a, b) =>
-        (b.timestamp || "").localeCompare(a.timestamp || ""),
-      ),
-    [activityHistory],
-  );
-
-  const renderActivityHistoryPage = () => {
-    return (
-      <div className="space-y-4">
-        <DataTable<ActivityLog>
-          title="Activity History"
-          data={activityHistorySorted}
-          defaultSortKey="timestamp"
-          defaultSortDir="desc"
-          searchFields={[
-            "summary",
-            "action",
-            "userName",
-            "collection",
-            "docId",
-          ]}
-          filterFields={[
-            {
-              key: "action",
-              label: "Action",
-              type: "select",
-              options: activityFilterOptions.actions,
-            },
-            {
-              key: "userName",
-              label: "User",
-              type: "select",
-              options: activityFilterOptions.users,
-            },
-          ]}
-          columns={[
-            {
-              key: "timestamp",
-              label: "Time",
-              render: (row) =>
-                row.timestamp ? new Date(row.timestamp).toLocaleString() : "—",
-              sortFn: (a, b) =>
-                (a.timestamp || "").localeCompare(b.timestamp || ""),
-            },
-            { key: "action", label: "Action" },
-            { key: "userName", label: "User" },
-            { key: "collection", label: "Collection" },
-            { key: "docId", label: "Doc ID" },
-            { key: "summary", label: "Summary" },
-          ]}
-          getRowId={(row) => row.id}
-        />
-      </div>
-    );
-  };
-
   const renderWarehousesPage = () => {
     return (
       <div className="space-y-4">
@@ -3861,14 +3868,19 @@ const App: React.FC = () => {
           </div>
           <nav className="flex-1 flex justify-center gap-1 sm:gap-2 items-center text-xs sm:text-sm">
             <NavButton
-              label="Warehouses"
-              active={page === "warehouses"}
-              onClick={() => setPage("warehouses")}
+              label="Dashboard"
+              active={page === "dashboard"}
+              onClick={() => setPage("dashboard")}
             />
             <NavButton
               label="Inventory"
-              active={page === "inventory"}
+              active={page === "inventory" || page === "itemDetail"}
               onClick={() => setPage("inventory")}
+            />
+            <NavButton
+              label="Warehouses"
+              active={page === "warehouses"}
+              onClick={() => setPage("warehouses")}
             />
             <NavButton
               label="Purchase Orders"
@@ -3884,6 +3896,11 @@ const App: React.FC = () => {
               label="Transfers"
               active={page === "transfers"}
               onClick={() => setPage("transfers")}
+            />
+            <NavButton
+              label="Activity"
+              active={page === "activityHistory"}
+              onClick={() => setPage("activityHistory")}
             />
           </nav>
           <div className="flex items-center gap-2">
@@ -3932,12 +3949,56 @@ const App: React.FC = () => {
           loadingPoHistory ||
           loadingTransfers ||
           loadingActivity) && <LoadingSpinner />}
+        {page === "dashboard" && (
+          <DashboardPage
+            inventory={filteredInventory}
+            warehouses={warehouses}
+            activityHistory={activityHistory}
+            onNavigateToItem={navigateToItem}
+            onOpenAdjust={(item) => {
+              setAdjustItem(item);
+              setAdjustModalOpen(true);
+            }}
+            onNavigateTo={setPage}
+            onOpenSearch={() => setSearchOpen(true)}
+          />
+        )}
+        {page === "itemDetail" &&
+          selectedItemId &&
+          (() => {
+            const item = enrichedInventory.find(
+              (i) => i.id === selectedItemId,
+            );
+            if (!item) return null;
+            const wh = warehouses.find(
+              (w) => w.id === item.assignedBranchId,
+            );
+            return (
+              <ItemDetailPage
+                item={item}
+                warehouse={wh}
+                activityHistory={activityHistory}
+                onBack={navigateBack}
+                onOpenAdjust={(itm) => {
+                  setAdjustItem(itm);
+                  setAdjustModalOpen(true);
+                }}
+              />
+            );
+          })()}
         {page === "inventory" && renderInventoryPage()}
         {page === "pos" && renderPendingPoPage()}
         {page === "poHistory" && renderPoHistoryPage()}
         {page === "transfers" && renderTransfersPage()}
         {page === "warehouses" && renderWarehousesPage()}
-        {page === "activityHistory" && renderActivityHistoryPage()}
+        {page === "activityHistory" && (
+          <ActivityHistoryPage
+            activityHistory={activityHistory}
+            inventory={enrichedInventory}
+            warehouses={warehouses}
+            onNavigateToItem={navigateToItem}
+          />
+        )}
       </main>
 
       <AddWarehouseModal
@@ -3947,6 +4008,50 @@ const App: React.FC = () => {
         db={db!}
         basePath={basePath!}
         onLogActivity={logActivity}
+      />
+
+      <GlobalSearch
+        open={searchOpen}
+        items={enrichedInventory}
+        warehouses={warehouses}
+        onSelectItem={(item) => {
+          setSearchOpen(false);
+          navigateToItem(item);
+        }}
+        onClose={() => setSearchOpen(false)}
+      />
+
+      <AdjustQuantityModal
+        open={adjustModalOpen}
+        item={adjustItem}
+        warehouse={warehouses.find(
+          (w) => w.id === adjustItem?.assignedBranchId,
+        )}
+        onClose={() => {
+          setAdjustModalOpen(false);
+          setAdjustItem(null);
+        }}
+        onSaved={(delta, result, _reason) => {
+          setAdjustModalOpen(false);
+          const itemName = adjustItem?.name || adjustItem?.modelNumber || "";
+          setAdjustItem(null);
+          addToast({
+            message: `Adjusted ${itemName}: ${delta > 0 ? "+" : ""}${delta} → ${result}`,
+            type: "success",
+          });
+        }}
+        db={db!}
+        basePath={basePath!}
+        onLogActivity={logActivity}
+        onConfirm={(message) =>
+          messageBoxRef.current?.confirm(message) ?? Promise.resolve(false)
+        }
+      />
+
+      <Toast
+        toasts={toasts}
+        onDismiss={dismissToast}
+        onUndo={handleUndoAdjust}
       />
 
       <MessageBox ref={messageBoxRef} />
