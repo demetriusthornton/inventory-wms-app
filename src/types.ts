@@ -7,6 +7,61 @@ export interface Warehouse {
   streetAddress: string;
   city: string;
   state: string;
+  type?: "standard" | "project";
+  projectId?: string;
+}
+
+export type ProjectStatus = "active" | "pending" | "on-hold" | "closed";
+
+export interface Project {
+  id: string;
+  ipNumber: string;
+  projectNumber?: string;
+  projectName: string;
+  description?: string;
+  status: ProjectStatus;
+  parentBranchId: string;
+  createdAt: string;
+  createdBy: string;
+  closedDate?: string;
+}
+
+export interface ProjectInventoryItem {
+  id: string;
+  projectId: string;
+  sourceItemId?: string;
+  sourcePurchaseOrderId?: string;
+  modelNumber: string;
+  name: string;
+  category: string;
+  manufactureName: string;
+  manufacturePartNumber: string;
+  imageUrl: string;
+  upc?: string;
+  description?: string;
+  quantity: number;
+  allocatedAt: string;
+  createdBy: string;
+}
+
+export interface ProjectShipmentLine {
+  projectItemId: string;
+  name: string;
+  modelNumber: string;
+  quantity: number;
+}
+
+export interface ProjectShipment {
+  id: string;
+  projectId: string;
+  destinationBranchId: string;
+  label?: string;
+  trackingNumber?: string;
+  status: "pending" | "shipped";
+  lines: ProjectShipmentLine[];
+  createdAt: string;
+  createdBy: string;
+  shippedAt?: string;
 }
 
 export interface InventoryItem {
@@ -51,6 +106,7 @@ export interface PurchaseOrder {
   orderDate: string;
   receivedDate?: string | null;
   deletedDate?: string | null;
+  projectId?: string;
 }
 
 export interface PoFormState {

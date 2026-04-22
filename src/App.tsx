@@ -28,6 +28,8 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { MessageBox, type MessageBoxHandle } from "./components/MessageBox";
 import { Modal } from "./components/Modal";
 import { useCollection } from "./hooks/useCollection";
+import { ProjectsPage } from "./features/projects/ProjectsPage";
+import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
 import {
   buildBasePath,
   jsonSafeParse,
@@ -42,7 +44,8 @@ type PageKey =
   | "poHistory"
   | "transfers"
   | "warehouses"
-  | "activityHistory";
+  | "activityHistory"
+  | "projects";
 
 interface Warehouse {
   id: string;
@@ -51,6 +54,61 @@ interface Warehouse {
   streetAddress: string;
   city: string;
   state: string;
+  type?: "standard" | "project";
+  projectId?: string;
+}
+
+type ProjectStatus = "active" | "pending" | "on-hold" | "closed";
+
+interface Project {
+  id: string;
+  ipNumber: string;
+  projectNumber?: string;
+  projectName: string;
+  description?: string;
+  status: ProjectStatus;
+  parentBranchId: string;
+  createdAt: string;
+  createdBy: string;
+  closedDate?: string;
+}
+
+interface ProjectInventoryItem {
+  id: string;
+  projectId: string;
+  sourceItemId?: string;
+  sourcePurchaseOrderId?: string;
+  modelNumber: string;
+  name: string;
+  category: string;
+  manufactureName: string;
+  manufacturePartNumber: string;
+  imageUrl: string;
+  upc?: string;
+  description?: string;
+  quantity: number;
+  allocatedAt: string;
+  createdBy: string;
+}
+
+interface ProjectShipmentLine {
+  projectItemId: string;
+  name: string;
+  modelNumber: string;
+  quantity: number;
+}
+
+interface ProjectShipment {
+  id: string;
+  projectId: string;
+  destinationBranchId: string;
+  label?: string;
+  trackingNumber?: string;
+  status: "pending" | "shipped";
+  lines: ProjectShipmentLine[];
+  createdAt: string;
+  createdBy: string;
+  shippedAt?: string;
 }
 
 interface InventoryItem {
@@ -95,6 +153,7 @@ interface PurchaseOrder {
   orderDate: string;
   receivedDate?: string | null;
   deletedDate?: string | null;
+  projectId?: string;
 }
 
 interface PoFormState {
@@ -104,6 +163,7 @@ interface PoFormState {
   manufacture: string;
   receivingWarehouseId: string;
   items: PurchaseOrderItem[];
+  projectId?: string;
 }
 
 const makeEmptyPoForm = (): PoFormState => ({
@@ -501,6 +561,27 @@ const App: React.FC = () => {
       collectionName: "activityHistory",
     });
 
+  const { data: projects, loading: loadingProjects } =
+    useCollection<Project>({
+      db,
+      basePath,
+      collectionName: "projects",
+    });
+
+  const { data: projectInventory, loading: loadingProjectInventory } =
+    useCollection<ProjectInventoryItem>({
+      db,
+      basePath,
+      collectionName: "projectInventory",
+    });
+
+  const { data: projectShipments, loading: loadingProjectShipments } =
+    useCollection<ProjectShipment>({
+      db,
+      basePath,
+      collectionName: "projectShipments",
+    });
+
   useEffect(() => {
     if (
       defaultWarehouseId &&
@@ -577,6 +658,16 @@ const App: React.FC = () => {
     return map;
   }, [pendingPOs]);
 
+  const projectWarehouseIds = useMemo(
+    () => new Set(warehouses.filter((w) => w.type === "project").map((w) => w.id)),
+    [warehouses],
+  );
+
+  const standardWarehouses = useMemo(
+    () => warehouses.filter((w) => !w.type || w.type === "standard"),
+    [warehouses],
+  );
+
   const enrichedInventory: InventoryItem[] = useMemo(
     () =>
       inventoryItems.map((item) => ({
@@ -589,26 +680,27 @@ const App: React.FC = () => {
     [inventoryItems, onOrderMap],
   );
 
-  const filteredInventory = useMemo(
-    () =>
-      defaultWarehouseId
-        ? enrichedInventory.filter(
-            (item) => item.assignedBranchId === defaultWarehouseId,
-          )
-        : enrichedInventory,
-    [defaultWarehouseId, enrichedInventory],
-  );
+  const filteredInventory = useMemo(() => {
+    const nonProjectItems = enrichedInventory.filter(
+      (item) => !projectWarehouseIds.has(item.assignedBranchId),
+    );
+    return defaultWarehouseId
+      ? nonProjectItems.filter(
+          (item) => item.assignedBranchId === defaultWarehouseId,
+        )
+      : nonProjectItems;
+  }, [defaultWarehouseId, enrichedInventory, projectWarehouseIds]);
 
   const sortedWarehouses = useMemo(
     () =>
-      [...warehouses].sort((a, b) =>
+      [...standardWarehouses].sort((a, b) =>
         (a.shortCode || a.name || "").localeCompare(
           b.shortCode || b.name || "",
           undefined,
           { sensitivity: "base" },
         ),
       ),
-    [warehouses],
+    [standardWarehouses],
   );
 
   const warehouseSelectOptions = useMemo(
@@ -725,6 +817,8 @@ const App: React.FC = () => {
 
   const [poModalOpen, setPoModalOpen] = useState(false);
   const [editingPO, setEditingPO] = useState<PurchaseOrder | null>(null);
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const [poReceiveMode, setPoReceiveMode] = useState<{
     po: PurchaseOrder;
@@ -1026,8 +1120,10 @@ const App: React.FC = () => {
   };
 
   const [poForm, setPoForm] = useState<PoFormState>(makeEmptyPoForm);
+  const [poForProject, setPoForProject] = useState(false);
   const resetPoForm = () => {
     setPoForm(makeEmptyPoForm());
+    setPoForProject(false);
     setEditingPO(null);
   };
 
@@ -1044,7 +1140,9 @@ const App: React.FC = () => {
       manufacture: po.manufacture,
       receivingWarehouseId: po.receivingWarehouseId,
       items: po.items.map((it) => ({ ...it })),
+      ...(po.projectId ? { projectId: po.projectId } : {}),
     });
+    setPoForProject(!!po.projectId);
     setEditingPO(po);
     setPoModalOpen(true);
   };
@@ -1116,6 +1214,7 @@ const App: React.FC = () => {
       manufacture,
       receivingWarehouseId,
       items,
+      projectId: formProjectId,
     } = poForm;
 
     if (!orderNumber || !vendor || !receivingWarehouseId) {
@@ -1155,6 +1254,7 @@ const App: React.FC = () => {
       })),
       status: "pending",
       orderDate: editingPO ? editingPO.orderDate : nowIso,
+      ...(formProjectId ? { projectId: formProjectId } : {}),
     };
 
     if (editingPO?.receivedDate) {
@@ -1192,64 +1292,99 @@ const App: React.FC = () => {
 
     try {
       const batch = writeBatch(db);
+      const nowIso = new Date().toISOString();
       for (const item of po.items) {
         const remaining = item.amountOrdered - (item.amountReceived ?? 0);
         if (remaining <= 0) continue;
-        const inventoryItem = inventoryItems.find(
-          (inv) =>
-            inv.assignedBranchId === po.receivingWarehouseId &&
-            (inv.manufacturePartNumber === item.modelNumber ||
-              (!!item.upc && inv.upc === item.upc)),
-        );
-        if (inventoryItem) {
-          const invRef = doc(
-            collection(db, `${basePath}/inventory`),
-            inventoryItem.id,
+        if (po.projectId) {
+          const existing = projectInventory.find(
+            (pi) =>
+              pi.projectId === po.projectId &&
+              pi.modelNumber.toLowerCase() === item.modelNumber.toLowerCase(),
           );
-          const invUpdate: Partial<InventoryItem> = {
-            amountInInventory:
-              Number(inventoryItem.amountInInventory) + remaining,
-          };
-          if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
-          if (item.imageUrl && !inventoryItem.imageUrl)
-            invUpdate.imageUrl = item.imageUrl;
-          if (item.description && !inventoryItem.description)
-            invUpdate.description = item.description;
-          if (item.manufactureName && !inventoryItem.manufactureName)
-            invUpdate.manufactureName = item.manufactureName;
-          if (!inventoryItem.name && item.itemName)
-            invUpdate.name = item.itemName;
-          batch.update(invRef, invUpdate);
+          if (existing) {
+            batch.update(
+              doc(collection(db, `${basePath}/projectInventory`), existing.id),
+              { quantity: existing.quantity + remaining },
+            );
+          } else {
+            const newId = crypto.randomUUID();
+            batch.set(
+              doc(collection(db, `${basePath}/projectInventory`), newId),
+              {
+                id: newId,
+                projectId: po.projectId,
+                sourcePurchaseOrderId: po.id,
+                modelNumber: item.modelNumber,
+                name: item.itemName,
+                category: item.category,
+                manufactureName: item.manufactureName ?? po.manufacture,
+                manufacturePartNumber: item.modelNumber,
+                imageUrl: item.imageUrl ?? "",
+                ...(item.upc ? { upc: item.upc } : {}),
+                ...(item.description ? { description: item.description } : {}),
+                quantity: remaining,
+                allocatedAt: nowIso,
+                createdBy: getUserName(),
+              },
+            );
+          }
         } else {
-          const id = crypto.randomUUID();
-          const invRef = doc(collection(db, `${basePath}/inventory`), id);
-          const template =
-            inventoryItems.find(
-              (inv) =>
-                inv.manufacturePartNumber === item.modelNumber ||
-                (!!item.upc && inv.upc === item.upc),
-            ) ?? null;
-          const newItem: InventoryItem = {
-            id,
-            upc: item.upc ?? template?.upc ?? "",
-            modelNumber: item.modelNumber,
-            name: item.itemName,
-            category: item.category,
-            amountInInventory: remaining,
-            numOnOrder: 0,
-            manufactureName: item.manufactureName ?? po.manufacture,
-            manufacturePartNumber:
-              template?.manufacturePartNumber ?? item.modelNumber,
-            description: item.description ?? template?.description ?? "",
-            imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
-            assignedBranchId: po.receivingWarehouseId,
-            minStockLevel: template?.minStockLevel ?? 0,
-          };
-          batch.set(invRef, newItem);
+          const inventoryItem = inventoryItems.find(
+            (inv) =>
+              inv.assignedBranchId === po.receivingWarehouseId &&
+              (inv.manufacturePartNumber === item.modelNumber ||
+                (!!item.upc && inv.upc === item.upc)),
+          );
+          if (inventoryItem) {
+            const invRef = doc(
+              collection(db, `${basePath}/inventory`),
+              inventoryItem.id,
+            );
+            const invUpdate: Partial<InventoryItem> = {
+              amountInInventory:
+                Number(inventoryItem.amountInInventory) + remaining,
+            };
+            if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
+            if (item.imageUrl && !inventoryItem.imageUrl)
+              invUpdate.imageUrl = item.imageUrl;
+            if (item.description && !inventoryItem.description)
+              invUpdate.description = item.description;
+            if (item.manufactureName && !inventoryItem.manufactureName)
+              invUpdate.manufactureName = item.manufactureName;
+            if (!inventoryItem.name && item.itemName)
+              invUpdate.name = item.itemName;
+            batch.update(invRef, invUpdate);
+          } else {
+            const id = crypto.randomUUID();
+            const invRef = doc(collection(db, `${basePath}/inventory`), id);
+            const template =
+              inventoryItems.find(
+                (inv) =>
+                  inv.manufacturePartNumber === item.modelNumber ||
+                  (!!item.upc && inv.upc === item.upc),
+              ) ?? null;
+            const newItem: InventoryItem = {
+              id,
+              upc: item.upc ?? template?.upc ?? "",
+              modelNumber: item.modelNumber,
+              name: item.itemName,
+              category: item.category,
+              amountInInventory: remaining,
+              numOnOrder: 0,
+              manufactureName: item.manufactureName ?? po.manufacture,
+              manufacturePartNumber:
+                template?.manufacturePartNumber ?? item.modelNumber,
+              description: item.description ?? template?.description ?? "",
+              imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
+              assignedBranchId: po.receivingWarehouseId,
+              minStockLevel: template?.minStockLevel ?? 0,
+            };
+            batch.set(invRef, newItem);
+          }
         }
       }
 
-      const nowIso = new Date().toISOString();
       const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
       const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
       const poReceived: PurchaseOrder = {
@@ -1294,63 +1429,99 @@ const App: React.FC = () => {
     try {
       const batch = writeBatch(db);
 
+      const nowIso = new Date().toISOString();
       const updatedItems: PurchaseOrderItem[] = po.items.map((item, idx) => {
         const key = String(idx);
         const receiveQty = Number(partialReceiveValues[key] ?? 0);
         const remaining = item.amountOrdered - (item.amountReceived ?? 0);
         const applyQty = receiveQty > remaining ? remaining : receiveQty;
         if (applyQty > 0) {
-          const inventoryItem = inventoryItems.find(
-            (inv) =>
-              inv.assignedBranchId === po.receivingWarehouseId &&
-              (inv.manufacturePartNumber === item.modelNumber ||
-                (!!item.upc && inv.upc === item.upc)),
-          );
-          if (inventoryItem) {
-            const invRef = doc(
-              collection(db, `${basePath}/inventory`),
-              inventoryItem.id,
+          if (po.projectId) {
+            const existing = projectInventory.find(
+              (pi) =>
+                pi.projectId === po.projectId &&
+                pi.modelNumber.toLowerCase() === item.modelNumber.toLowerCase(),
             );
-            const invUpdate: Partial<InventoryItem> = {
-              amountInInventory:
-                Number(inventoryItem.amountInInventory) + applyQty,
-            };
-            if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
-            if (item.imageUrl && !inventoryItem.imageUrl)
-              invUpdate.imageUrl = item.imageUrl;
-            if (item.description && !inventoryItem.description)
-              invUpdate.description = item.description;
-            if (item.manufactureName && !inventoryItem.manufactureName)
-              invUpdate.manufactureName = item.manufactureName;
-            if (!inventoryItem.name && item.itemName)
-              invUpdate.name = item.itemName;
-            batch.update(invRef, invUpdate);
+            if (existing) {
+              batch.update(
+                doc(collection(db, `${basePath}/projectInventory`), existing.id),
+                { quantity: existing.quantity + applyQty },
+              );
+            } else {
+              const newId = crypto.randomUUID();
+              batch.set(
+                doc(collection(db, `${basePath}/projectInventory`), newId),
+                {
+                  id: newId,
+                  projectId: po.projectId,
+                  sourcePurchaseOrderId: po.id,
+                  modelNumber: item.modelNumber,
+                  name: item.itemName,
+                  category: item.category,
+                  manufactureName: item.manufactureName ?? po.manufacture,
+                  manufacturePartNumber: item.modelNumber,
+                  imageUrl: item.imageUrl ?? "",
+                  ...(item.upc ? { upc: item.upc } : {}),
+                  ...(item.description ? { description: item.description } : {}),
+                  quantity: applyQty,
+                  allocatedAt: nowIso,
+                  createdBy: getUserName(),
+                },
+              );
+            }
           } else {
-            const id = crypto.randomUUID();
-            const invRef = doc(collection(db, `${basePath}/inventory`), id);
-            const template =
-              inventoryItems.find(
-                (inv) =>
-                  inv.manufacturePartNumber === item.modelNumber ||
-                  (!!item.upc && inv.upc === item.upc),
-              ) ?? null;
-            const newItem: InventoryItem = {
-              id,
-              upc: item.upc ?? template?.upc ?? "",
-              modelNumber: item.modelNumber,
-              name: item.itemName,
-              category: item.category,
-              amountInInventory: applyQty,
-              numOnOrder: 0,
-              manufactureName: item.manufactureName ?? po.manufacture,
-              manufacturePartNumber:
-                template?.manufacturePartNumber ?? item.modelNumber,
-              description: item.description ?? template?.description ?? "",
-              imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
-              assignedBranchId: po.receivingWarehouseId,
-              minStockLevel: template?.minStockLevel ?? 0,
-            };
-            batch.set(invRef, newItem);
+            const inventoryItem = inventoryItems.find(
+              (inv) =>
+                inv.assignedBranchId === po.receivingWarehouseId &&
+                (inv.manufacturePartNumber === item.modelNumber ||
+                  (!!item.upc && inv.upc === item.upc)),
+            );
+            if (inventoryItem) {
+              const invRef = doc(
+                collection(db, `${basePath}/inventory`),
+                inventoryItem.id,
+              );
+              const invUpdate: Partial<InventoryItem> = {
+                amountInInventory:
+                  Number(inventoryItem.amountInInventory) + applyQty,
+              };
+              if (item.upc && !inventoryItem.upc) invUpdate.upc = item.upc;
+              if (item.imageUrl && !inventoryItem.imageUrl)
+                invUpdate.imageUrl = item.imageUrl;
+              if (item.description && !inventoryItem.description)
+                invUpdate.description = item.description;
+              if (item.manufactureName && !inventoryItem.manufactureName)
+                invUpdate.manufactureName = item.manufactureName;
+              if (!inventoryItem.name && item.itemName)
+                invUpdate.name = item.itemName;
+              batch.update(invRef, invUpdate);
+            } else {
+              const id = crypto.randomUUID();
+              const invRef = doc(collection(db, `${basePath}/inventory`), id);
+              const template =
+                inventoryItems.find(
+                  (inv) =>
+                    inv.manufacturePartNumber === item.modelNumber ||
+                    (!!item.upc && inv.upc === item.upc),
+                ) ?? null;
+              const newItem: InventoryItem = {
+                id,
+                upc: item.upc ?? template?.upc ?? "",
+                modelNumber: item.modelNumber,
+                name: item.itemName,
+                category: item.category,
+                amountInInventory: applyQty,
+                numOnOrder: 0,
+                manufactureName: item.manufactureName ?? po.manufacture,
+                manufacturePartNumber:
+                  template?.manufacturePartNumber ?? item.modelNumber,
+                description: item.description ?? template?.description ?? "",
+                imageUrl: item.imageUrl ?? template?.imageUrl ?? "",
+                assignedBranchId: po.receivingWarehouseId,
+                minStockLevel: template?.minStockLevel ?? 0,
+              };
+              batch.set(invRef, newItem);
+            }
           }
         }
         return {
@@ -1366,7 +1537,6 @@ const App: React.FC = () => {
       const poRef = doc(collection(db, `${basePath}/purchaseOrders`), po.id);
 
       if (allReceived) {
-        const nowIso = new Date().toISOString();
         const historyRef = doc(collection(db, `${basePath}/poHistory`), po.id);
         const poReceived: PurchaseOrder = {
           ...po,
@@ -1837,6 +2007,12 @@ const App: React.FC = () => {
 
   const handleDeleteWarehouse = async (warehouse: Warehouse) => {
     if (!db || !basePath) return;
+    if (warehouse.type === "project") {
+      messageBoxRef.current?.alert(
+        "Project warehouses cannot be deleted directly. Close the project instead.",
+      );
+      return;
+    }
     const confirmed = await messageBoxRef.current?.confirm(
       `Delete branch ${warehouse.name}?`,
     );
@@ -2511,6 +2687,7 @@ const App: React.FC = () => {
             />
           </Modal>
         </div>
+
       </>
     );
   };
@@ -2729,17 +2906,79 @@ const App: React.FC = () => {
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 IP Number
               </label>
-              <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-                value={poForm.ipNumber ?? ""}
-                onChange={(e) =>
-                  setPoForm((prev) => ({
-                    ...prev,
-                    ipNumber: e.target.value,
-                  }))
+              <div className="flex items-center gap-2">
+                <input
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                  value={poForm.ipNumber ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const q = val.trim().toLowerCase();
+                    const matched = q
+                      ? (projects.find((p) =>
+                          p.ipNumber.toLowerCase().includes(q),
+                        ) ?? null)
+                      : null;
+                    setPoForm((prev) => ({
+                      ...prev,
+                      ipNumber: val,
+                      ...(poForProject
+                        ? {
+                            projectId: matched?.id ?? "",
+                            receivingWarehouseId:
+                              matched?.parentBranchId ?? prev.receivingWarehouseId,
+                          }
+                        : {}),
+                    }));
+                  }}
+                  placeholder="Optional"
+                />
+                <label className="flex items-center gap-1.5 text-xs text-slate-600 whitespace-nowrap cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={poForProject}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setPoForProject(checked);
+                      if (!checked) {
+                        setPoForm((prev) => ({ ...prev, projectId: "" }));
+                      } else {
+                        const q = (poForm.ipNumber ?? "").trim().toLowerCase();
+                        const matched = q
+                          ? (projects.find((p) =>
+                              p.ipNumber.toLowerCase().includes(q),
+                            ) ?? null)
+                          : null;
+                        setPoForm((prev) => ({
+                          ...prev,
+                          projectId: matched?.id ?? "",
+                          receivingWarehouseId:
+                            matched?.parentBranchId ?? prev.receivingWarehouseId,
+                        }));
+                      }
+                    }}
+                  />
+                  For a Project
+                </label>
+              </div>
+              {poForProject && (() => {
+                const q = (poForm.ipNumber ?? "").trim().toLowerCase();
+                if (!q) return null;
+                const matched = projects.find((p) =>
+                  p.ipNumber.toLowerCase().includes(q),
+                );
+                if (matched) {
+                  return (
+                    <p className="mt-1 text-xs text-emerald-600">
+                      ✓ Matched: {matched.projectName} ({matched.ipNumber})
+                    </p>
+                  );
                 }
-                placeholder="Optional"
-              />
+                return (
+                  <p className="mt-1 text-xs text-red-500">
+                    No project found for "{poForm.ipNumber}". Create the project first.
+                  </p>
+                );
+              })()}
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
@@ -2763,6 +3002,7 @@ const App: React.FC = () => {
               <select
                 className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
                 value={poForm.receivingWarehouseId ?? ""}
+                disabled={poForProject && !!poForm.projectId}
                 onChange={(e) =>
                   setPoForm((prev) => ({
                     ...prev,
@@ -2777,6 +3017,11 @@ const App: React.FC = () => {
                   </option>
                 ))}
               </select>
+              {poForProject && !!poForm.projectId && (
+                <p className="mt-1 text-xs text-slate-500">
+                  Auto-set to project's branch.
+                </p>
+              )}
             </div>
           </div>
 
@@ -3655,6 +3900,63 @@ const App: React.FC = () => {
     );
   };
 
+  const renderProjectsPage = () => {
+    if (selectedProjectId) {
+      const project = projects.find((p) => p.id === selectedProjectId);
+      if (!project) {
+        setSelectedProjectId(null);
+        return null;
+      }
+      const filteredPOHistory = poHistory.filter(
+        (po) => po.projectId === selectedProjectId,
+      );
+      return (
+        <ProjectDetailPage
+          db={db!}
+          basePath={basePath!}
+          project={project}
+          projectInventory={projectInventory.filter(
+            (pi) => pi.projectId === selectedProjectId,
+          )}
+          projectShipments={projectShipments.filter(
+            (s) => s.projectId === selectedProjectId,
+          )}
+          purchaseOrders={purchaseOrders.filter(
+            (po) => po.projectId === selectedProjectId,
+          )}
+          poHistory={filteredPOHistory}
+          parentBranchInventory={inventoryItems.filter(
+            (i) => i.assignedBranchId === project.parentBranchId,
+          )}
+          warehouses={standardWarehouses}
+          getUserName={getUserName}
+          onBack={() => setSelectedProjectId(null)}
+          onLogActivity={logActivity}
+          onAlert={(msg) => messageBoxRef.current?.alert(msg)}
+          onConfirm={(msg) =>
+            messageBoxRef.current?.confirm(msg) ?? Promise.resolve(undefined)
+          }
+        />
+      );
+    }
+    return (
+      <ProjectsPage
+        db={db!}
+        basePath={basePath!}
+        projects={projects}
+        projectInventory={projectInventory}
+        warehouses={warehouses}
+        getUserName={getUserName}
+        onSelectProject={(p) => setSelectedProjectId(p.id)}
+        onLogActivity={logActivity}
+        onAlert={(msg) => messageBoxRef.current?.alert(msg)}
+        onConfirm={(msg) =>
+          messageBoxRef.current?.confirm(msg) ?? Promise.resolve(undefined)
+        }
+      />
+    );
+  };
+
   const renderWarehousesPage = () => {
     return (
       <div className="space-y-4">
@@ -3860,6 +4162,11 @@ const App: React.FC = () => {
               active={page === "transfers"}
               onClick={() => setPage("transfers")}
             />
+            <NavButton
+              label="Projects"
+              active={page === "projects"}
+              onClick={() => setPage("projects")}
+            />
           </nav>
           <div className="flex items-center gap-2">
             <button
@@ -3906,13 +4213,17 @@ const App: React.FC = () => {
           loadingPOs ||
           loadingPoHistory ||
           loadingTransfers ||
-          loadingActivity) && <LoadingSpinner />}
+          loadingActivity ||
+          loadingProjects ||
+          loadingProjectShipments ||
+          loadingProjectInventory) && <LoadingSpinner />}
         {page === "inventory" && renderInventoryPage()}
         {page === "pos" && renderPendingPoPage()}
         {page === "poHistory" && renderPoHistoryPage()}
         {page === "transfers" && renderTransfersPage()}
         {page === "warehouses" && renderWarehousesPage()}
         {page === "activityHistory" && renderActivityHistoryPage()}
+        {page === "projects" && renderProjectsPage()}
       </main>
 
       <AddWarehouseModal
