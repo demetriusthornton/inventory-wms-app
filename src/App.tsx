@@ -67,6 +67,7 @@ interface Warehouse {
   streetAddress: string;
   city: string;
   state: string;
+  zip?: string;
 }
 
 interface InventoryItem {
@@ -210,6 +211,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
   const [streetAddress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
   const [stateVal, setStateVal] = useState("");
+  const [zip, setZip] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -219,12 +221,14 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       setStreetAddress(existing.streetAddress);
       setCity(existing.city);
       setStateVal(existing.state);
+      setZip(existing.zip ?? "");
     } else {
       setShortCode("");
       setName("");
       setStreetAddress("");
       setCity("");
       setStateVal("");
+      setZip("");
     }
   }, [existing, open]);
 
@@ -240,6 +244,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       streetAddress: streetAddress.trim(),
       city: city.trim(),
       state: stateVal.trim(),
+      zip: zip.trim(),
     };
     await setDoc(ref, warehouse);
     await onLogActivity({
@@ -330,6 +335,16 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             onChange={(e) => setStateVal(e.target.value)}
           />
         </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">
+            Zip
+          </label>
+          <input
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            value={zip}
+            onChange={(e) => setZip(e.target.value)}
+          />
+        </div>
       </div>
     </Modal>
   );
@@ -417,10 +432,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!authInitDone) return;
-    if (!authUser) {
-      setDefaultWarehouseId(null);
-      return;
-    }
+    if (!authUser) return;
     const stored = localStorage.getItem(
       getDefaultWarehouseStorageKey(authUser.uid),
     );
@@ -528,12 +540,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (
-      defaultWarehouseId &&
-      !warehouses.some((w) => w.id === defaultWarehouseId)
-    ) {
-      setDefaultWarehouseId(null);
-    }
-  }, [defaultWarehouseId, warehouses]);
+      loadingWarehouses ||
+      !defaultWarehouseId ||
+      warehouses.some((w) => w.id === defaultWarehouseId)
+    ) return;
+    setDefaultWarehouseId(null);
+  }, [defaultWarehouseId, warehouses, loadingWarehouses]);
 
   const filteredPurchaseOrders = useMemo(
     () =>
@@ -3725,6 +3737,7 @@ const App: React.FC = () => {
             { key: "streetAddress", label: "Address" },
             { key: "city", label: "City" },
             { key: "state", label: "State" },
+            { key: "zip", label: "Zip" },
             {
               key: "default",
               label: "Default",

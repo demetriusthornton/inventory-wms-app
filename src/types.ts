@@ -7,6 +7,7 @@ export interface Warehouse {
   streetAddress: string;
   city: string;
   state: string;
+  zip?: string;
 }
 
 export interface InventoryItem {
