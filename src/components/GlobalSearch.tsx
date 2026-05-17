@@ -68,7 +68,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] bg-black/50"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] sm:pt-[15vh] bg-black/50 px-4 sm:px-0"
       onClick={onClose}
     >
       <div

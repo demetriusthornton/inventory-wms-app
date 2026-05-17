@@ -22,7 +22,7 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
       <div
-        className={`bg-[var(--modal-bg)] rounded-lg shadow-xl w-full ${maxWidthClass} max-h-[90vh] flex flex-col border border-[var(--modal-border)]`}
+        className={`bg-[var(--modal-bg)] rounded-lg shadow-xl w-full mx-4 sm:mx-0 ${maxWidthClass} max-h-[90vh] flex flex-col border border-[var(--modal-border)]`}
       >
         <div className="flex justify-between items-center px-6 py-4 border-b border-[var(--modal-border)]">
           <h2 className="text-lg font-semibold text-[var(--fg)]">

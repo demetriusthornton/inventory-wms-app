@@ -1,0 +1,175 @@
+# Inventory WMS App
+
+## What This Is
+
+A warehouse management system (WMS) for tracking inventory, purchase orders, transfers between locations, and warehouse operations. Built as a single-page application with real-time data synchronization.
+
+## Why This Exists
+
+Provides businesses with multi-warehouse inventory management capabilities including:
+- Real-time inventory tracking across multiple locations
+- Purchase order management and receiving
+- Inter-warehouse transfer tracking
+- Activity audit logging
+- UPC barcode lookup integration
+
+## Tech Stack
+
+- **Frontend**: React 18.0.0 + TypeScript 5.0.0
+- **Build Tool**: Vite 6.0.0
+- **Backend**: Firebase 11.0.0 (Authentication + Firestore + Cloud Functions)
+- **Styling**: TailwindCSS 3.0.0 + PostCSS 8.0.0
+- **Testing**: Vitest 4.0.18
+- **Package Manager**: npm
+
+### Key Dependencies
+- `task-master-ai` (0.42.0) - AI task management integration
+- `firebase` - All backend services (auth, database, functions, hosting)
+- `@vitejs/plugin-react` (5.1.1) - React Fast Refresh support
+
+## Project Structure
+
+### Source Code (`src/`)
+- **[App.tsx](src/App.tsx)** (3974 lines) - Main application component containing most business logic
+- **[main.tsx](src/main.tsx)** - React root entry point
+- **[types.ts](src/types.ts)** - Centralized TypeScript type definitions
+- **[AuthPage.tsx](AuthPage.tsx)** - Authentication UI (email/password, Google sign-in)
+
+### Features (`src/features/`)
+- **transfers/** - Inter-warehouse transfer components
+  - [TransfersTable.tsx](src/features/transfers/TransfersTable.tsx)
+  - [TransferTrackingModal.tsx](src/features/transfers/TransferTrackingModal.tsx)
+
+### Components (`src/components/`)
+- **[DataTable.tsx](src/components/DataTable.tsx)** - Generic table with search, sort, filter
+- **[Modal.tsx](src/components/Modal.tsx)** - Reusable modal dialog
+- **[MessageBox.tsx](src/components/MessageBox.tsx)** - Notification system
+- **[LoadingSpinner.tsx](src/components/LoadingSpinner.tsx)** - Loading indicator
+
+### Hooks (`src/hooks/`)
+- **[useCollection.ts](src/hooks/useCollection.ts)** - Real-time Firestore collection sync
+
+### Utilities (`src/utils/`)
+- **[helpers.ts](src/utils/helpers.ts)** - Utility functions (sanitization, parsing, UPC lookup)
+- **[authErrors.ts](src/utils/authErrors.ts)** - Firebase auth error handling
+- **[authErrors.test.ts](src/utils/authErrors.test.ts)** - Auth error tests
+
+### Backend (`functions/`)
+- **[functions/src/index.ts](functions/src/index.ts)** - Cloud Functions
+  - `lookupUPC` - Secure UPC product lookup (callable function)
+  - `healthCheck` - Health monitoring endpoint
+
+### Configuration
+- **[firebase.json](firebase.json)** - Firebase project config
+- **[firestore.rules](firestore.rules)** - Database security rules
+- **[vite.config.ts](vite.config.ts)** - Vite build configuration
+- **[tailwind.config.cjs](tailwind.config.cjs)** - Tailwind CSS config
+- **[tsconfig.json](tsconfig.json)** - TypeScript root config
+- **[tsconfig.app.json](tsconfig.app.json)** - App-specific TS config
+- **[tsconfig.node.json](tsconfig.node.json)** - Node/Vite TS config
+
+### Assets & Public
+- **public/** - Static assets (favicons, images)
+- **src/assets/** - Source assets bundled by Vite
+
+## Essential Commands
+
+### Development
+```bash
+npm run dev          # Start development server with HMR
+```
+
+### Building
+```bash
+npm run build        # TypeScript check + Vite production build
+```
+
+### Testing
+```bash
+npm run test         # Run tests with Vitest
+```
+
+### Code Quality
+```bash
+npm run lint         # Run ESLint on all files
+```
+
+### Preview
+```bash
+npm run preview      # Preview production build locally
+```
+
+### Firebase (if Firebase CLI installed)
+```bash
+firebase serve       # Run Firebase emulators
+firebase deploy      # Deploy to Firebase hosting
+```
+
+## Key Directories
+
+| Directory | Purpose |
+|-----------|---------|
+| `src/` | Main application source code |
+| `src/components/` | Reusable UI components |
+| `src/features/` | Feature-specific components (transfers, etc.) |
+| `src/hooks/` | Custom React hooks |
+| `src/utils/` | Helper functions and utilities |
+| `functions/` | Firebase Cloud Functions (backend logic) |
+| `public/` | Static assets served as-is |
+| `.claude/docs/` | Additional documentation for Claude |
+| `tasks/` | Task planning and TODO tracking |
+
+## Data Collections (Firestore)
+
+All collections are namespaced by organization using `basePath` pattern: `${basePath}/${collectionName}`
+
+- **warehouses** - Branch/location definitions
+- **inventory** - Current inventory items
+- **purchaseOrders** - Active purchase orders
+- **poHistory** - Completed/deleted purchase orders
+- **moves** - Inter-warehouse transfers
+- **activityHistory** - Audit log of all operations
+
+## Environment Variables
+
+Create `.env.local` (never commit!) for local development:
+- `VITE_GOUPC_API_KEY` - Go-UPC API key (optional, prefer Cloud Functions)
+- `VITE_UPCITEMDB_KEY` - UPCItemDB API key (optional, prefer Cloud Functions)
+
+**Note**: For production, use Cloud Functions with environment variables to keep API keys secure.
+
+Example: [.env.example](.env.example)
+
+## Multi-Tenancy
+
+The app uses **organization-based data isolation**:
+- Each organization gets a unique `appId` (e.g., "wms-app-prod")
+- All Firestore paths include `basePath`: `organizations/${appId}`
+- Security enforced via [firestore.rules:1-50](firestore.rules#L1-L50)
+
+## Additional Documentation
+
+For deeper architectural understanding, see:
+
+- **[Architectural Patterns](.claude/docs/architectural_patterns.md)** - Design patterns, conventions, and architectural decisions used throughout the codebase
+- **[Security Guide](SECURITY.md)** - Security best practices and implementation details
+- **[Cloud Functions Setup](CLOUD_FUNCTIONS_SETUP.md)** - Detailed Cloud Functions configuration
+- **[Quick Start: Cloud Functions](QUICKSTART_CLOUD_FUNCTIONS.md)** - Fast setup guide for Cloud Functions
+
+## Working on This Codebase
+
+### Before Starting Work
+1. Read the relevant files to understand current implementation
+2. Check [architectural_patterns.md](.claude/docs/architectural_patterns.md) for conventions
+3. Write a plan to [tasks/todo.md](tasks/todo.md)
+4. Get user approval before making changes
+
+### Making Changes
+- Keep changes simple and minimal
+- Impact as little code as possible
+- Mark tasks as complete as you go
+- Add high-level summaries of changes
+
+### After Completion
+- Add a review section to [tasks/todo.md](tasks/todo.md)
+- Summarize changes and any relevant notes

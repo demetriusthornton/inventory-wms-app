@@ -3,84 +3,151 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f8fafc;
-  --fg: #0f172a;
+  /* Core palette */
+  --bg: #fafaf9;
+  --fg: #1c1917;
   --card: #ffffff;
-  --muted: #475569;
-  --border: #e2e8f0;
-  --accent: #0ea5e9;
-  --surface-1: #f1f5f9;
-  --surface-2: #e2e8f0;
+  --muted: #78716c;
+  --border: #e7e5e4;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  /* Surfaces */
+  --surface-1: #f5f5f4;
+  --surface-2: #e7e5e4;
+
+  /* Table rows */
   --row-odd: #ffffff;
-  --row-even: #f8fafc;
-  --row-hover: #eef2f6;
-  --header-bg: #1e3a5f;
-  --header-fg: #ffffff;
-  --status-bg: #e2e8f0;
-  --status-fg: #0f172a;
-  --status-muted: #475569;
+  --row-even: #fafaf9;
+  --row-hover: #fef9ee;
+
+  /* Sidebar */
+  --sidebar-bg: #292524;
+  --sidebar-fg: #fafaf9;
+  --sidebar-muted: #a8a29e;
+  --sidebar-active-bg: #2563eb;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-hover: #3c3330;
+
+  /* Top bar */
+  --topbar-bg: #ffffff;
+  --topbar-border: #e7e5e4;
+
+  /* Status bar (kept for compat) */
+  --status-bg: #f5f5f4;
+  --status-fg: #1c1917;
+  --status-muted: #78716c;
+
+  /* Inputs */
   --input-bg: #ffffff;
-  --input-fg: #0f172a;
-  --input-border: #cbd5e1;
-  --input-placeholder: #64748b;
-  --outline-bg: #f8fafc;
-  --outline-border: #94a3b8;
-  --outline-fg: #0f172a;
-  --outline-hover: #e2e8f0;
+  --input-fg: #1c1917;
+  --input-border: #d6d3d1;
+  --input-placeholder: #a8a29e;
+
+  /* Outline buttons */
+  --outline-bg: #fafaf9;
+  --outline-border: #a8a29e;
+  --outline-fg: #1c1917;
+  --outline-hover: #f5f5f4;
+
+  /* Modals */
   --modal-bg: #ffffff;
-  --modal-border: #e2e8f0;
-  --modal-footer: #f1f5f9;
-  --error-bg: #fee2e2;
+  --modal-border: #e7e5e4;
+  --modal-footer: #f5f5f4;
+
+  /* Error states */
+  --error-bg: #fef2f2;
   --error-border: #fecaca;
   --error-fg: #991b1b;
+
+  /* Timeline */
   --timeline-up: #10b981;
   --timeline-down: #ef4444;
-  --timeline-neutral: #0ea5e9;
+  --timeline-neutral: #2563eb;
+
+  /* Header (kept for AuthPage compat) */
+  --header-bg: #292524;
+  --header-fg: #fafaf9;
+
   color-scheme: light;
 }
 
 .dark {
-  --bg: #0d0d0d;
-  --fg: #f8fafc;
-  --card: #15181d;
-  --muted: #cbd5e1;
-  --border: #3f3f46;
-  --accent: #0ea5e9;
-  --surface-1: #2d2d2d;
-  --surface-2: #1a1a1a;
-  --row-odd: #171c22;
-  --row-even: #12161b;
-  --row-hover: #1f2630;
-  --header-bg: #1e3a5f;
-  --header-fg: #ffffff;
-  --status-bg: #2d2d2d;
-  --status-fg: #e2e8f0;
-  --status-muted: #94a3b8;
-  --input-bg: #3a3a3a;
-  --input-fg: #f8fafc;
-  --input-border: #52525b;
-  --input-placeholder: #94a3b8;
-  --outline-bg: #2b2b2b;
-  --outline-border: #64748b;
-  --outline-fg: #e2e8f0;
-  --outline-hover: #343434;
-  --modal-bg: #15181d;
-  --modal-border: #475569;
-  --modal-footer: #1f242b;
+  /* Core palette */
+  --bg: #1c1412;
+  --fg: #fafaf9;
+  --card: #292524;
+  --muted: #a8a29e;
+  --border: #44403c;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+
+  /* Surfaces */
+  --surface-1: #292524;
+  --surface-2: #3c3330;
+
+  /* Table rows */
+  --row-odd: #292524;
+  --row-even: #241f1d;
+  --row-hover: #3c3330;
+
+  /* Sidebar */
+  --sidebar-bg: #1a1210;
+  --sidebar-fg: #fafaf9;
+  --sidebar-muted: #78716c;
+  --sidebar-active-bg: #3b82f6;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-hover: #292524;
+
+  /* Top bar */
+  --topbar-bg: #241f1d;
+  --topbar-border: #44403c;
+
+  /* Status bar */
+  --status-bg: #292524;
+  --status-fg: #e7e5e4;
+  --status-muted: #a8a29e;
+
+  /* Inputs */
+  --input-bg: #3c3330;
+  --input-fg: #fafaf9;
+  --input-border: #57534e;
+  --input-placeholder: #a8a29e;
+
+  /* Outline buttons */
+  --outline-bg: #3c3330;
+  --outline-border: #78716c;
+  --outline-fg: #e7e5e4;
+  --outline-hover: #44403c;
+
+  /* Modals */
+  --modal-bg: #292524;
+  --modal-border: #44403c;
+  --modal-footer: #241f1d;
+
+  /* Error states */
   --error-bg: #3b0a0a;
   --error-border: #7f1d1d;
   --error-fg: #fecaca;
+
+  /* Timeline */
   --timeline-up: #34d399;
   --timeline-down: #f87171;
-  --timeline-neutral: #38bdf8;
+  --timeline-neutral: #3b82f6;
+
+  /* Header (kept for AuthPage compat) */
+  --header-bg: #1a1210;
+  --header-fg: #fafaf9;
+
   color-scheme: dark;
 }
 
-/* Optional small global tweaks */
+/* Global base */
 body {
-  font-size: 16pt;
+  font-size: 15px;
   background-color: var(--bg);
   color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 input,
@@ -101,6 +168,7 @@ select option {
   color: var(--input-fg);
 }
 
+/* Tailwind class overrides for theming */
 .bg-slate-100 {
   background-color: var(--bg) !important;
 }
@@ -138,11 +206,11 @@ select option {
   color: #000 !important;
 }
 
-.hover\\:bg-slate-50:hover {
+.hover\:bg-slate-50:hover {
   background-color: var(--row-hover) !important;
 }
 
-.hover\\:bg-slate-100:hover {
+.hover\:bg-slate-100:hover {
   background-color: var(--row-hover) !important;
 }
 
@@ -160,7 +228,7 @@ select option {
   color: #111827 !important;
 }
 
-/* Table row hover text color */
+/* Table row hover */
 tr:hover,
 tr:hover td,
 tr:hover th {
@@ -171,7 +239,7 @@ tr:hover th {
 .dark tr:hover td,
 .dark tr:hover th {
   color: var(--fg) !important;
-  background-color: #021627 !important;
+  background-color: var(--row-hover) !important;
 }
 
 .dark tr:hover a,

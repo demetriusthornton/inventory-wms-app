@@ -99,7 +99,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
             <input
               type="email"
               required
-              className="w-full border border-[var(--input-border)] rounded-lg px-4 py-2 bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
+              className="w-full border border-[var(--input-border)] rounded-lg px-4 py-2 bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -112,7 +112,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
             <input
               type="password"
               required
-              className="w-full border border-[var(--input-border)] rounded-lg px-4 py-2 bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent"
+              className="w-full border border-[var(--input-border)] rounded-lg px-4 py-2 bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -122,7 +122,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#0ea5e9] text-white font-semibold py-2.5 rounded-lg hover:bg-[#0284c7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            className="w-full bg-[var(--accent)] text-white font-semibold py-2.5 rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
             {loading
               ? "Processing..."
@@ -138,7 +138,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
               setIsRegistering(!isRegistering);
               setError(null);
             }}
-            className="text-sm text-[#0ea5e9] hover:underline font-medium"
+            className="text-sm text-[var(--accent)] hover:underline font-medium"
           >
             {isRegistering
               ? "Already have an account? Sign in"

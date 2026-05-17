@@ -63,7 +63,7 @@ export const MessageBox = forwardRef<MessageBoxHandle>((_, ref) => {
             </button>
           )}
           <button
-            className="px-4 py-2 rounded-md bg-[#0ea5e9] text-white text-sm hover:bg-[#0284c7]"
+            className="px-4 py-2 rounded-md bg-[var(--accent)] text-white text-sm hover:bg-[var(--accent-hover)]"
             onClick={() => close(true)}
           >
             OK
