@@ -213,6 +213,7 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
   const [stateVal, setStateVal] = useState("");
   const [zip, setZip] = useState("");
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (existing) {
@@ -230,34 +231,41 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       setStateVal("");
       setZip("");
     }
+    setSaveError(null);
   }, [existing, open]);
 
   const handleSave = async () => {
     if (!name.trim() || !shortCode.trim()) return;
     setSaving(true);
-    const id = existing?.id ?? crypto.randomUUID();
-    const ref = doc(collection(db, `${basePath}/warehouses`), id);
-    const warehouse: Warehouse = {
-      id,
-      shortCode: shortCode.trim(),
-      name: name.trim(),
-      streetAddress: streetAddress.trim(),
-      city: city.trim(),
-      state: stateVal.trim(),
-      zip: zip.trim(),
-    };
-    await setDoc(ref, warehouse);
-    await onLogActivity({
-      action: existing ? "warehouse_update" : "warehouse_create",
-      collection: "warehouses",
-      docId: id,
-      summary: `${existing ? "Updated" : "Created"} warehouse ${
-        warehouse.name
-      }`,
-    });
-    setSaving(false);
-    onSaved(warehouse);
-    onClose();
+    setSaveError(null);
+    try {
+      const id = existing?.id ?? crypto.randomUUID();
+      const ref = doc(collection(db, `${basePath}/warehouses`), id);
+      const warehouse: Warehouse = {
+        id,
+        shortCode: shortCode.trim(),
+        name: name.trim(),
+        streetAddress: streetAddress.trim(),
+        city: city.trim(),
+        state: stateVal.trim(),
+        zip: zip.trim(),
+      };
+      await setDoc(ref, warehouse);
+      await onLogActivity({
+        action: existing ? "warehouse_update" : "warehouse_create",
+        collection: "warehouses",
+        docId: id,
+        summary: `${existing ? "Updated" : "Created"} warehouse ${warehouse.name}`,
+      });
+      onSaved(warehouse);
+      onClose();
+    } catch (err: unknown) {
+      setSaveError(
+        err instanceof Error ? err.message : "Failed to save. Try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -285,6 +293,11 @@ const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       }
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {saveError && (
+          <div className="col-span-2 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+            {saveError}
+          </div>
+        )}
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">
             Short Code <span className="text-red-500">*</span>
