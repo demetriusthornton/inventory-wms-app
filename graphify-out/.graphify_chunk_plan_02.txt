@@ -1,0 +1,15 @@
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/.claude/docs/architectural_patterns.md
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/.github/workflows/firebase-hosting-pull-request.yml
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/functions/README.md
+/Users/kingdem/Projects/BenchStockdev/.github/workflows/firebase-hosting-pull-request.yml
+/Users/kingdem/Projects/BenchStockdev/functions/README.md
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/public/vite.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/assets/react.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/public/vite.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/assets/react.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/public/vite.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/assets/react.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/public/vite.svg
+/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/assets/react.svg
+/Users/kingdem/Projects/BenchStockdev/public/vite.svg
+/Users/kingdem/Projects/BenchStockdev/src/assets/react.svg
