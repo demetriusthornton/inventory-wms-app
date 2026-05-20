@@ -1,0 +1,482 @@
+# Instincts generated from https://github.com/demetriusthornton/inventory-wms-app
+# Generated: 2026-05-20T15:40:32.260Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: inventory-wms-app-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Commit Length
+
+## Action
+
+Write moderate-length commit messages (~58 characters)
+
+## Evidence
+
+- Average commit message length: 58 chars
+- Based on 9 commits
+
+---
+id: inventory-wms-app-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: inventory-wms-app-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: inventory-wms-app-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Test Framework
+
+## Action
+
+Use vitest as the test framework
+
+## Evidence
+
+- Test framework detected: vitest
+- File pattern: *.test.ts
+
+---
+id: inventory-wms-app-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: inventory-wms-app-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~20x per month
+- Files: src/*, src/components/*, src/features/activityhistory/*
+
+---
+id: inventory-wms-app-workflow-add-or-update-feature-module
+trigger: "when doing add or update feature module"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Workflow Add Or Update Feature Module
+
+## Action
+
+Follow the add-or-update-feature-module workflow:
+1. Create or update feature page/component files in src/features/ or src/components/
+2. Update src/types.ts to add or modify types/interfaces as needed
+3. Update src/App.tsx to register new routes or components
+4. Optionally add or update utility functions in src/utils/
+5. Optionally update styling in src/index.css
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/App.tsx, src/types.ts, src/features/*/*.tsx
+
+---
+id: inventory-wms-app-workflow-multi-worktree-project-snapshot
+trigger: "when doing multi worktree project snapshot"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Workflow Multi Worktree Project Snapshot
+
+## Action
+
+Follow the multi-worktree-project-snapshot workflow:
+1. Copy or update all relevant files (code, config, docs, scripts) into each .claude/worktrees/<worktree-name>/ directory
+2. Update root-level files as needed to match worktree changes
+3. Synchronize documentation and architectural pattern files across worktrees
+4. Update shared files such as package.json, tsconfig, and firebase configs
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: .claude/worktrees/*/src/*, .claude/worktrees/*/*.md, .claude/worktrees/*/firebase.json
+
+---
+id: inventory-wms-app-workflow-documentation-and-architecture-update
+trigger: "when doing documentation and architecture update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Workflow Documentation And Architecture Update
+
+## Action
+
+Follow the documentation-and-architecture-update workflow:
+1. Create or update documentation files such as claude.md, architectural_patterns.md, README.md
+2. Optionally update or archive previous versions (e.g., claude.md.old)
+3. Add or update todo/task tracking files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: claude.md, claude.md.old, .claude/docs/architectural_patterns.md
+
+---
+id: inventory-wms-app-instinct-file-naming
+trigger: "When creating a new file for a component or class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct File Naming
+
+## Action
+
+Name the file using PascalCase (e.g., DashboardPage.tsx)
+
+## Evidence
+
+- Pattern in src/components and src/features file names
+- Naming conventions section in analysis
+
+---
+id: inventory-wms-app-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Function Naming
+
+## Action
+
+Use camelCase for function names (e.g., fetchInventoryData)
+
+## Evidence
+
+- Naming conventions in codeStyle
+- Pattern in src/utils/*.ts
+
+---
+id: inventory-wms-app-instinct-constant-naming
+trigger: "When declaring a constant value"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Constant Naming
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names (e.g., MAX_ITEMS_PER_PAGE)
+
+## Evidence
+
+- Naming conventions in codeStyle
+
+---
+id: inventory-wms-app-instinct-import-style
+trigger: "When importing modules or components"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Import Style
+
+## Action
+
+Use both default and named imports as appropriate; follow existing mixed import style
+
+## Evidence
+
+- importStyle: mixed in codeStyle
+- Pattern in src/components and src/features
+
+---
+id: inventory-wms-app-instinct-export-style
+trigger: "When exporting functions, components, or constants"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Export Style
+
+## Action
+
+Prefer named exports over default exports
+
+## Evidence
+
+- exportStyle: named in codeStyle
+- Pattern in src/components and src/features
+
+---
+id: inventory-wms-app-instinct-test-location
+trigger: "When adding tests for a feature or component"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Test Location
+
+## Action
+
+Place test files alongside implementation files using the pattern *.test.ts
+
+## Evidence
+
+- testLocation: mixed
+- testing.filePattern: *.test.ts
+
+---
+id: inventory-wms-app-instinct-test-framework
+trigger: "When writing new tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Test Framework
+
+## Action
+
+Use the vitest framework for unit tests
+
+## Evidence
+
+- testing.framework: vitest
+- Pattern in test files
+
+---
+id: inventory-wms-app-instinct-test-type
+trigger: "When deciding what kind of tests to write"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Test Type
+
+## Action
+
+Write unit tests for individual functions and components
+
+## Evidence
+
+- testing.testTypes: unit
+
+---
+id: inventory-wms-app-instinct-commit-prefix
+trigger: "When writing a commit message for a new feature"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Commit Prefix
+
+## Action
+
+Prefix the commit message with 'feat:' (e.g., feat: Add DashboardPage and related components)
+
+## Evidence
+
+- Pattern in commit examples: 'feat:'
+- commits.prefixes: ['feat']
+
+---
+id: inventory-wms-app-instinct-commit-length
+trigger: "When composing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Commit Length
+
+## Action
+
+Keep commit messages concise, averaging around 58 characters
+
+## Evidence
+
+- commits.averageLength: 58
+
+---
+id: inventory-wms-app-instinct-add-feature-module-workflow
+trigger: "When adding or updating a feature module (e.g., dashboard, inventory, activity history)"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Add Feature Module Workflow
+
+## Action
+
+Create/update files in src/features/ or src/components/, update src/types.ts, update src/App.tsx, and optionally update src/utils/ and src/index.css
+
+## Evidence
+
+- Workflow: add-or-update-feature-module
+- Example commit/file sequences
+
+---
+id: inventory-wms-app-instinct-multi-worktree-snapshot-workflow
+trigger: "When synchronizing or initializing multiple project worktrees with latest code, configs, and docs"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Multi Worktree Snapshot Workflow
+
+## Action
+
+Copy/update all relevant files into each .claude/worktrees/<worktree-name>/ directory, update root-level files, synchronize docs, and update shared configs
+
+## Evidence
+
+- Workflow: multi-worktree-project-snapshot
+- Example commit/file sequences
+
+---
+id: inventory-wms-app-instinct-documentation-update-workflow
+trigger: "When documenting new features, updating architectural patterns, or providing usage instructions"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Documentation Update Workflow
+
+## Action
+
+Create/update documentation files (claude.md, architectural_patterns.md, README.md), optionally archive previous versions, and update todo/task tracking files
+
+## Evidence
+
+- Workflow: documentation-and-architecture-update
+- Example commit/file sequences
+
+---
+id: inventory-wms-app-instinct-try-catch-error-handling
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: demetriusthornton/inventory-wms-app
+---
+
+# Inventory Wms App Instinct Try Catch Error Handling
+
+## Action
+
+Use try-catch blocks for error handling; avoid custom error classes or global handlers
+
+## Evidence
+
+- errorHandling.style: try-catch
+- No customErrorClasses or globalHandler
+
