@@ -13,9 +13,6 @@ import {
   getAuth,
   onAuthStateChanged,
   signOut,
-  updatePassword,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { AuthPage } from "./AuthPage";
@@ -42,13 +39,30 @@ import {
   lookupProductByUpc,
   sanitizeImageUrl,
 } from "./utils/helpers";
-import type { ToastMessage, AdjustUndoPayload } from "./types";
+import type {
+  Warehouse,
+  InventoryItem,
+  PurchaseOrder,
+  PurchaseOrderItem,
+  PoFormState,
+  Transfer,
+  TransferLine,
+  TransferStatus,
+  ActivityLog,
+  ToastMessage,
+  AdjustUndoPayload,
+  Project,
+  ProjectItem,
+} from "./types";
 import { Toast } from "./components/Toast";
 import { GlobalSearch } from "./components/GlobalSearch";
 import { AdjustQuantityModal } from "./features/inventory/AdjustQuantityModal";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { ItemDetailPage } from "./features/inventory/ItemDetailPage";
 import { ActivityHistoryPage } from "./features/activityHistory/ActivityHistoryPage";
+import { AddWarehouseModal } from "./features/warehouses/AddWarehouseModal";
+import { ProjectModal } from "./features/projects/ProjectModal";
+import { UserSettingsModal } from "./features/settings/UserSettingsModal";
 
 type PageKey =
   | "dashboard"
@@ -58,70 +72,9 @@ type PageKey =
   | "poHistory"
   | "transfers"
   | "warehouses"
+  | "projects"
+  | "projectDetail"
   | "activityHistory";
-
-interface Warehouse {
-  id: string;
-  shortCode: string;
-  name: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  zip?: string;
-}
-
-interface InventoryItem {
-  id: string;
-  upc?: string;
-  modelNumber: string;
-  name: string;
-  category: string;
-  tags?: string[];
-  description?: string;
-  amountInInventory: number;
-  numOnOrder: number;
-  manufactureName: string;
-  manufacturePartNumber: string;
-  imageUrl: string;
-  assignedBranchId: string;
-  minStockLevel: number;
-}
-
-interface PurchaseOrderItem {
-  upc?: string;
-  itemName: string;
-  modelNumber: string;
-  amountOrdered: number;
-  category: string;
-  orderCost: number;
-  amountReceived: number;
-  imageUrl?: string;
-  description?: string;
-  manufactureName?: string;
-}
-
-interface PurchaseOrder {
-  id: string;
-  orderNumber: string;
-  ipNumber?: string;
-  vendor: string;
-  manufacture: string;
-  receivingWarehouseId: string;
-  items: PurchaseOrderItem[];
-  status: "pending" | "received" | "deleted";
-  orderDate: string;
-  receivedDate?: string | null;
-  deletedDate?: string | null;
-}
-
-interface PoFormState {
-  orderNumber: string;
-  ipNumber?: string;
-  vendor: string;
-  manufacture: string;
-  receivingWarehouseId: string;
-  items: PurchaseOrderItem[];
-}
 
 const makeEmptyPoForm = (): PoFormState => ({
   orderNumber: "",
@@ -144,224 +97,6 @@ const makeEmptyPoForm = (): PoFormState => ({
     },
   ],
 });
-
-type TransferStatus = "pending" | "in-transit" | "completed" | "cancelled";
-
-interface TransferLine {
-  itemId: string;
-  itemModelNumber: string;
-  itemName: string;
-  quantity: number;
-}
-
-interface Transfer {
-  id: string;
-  transferId: string;
-  label?: string;
-  trackingNumber?: string;
-  sourceBranchId: string;
-  destinationBranchId: string;
-  dateInitiated: string;
-  status: TransferStatus;
-  dateCompleted?: string;
-  statusUpdatedAt?: string;
-  lines: TransferLine[];
-}
-
-interface ActivityLog {
-  id: string;
-  timestamp: string;
-  userName: string;
-  action: string;
-  collection: string;
-  docId?: string;
-  summary: string;
-  // PRD audit fields
-  itemId?: string;
-  delta?: number;
-  resultingQuantity?: number;
-  reason?: string;
-  locationId?: string;
-  undoOf?: string;
-}
-
-interface AddWarehouseModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSaved: (warehouse: Warehouse) => void;
-  db: Firestore;
-  basePath: string;
-  existing?: Warehouse | null;
-  onLogActivity: (
-    entry: Omit<ActivityLog, "id" | "timestamp" | "userName">,
-  ) => Promise<void>;
-}
-
-const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
-  open,
-  onClose,
-  onSaved,
-  db,
-  basePath,
-  existing,
-  onLogActivity,
-}) => {
-  const [shortCode, setShortCode] = useState("");
-  const [name, setName] = useState("");
-  const [streetAddress, setStreetAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [stateVal, setStateVal] = useState("");
-  const [zip, setZip] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (existing) {
-      setShortCode(existing.shortCode);
-      setName(existing.name);
-      setStreetAddress(existing.streetAddress);
-      setCity(existing.city);
-      setStateVal(existing.state);
-      setZip(existing.zip ?? "");
-    } else {
-      setShortCode("");
-      setName("");
-      setStreetAddress("");
-      setCity("");
-      setStateVal("");
-      setZip("");
-    }
-    setSaveError(null);
-  }, [existing, open]);
-
-  const handleSave = async () => {
-    if (!name.trim() || !shortCode.trim()) return;
-    setSaving(true);
-    setSaveError(null);
-    try {
-      const id = existing?.id ?? crypto.randomUUID();
-      const ref = doc(collection(db, `${basePath}/warehouses`), id);
-      const warehouse: Warehouse = {
-        id,
-        shortCode: shortCode.trim(),
-        name: name.trim(),
-        streetAddress: streetAddress.trim(),
-        city: city.trim(),
-        state: stateVal.trim(),
-        zip: zip.trim(),
-      };
-      await setDoc(ref, warehouse);
-      await onLogActivity({
-        action: existing ? "warehouse_update" : "warehouse_create",
-        collection: "warehouses",
-        docId: id,
-        summary: `${existing ? "Updated" : "Created"} warehouse ${warehouse.name}`,
-      });
-      onSaved(warehouse);
-      onClose();
-    } catch (err: unknown) {
-      setSaveError(
-        err instanceof Error ? err.message : "Failed to save. Try again.",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={existing ? "Edit Branch" : "Add Branch"}
-      footer={
-        <div className="flex justify-end gap-3">
-          <button
-            className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
-            onClick={onClose}
-            disabled={saving}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-        </div>
-      }
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {saveError && (
-          <div className="col-span-2 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
-            {saveError}
-          </div>
-        )}
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Short Code <span className="text-red-500">*</span>
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            value={shortCode}
-            onChange={(e) => setShortCode(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Street Address
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            value={streetAddress}
-            onChange={(e) => setStreetAddress(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            City
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            State
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            value={stateVal}
-            onChange={(e) => setStateVal(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Zip
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-            value={zip}
-            onChange={(e) => setZip(e.target.value)}
-          />
-        </div>
-      </div>
-    </Modal>
-  );
-};
 
 const THEME_STORAGE_KEY = "ui:darkMode";
 
@@ -550,6 +285,18 @@ const App: React.FC = () => {
       basePath,
       collectionName: "activityHistory",
     });
+
+  const { data: projects } = useCollection<Project>({
+    db,
+    basePath,
+    collectionName: "projects",
+  });
+
+  const { data: projectItems } = useCollection<ProjectItem>({
+    db,
+    basePath,
+    collectionName: "projectItems",
+  });
 
   useEffect(() => {
     if (
@@ -763,6 +510,17 @@ const App: React.FC = () => {
   const [inventoryCsvModalOpen, setInventoryCsvModalOpen] = useState(false);
   const inventoryCsvInputRef = useRef<HTMLInputElement | null>(null);
   const inventoryImageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [projectDetailTab, setProjectDetailTab] = useState<"inventory" | "pos" | "shipments">("inventory");
+  const [addFromStockOpen, setAddFromStockOpen] = useState(false);
+  const [addStockItemId, setAddStockItemId] = useState("");
+  const [addStockQty, setAddStockQty] = useState(1);
+  const [addStockSaving, setAddStockSaving] = useState(false);
+  const [projectSearch, setProjectSearch] = useState("");
+  const [projectStatusFilter, setProjectStatusFilter] = useState("all");
 
   const [warehouseModalQuickOpen, setWarehouseModalQuickOpen] = useState(false);
   const [warehouseModalMainOpen, setWarehouseModalMainOpen] = useState(false);
@@ -1819,10 +1577,6 @@ const App: React.FC = () => {
       return;
     }
 
-    if (newStatus === "in-transit" && transfer.status !== "pending") {
-      return;
-    }
-
     if (newStatus === "cancelled") {
       const confirmed = await messageBoxRef.current?.confirm(
         `Cancel transfer ${transfer.transferId}?`,
@@ -1969,6 +1723,80 @@ const App: React.FC = () => {
     });
   };
 
+  const handleSaveProject = async (
+    data: Omit<Project, "id" | "createdAt" | "createdBy">,
+  ) => {
+    if (!db || !basePath) return;
+    const id = editingProject?.id ?? crypto.randomUUID();
+    const ref = doc(collection(db, `${basePath}/projects`), id);
+    const raw = {
+      id,
+      ...data,
+      createdAt: editingProject?.createdAt ?? new Date().toISOString(),
+      createdBy: editingProject?.createdBy ?? (authUser?.email ?? ""),
+    };
+    const project = Object.fromEntries(
+      Object.entries(raw).filter(([, v]) => v !== undefined),
+    ) as unknown as Project;
+    await setDoc(ref, project);
+    await logActivity({
+      action: editingProject ? "project_update" : "project_create",
+      collection: "projects",
+      docId: id,
+      summary: `${editingProject ? "Updated" : "Created"} project ${project.name}`,
+    });
+  };
+
+  const handleDeleteProject = async (project: Project) => {
+    if (!db || !basePath) return;
+    const confirmed = await messageBoxRef.current?.confirm(
+      `Delete project "${project.name}"? This will also delete all project inventory.`,
+    );
+    if (!confirmed) return;
+    const batch = writeBatch(db);
+    const projRef = doc(collection(db, `${basePath}/projects`), project.id);
+    batch.delete(projRef);
+    projectItems
+      .filter((pi) => pi.projectId === project.id)
+      .forEach((pi) => {
+        batch.delete(doc(collection(db, `${basePath}/projectItems`), pi.id));
+      });
+    await batch.commit();
+    await logActivity({
+      action: "project_delete",
+      collection: "projects",
+      docId: project.id,
+      summary: `Deleted project ${project.name}`,
+    });
+  };
+
+  const handleAddFromStock = async () => {
+    if (!db || !basePath || !addStockItemId || !selectedProjectId) return;
+    const invItem = inventoryItems.find((i) => i.id === addStockItemId);
+    if (!invItem) return;
+    setAddStockSaving(true);
+    try {
+      const id = crypto.randomUUID();
+      const ref = doc(collection(db, `${basePath}/projectItems`), id);
+      const pi: ProjectItem = {
+        id,
+        projectId: selectedProjectId,
+        itemId: invItem.id,
+        name: invItem.name,
+        modelNumber: invItem.modelNumber,
+        category: invItem.category,
+        qty: addStockQty,
+        source: "stock",
+      };
+      await setDoc(ref, pi);
+      setAddFromStockOpen(false);
+      setAddStockItemId("");
+      setAddStockQty(1);
+    } finally {
+      setAddStockSaving(false);
+    }
+  };
+
   const handleWarehouseCsvImport = async (file: File) => {
     if (!db || !basePath) return;
     const text = await file.text();
@@ -2005,6 +1833,373 @@ const App: React.FC = () => {
       summary: `Imported ${Math.max(rows.length - 1, 0)} warehouses from CSV`,
     });
     messageBoxRef.current?.alert("Branch CSV import complete.");
+  };
+
+  const renderProjectDetailPage = () => {
+    const project = projects.find((p) => p.id === selectedProjectId);
+    if (!project) return null;
+    const branch = warehouses.find((w) => w.id === project.branchId);
+    const pItems = projectItems.filter((pi) => pi.projectId === project.id);
+    const totalQty = pItems.reduce((sum, pi) => sum + pi.qty, 0);
+    const branchInventory = inventoryItems.filter(
+      (i) => i.assignedBranchId === project.branchId,
+    );
+
+    return (
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              className="px-3 py-1.5 rounded-md border border-slate-300 text-sm text-slate-600 hover:bg-slate-50"
+              onClick={() => setPage("projects")}
+            >
+              ← Back
+            </button>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-lg font-bold text-slate-800">{project.ipNumber}</span>
+                {project.projectNumber && (
+                  <span className="text-sm text-[var(--accent)] font-medium">#{project.projectNumber}</span>
+                )}
+                <span className="text-base text-slate-700">{project.name}</span>
+              </div>
+              {project.description && (
+                <p className="text-xs text-slate-500 mt-0.5">{project.description}</p>
+              )}
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                {branch && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600">
+                    {branch.shortCode || branch.name}
+                  </span>
+                )}
+                <span className="text-[11px] text-slate-400">
+                  Created {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "—"} by {project.createdBy ?? ""}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              className="border border-slate-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              value={project.status}
+              onChange={async (e) => {
+                if (!db || !basePath) return;
+                const ref = doc(collection(db, `${basePath}/projects`), project.id);
+                await updateDoc(ref, { status: e.target.value });
+              }}
+            >
+              <option value="active">Active</option>
+              <option value="closed">Closed</option>
+            </select>
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] font-semibold ${
+              project.status === "active"
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-slate-200 text-slate-600"
+            }`}>
+              {project.status === "active" ? "Active" : "Closed"}
+            </span>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-slate-200">
+          <div className="flex gap-0">
+            {(["inventory", "pos", "shipments"] as const).map((tab) => (
+              <button
+                key={tab}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                  projectDetailTab === tab
+                    ? "border-[var(--accent)] text-[var(--accent)]"
+                    : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+                onClick={() => setProjectDetailTab(tab)}
+              >
+                {tab === "inventory" ? `Inventory ${pItems.length}` : tab === "pos" ? "Purchase Orders 0" : "Shipments 0"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Inventory tab */}
+        {projectDetailTab === "inventory" && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-700">Project Inventory</h3>
+              {project.status === "active" && (
+                <button
+                  className="px-3 py-1.5 rounded-md bg-[var(--accent)] text-white text-xs hover:bg-[var(--accent-hover)]"
+                  onClick={() => {
+                    setAddStockItemId("");
+                    setAddStockQty(1);
+                    setAddFromStockOpen(true);
+                  }}
+                >
+                  + Add from Stock
+                </button>
+              )}
+            </div>
+            {pItems.length === 0 ? (
+              <p className="text-sm text-slate-400 py-8 text-center">No inventory in this project yet.</p>
+            ) : (
+              <div className="rounded-lg border border-slate-200 overflow-hidden">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Name</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Model #</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Category</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Qty</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Source</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {pItems.map((pi) => (
+                      <tr key={pi.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-2 text-slate-800">{pi.name}</td>
+                        <td className="px-4 py-2 text-slate-600 font-mono text-xs">{pi.modelNumber}</td>
+                        <td className="px-4 py-2 text-slate-600">{pi.category}</td>
+                        <td className="px-4 py-2 font-medium text-slate-800">{pi.qty}</td>
+                        <td className="px-4 py-2">
+                          <span className="text-xs text-slate-400 uppercase">{pi.source}</span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <button
+                            className="px-2 py-0.5 rounded text-xs bg-red-100 text-red-700 hover:bg-red-200"
+                            onClick={async () => {
+                              if (!db || !basePath) return;
+                              const confirmed = await messageBoxRef.current?.confirm("Remove this item from the project?");
+                              if (!confirmed) return;
+                              await deleteDoc(doc(collection(db, `${basePath}/projectItems`), pi.id));
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-slate-50 border-t border-slate-200">
+                    <tr>
+                      <td colSpan={3} className="px-4 py-2 text-xs text-slate-500 font-medium">Total</td>
+                      <td className="px-4 py-2 text-sm font-semibold text-slate-800">{totalQty}</td>
+                      <td colSpan={2} />
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {projectDetailTab === "pos" && (
+          <p className="text-sm text-slate-400 py-8 text-center">No purchase orders linked to this project.</p>
+        )}
+        {projectDetailTab === "shipments" && (
+          <p className="text-sm text-slate-400 py-8 text-center">No shipments for this project.</p>
+        )}
+
+        {/* Add from Stock modal */}
+        <Modal
+          open={addFromStockOpen}
+          onClose={() => setAddFromStockOpen(false)}
+          title="Add from Stock"
+          footer={
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
+                onClick={() => setAddFromStockOpen(false)}
+                disabled={addStockSaving}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
+                onClick={handleAddFromStock}
+                disabled={addStockSaving || !addStockItemId}
+              >
+                {addStockSaving ? "Adding..." : "Add"}
+              </button>
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Item <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                value={addStockItemId}
+                onChange={(e) => setAddStockItemId(e.target.value)}
+              >
+                <option value="">Select item from {branch?.name ?? "branch"}...</option>
+                {branchInventory.map((i) => (
+                  <option key={i.id} value={i.id}>
+                    {i.name || i.modelNumber} — {i.modelNumber} (on hand: {i.amountInInventory})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Quantity
+              </label>
+              <input
+                type="number"
+                min={1}
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                value={addStockQty}
+                onChange={(e) => setAddStockQty(Math.max(1, Number(e.target.value)))}
+              />
+            </div>
+          </div>
+        </Modal>
+      </div>
+    );
+  };
+
+  const renderProjectsPage = () => {
+    const filtered = projects
+      .filter((p) =>
+        (projectStatusFilter === "all" || p.status === projectStatusFilter) &&
+        (projectSearch === "" ||
+          (p.name ?? "").toLowerCase().includes(projectSearch.toLowerCase()) ||
+          (p.ipNumber ?? "").toLowerCase().includes(projectSearch.toLowerCase()) ||
+          (p.projectNumber ?? "").toLowerCase().includes(projectSearch.toLowerCase())),
+      )
+      .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+            <h2 className="text-base font-semibold text-slate-800">Projects</h2>
+            <button
+              className="px-3 py-1.5 rounded-md bg-[var(--accent)] text-white text-xs sm:text-sm hover:bg-[var(--accent-hover)]"
+              onClick={() => {
+                setEditingProject(null);
+                setProjectModalOpen(true);
+              }}
+            >
+              + New Project
+            </button>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2 border-b border-slate-100">
+            <input
+              className="flex-1 border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              placeholder="Search..."
+              value={projectSearch}
+              onChange={(e) => setProjectSearch(e.target.value)}
+            />
+            <select
+              className="border border-slate-300 rounded-md px-2 py-1.5 text-sm focus:outline-none"
+              value={projectStatusFilter}
+              onChange={(e) => setProjectStatusFilter(e.target.value)}
+            >
+              <option value="all">Status</option>
+              <option value="active">Active</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Name</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">IP #</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Project #</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Branch</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Items (qty)</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Created</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-12 text-center text-sm text-slate-400">
+                      {projects.length === 0
+                        ? "No projects yet. Create one with + New Project."
+                        : "No projects match your search."}
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((project) => {
+                    const branch = warehouses.find((w) => w.id === project.branchId);
+                    const pItems = projectItems.filter((pi) => pi.projectId === project.id);
+                    const totalQty = pItems.reduce((sum, pi) => sum + pi.qty, 0);
+                    return (
+                      <tr key={project.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-2 font-medium text-slate-800">{project.name}</td>
+                        <td className="px-4 py-2 text-slate-600">{project.ipNumber}</td>
+                        <td className="px-4 py-2 text-slate-600">{project.projectNumber ?? "—"}</td>
+                        <td className="px-4 py-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                            project.status === "active"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-slate-200 text-slate-600"
+                          }`}>
+                            {project.status === "active" ? "Active" : "Closed"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-slate-600">{branch?.shortCode || branch?.name || "—"}</td>
+                        <td className="px-4 py-2 text-slate-700">{totalQty}</td>
+                        <td className="px-4 py-2 text-slate-500 text-xs">
+                          {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : "—"}
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex gap-1">
+                            <button
+                              className="px-2 py-1 rounded bg-[var(--accent)] text-white text-xs hover:bg-[var(--accent-hover)]"
+                              onClick={() => {
+                                setSelectedProjectId(project.id);
+                                setProjectDetailTab("inventory");
+                                setPage("projectDetail");
+                              }}
+                            >
+                              View
+                            </button>
+                            <button
+                              className="px-2 py-1 rounded border border-slate-300 text-xs text-slate-600 hover:bg-slate-50"
+                              onClick={() => {
+                                setEditingProject(project);
+                                setProjectModalOpen(true);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="px-2 py-1 rounded bg-red-500 text-white text-xs hover:bg-red-600"
+                              onClick={() => handleDeleteProject(project)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <ProjectModal
+          open={projectModalOpen}
+          onClose={() => {
+            setProjectModalOpen(false);
+            setEditingProject(null);
+          }}
+          onSave={handleSaveProject}
+          existing={editingProject}
+          warehouses={sortedWarehouses}
+        />
+      </div>
+    );
   };
 
   const renderInventoryPage = () => {
@@ -4017,6 +4212,16 @@ const App: React.FC = () => {
               }
             />
             <SidebarItem
+              label="Projects"
+              active={page === "projects"}
+              onClick={() => { setPage("projects"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+              }
+            />
+            <SidebarItem
               label="Purchase Orders"
               active={page === "pos"}
               onClick={() => { setPage("pos"); setSidebarOpen(false); }}
@@ -4122,6 +4327,8 @@ const App: React.FC = () => {
         {page === "poHistory" && renderPoHistoryPage()}
         {page === "transfers" && renderTransfersPage()}
         {page === "warehouses" && renderWarehousesPage()}
+        {page === "projects" && renderProjectsPage()}
+        {page === "projectDetail" && renderProjectDetailPage()}
         {page === "activityHistory" && (
           <ActivityHistoryPage
             activityHistory={activityHistory}
@@ -4198,278 +4405,6 @@ const App: React.FC = () => {
           onSetDefaultWarehouse={setDefaultWarehouseId}
         />
       )}
-    </div>
-  );
-};
-
-// ── User Settings Modal ──────────────────────────────────────────────────────
-
-interface UserSettingsModalProps {
-  open: boolean;
-  onClose: () => void;
-  authUser: User;
-  warehouses: Warehouse[];
-  defaultWarehouseId: string | null;
-  onSetDefaultWarehouse: (id: string | null) => void;
-}
-
-const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
-  open,
-  onClose,
-  authUser,
-  warehouses,
-  defaultWarehouseId,
-  onSetDefaultWarehouse,
-}) => {
-  const [activeTab, setActiveTab] = useState<"branch" | "password">("branch");
-
-  // Branch state
-  const [selectedBranchId, setSelectedBranchId] = useState<string>(
-    defaultWarehouseId ?? "",
-  );
-
-  // Password state
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [pwError, setPwError] = useState<string | null>(null);
-  const [pwSuccess, setPwSuccess] = useState(false);
-  const [pwLoading, setPwLoading] = useState(false);
-
-  // Sync branch picker when modal opens
-  useEffect(() => {
-    if (open) {
-      setSelectedBranchId(defaultWarehouseId ?? "");
-      setPwError(null);
-      setPwSuccess(false);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    }
-  }, [open, defaultWarehouseId]);
-
-  const handleSaveBranch = () => {
-    onSetDefaultWarehouse(selectedBranchId || null);
-    onClose();
-  };
-
-  const handleChangePassword = async () => {
-    setPwError(null);
-    setPwSuccess(false);
-
-    if (!newPassword || !currentPassword) {
-      setPwError("Please fill in all password fields.");
-      return;
-    }
-    if (newPassword.length < 6) {
-      setPwError("New password must be at least 6 characters.");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPwError("New passwords do not match.");
-      return;
-    }
-
-    const email = authUser.email;
-    if (!email) {
-      setPwError("Cannot change password for this account type.");
-      return;
-    }
-
-    setPwLoading(true);
-    try {
-      const credential = EmailAuthProvider.credential(email, currentPassword);
-      await reauthenticateWithCredential(authUser, credential);
-      await updatePassword(authUser, newPassword);
-      setPwSuccess(true);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (err: unknown) {
-      const code = (err as { code?: string })?.code ?? "";
-      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
-        setPwError("Current password is incorrect.");
-      } else if (code === "auth/too-many-requests") {
-        setPwError("Too many attempts. Please try again later.");
-      } else {
-        setPwError("Failed to update password. Please try again.");
-      }
-    } finally {
-      setPwLoading(false);
-    }
-  };
-
-  if (!open) return null;
-
-  const inputClass =
-    "w-full border border-[var(--input-border)] rounded-lg px-3 py-2 text-sm bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]";
-
-  return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-      <div className="bg-[var(--modal-bg)] border border-[var(--modal-border)] rounded-xl shadow-xl w-full max-w-md flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--modal-border)]">
-          <h2 className="text-base font-semibold text-[var(--fg)]">User Settings</h2>
-          <button
-            className="text-[var(--muted)] hover:text-[var(--fg)] text-xl leading-none"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </div>
-
-        {/* User info strip */}
-        <div className="px-6 py-3 bg-[var(--surface-1)] border-b border-[var(--modal-border)] flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-[var(--accent)]/15 flex items-center justify-center text-[var(--accent)] text-sm font-bold flex-shrink-0">
-            {(authUser.displayName || authUser.email || "U").charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <p className="text-sm font-medium text-[var(--fg)]">
-              {authUser.displayName || authUser.email}
-            </p>
-            {authUser.displayName && (
-              <p className="text-xs text-[var(--muted)]">{authUser.email}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex border-b border-[var(--modal-border)]">
-          {(["branch", "password"] as const).map((tab) => (
-            <button
-              key={tab}
-              className={`flex-1 py-3 text-sm font-medium transition-colors ${
-                activeTab === tab
-                  ? "text-[var(--accent)] border-b-2 border-[var(--accent)]"
-                  : "text-[var(--muted)] hover:text-[var(--fg)]"
-              }`}
-              onClick={() => {
-                setActiveTab(tab);
-                setPwError(null);
-                setPwSuccess(false);
-              }}
-            >
-              {tab === "branch" ? "Preferred Branch" : "Change Password"}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab content */}
-        <div className="px-6 py-5">
-          {activeTab === "branch" && (
-            <div className="space-y-4">
-              <p className="text-sm text-[var(--muted)]">
-                Your preferred branch filters inventory, purchase orders, and transfers by default. You can change it at any time.
-              </p>
-              <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1.5">
-                  Default Branch
-                </label>
-                <select
-                  className={inputClass}
-                  value={selectedBranchId}
-                  onChange={(e) => setSelectedBranchId(e.target.value)}
-                >
-                  <option value="">— No preference (show all) —</option>
-                  {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name}{w.shortCode ? ` (${w.shortCode})` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {selectedBranchId && (
-                <p className="text-xs text-[var(--muted)]">
-                  Currently filtering to:{" "}
-                  <span className="font-medium text-[var(--fg)]">
-                    {warehouses.find((w) => w.id === selectedBranchId)?.name ?? selectedBranchId}
-                  </span>
-                </p>
-              )}
-            </div>
-          )}
-
-          {activeTab === "password" && (
-            <div className="space-y-3">
-              {pwError && (
-                <div className="p-3 rounded-lg bg-[var(--error-bg)] border border-[var(--error-border)] text-[var(--error-fg)] text-sm">
-                  {pwError}
-                </div>
-              )}
-              {pwSuccess && (
-                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
-                  Password updated successfully.
-                </div>
-              )}
-              <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1.5">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  className={inputClass}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                  autoComplete="current-password"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1.5">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  className={inputClass}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  autoComplete="new-password"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[var(--muted)] mb-1.5">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  className={inputClass}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat new password"
-                  autoComplete="new-password"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-[var(--modal-border)] bg-[var(--modal-footer)] flex justify-end gap-3 rounded-b-xl">
-          <button
-            className="px-4 py-2 rounded-lg text-sm border border-[var(--outline-border)] bg-[var(--outline-bg)] text-[var(--outline-fg)] hover:bg-[var(--outline-hover)] transition-colors"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          {activeTab === "branch" ? (
-            <button
-              className="px-4 py-2 rounded-lg text-sm bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors"
-              onClick={handleSaveBranch}
-            >
-              Save Branch
-            </button>
-          ) : (
-            <button
-              className="px-4 py-2 rounded-lg text-sm bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50"
-              onClick={handleChangePassword}
-              disabled={pwLoading}
-            >
-              {pwLoading ? "Updating..." : "Update Password"}
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 };

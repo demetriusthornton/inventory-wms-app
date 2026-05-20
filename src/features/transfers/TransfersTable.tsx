@@ -123,38 +123,21 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
           >
             Track
           </button>
-          {row.status === "pending" && (
-            <button
-              className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
-              onClick={(e) => {
+          {row.status !== "completed" && (
+            <select
+              className="px-2 py-1 rounded-md border border-slate-300 text-xs bg-white hover:bg-slate-50 cursor-pointer"
+              value={row.status}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => {
                 e.stopPropagation();
-                onUpdateStatus(row, "in-transit");
+                onUpdateStatus(row, e.target.value as TransferStatus);
               }}
             >
-              In-Transit
-            </button>
-          )}
-          {(row.status === "pending" || row.status === "in-transit") && (
-            <button
-              className="px-2 py-1 rounded-md bg-emerald-600 text-xs text-white hover:bg-emerald-700"
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateStatus(row, "completed");
-              }}
-            >
-              Completed
-            </button>
-          )}
-          {(row.status === "pending" || row.status === "in-transit") && (
-            <button
-              className="px-2 py-1 rounded-md bg-[#FF6347] text-xs text-white hover:bg-[#e4573d]"
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateStatus(row, "cancelled");
-              }}
-            >
-              Cancel
-            </button>
+              <option value="pending">Pending</option>
+              <option value="in-transit">In-Transit</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
           )}
         </div>
       )}

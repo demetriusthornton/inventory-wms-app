@@ -10,6 +10,29 @@ export interface Warehouse {
   zip?: string;
 }
 
+export interface Project {
+  id: string;
+  ipNumber: string;
+  projectNumber?: string;
+  name: string;
+  description?: string;
+  branchId: string;
+  status: "active" | "closed";
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface ProjectItem {
+  id: string;
+  projectId: string;
+  itemId?: string;
+  name: string;
+  modelNumber: string;
+  category: string;
+  qty: number;
+  source: "stock" | "po";
+}
+
 export interface InventoryItem {
   id: string;
   upc?: string;

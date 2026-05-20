@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Skill(graphify)",
+      "Skill(graphify:*)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

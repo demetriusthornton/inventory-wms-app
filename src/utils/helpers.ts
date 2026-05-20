@@ -159,7 +159,41 @@ export async function lookupProductByUpc(
 
   // Fall back to direct API calls (development only - exposes API keys!)
 
-  // Preferred: Go-UPC (requires API key via VITE_GO_UPC_KEY).
+  // Primary: UPCItemDB (uses trial endpoint if no API key, authenticated if key provided).
+  try {
+    const endpoint = UPCITEMDB_KEY ? UPCITEMDB_AUTH_ENDPOINT : UPCITEMDB_TRIAL_ENDPOINT;
+    const upcDbUrl = `${endpoint}?upc=${encodeURIComponent(upc)}`;
+
+    const headers: HeadersInit = {
+      Accept: "application/json",
+    };
+    if (UPCITEMDB_KEY) {
+      headers["user_key"] = UPCITEMDB_KEY;
+    }
+
+    const resp = await fetch(upcDbUrl, { headers });
+    if (resp.ok) {
+      const json: any = await resp.json();
+      const item = json?.items?.[0];
+      if (item) {
+        return {
+          upc,
+          title: item.title ?? item.brand,
+          brand: item.brand ?? item.manufacturer,
+          model: item.model ?? item.asin ?? "",
+          description: item.description ?? item.title ?? "",
+          imageUrl: item.images?.[0] ?? item.offers?.[0]?.img_url ?? "",
+          category: item.category ?? item.categoryName ?? "",
+        };
+      }
+    } else if (resp.status === 401 || resp.status === 403) {
+      console.warn("UPCItemDB unauthorized; check VITE_UPCITEMDB_KEY");
+    }
+  } catch (err) {
+    console.error("UPCItemDB lookup failed", err);
+  }
+
+  // Fallback: Go-UPC (requires API key via VITE_GO_UPC_KEY).
   if (GO_UPC_KEY) {
     try {
       const resp = await fetch(
@@ -174,7 +208,6 @@ export async function lookupProductByUpc(
       );
       if (resp.ok) {
         const json: any = await resp.json();
-        // Go-UPC responds with { product: {...} }
         const product = json?.product ?? null;
         if (product) {
           return {
@@ -204,40 +237,6 @@ export async function lookupProductByUpc(
     } catch (err) {
       console.error("Go-UPC lookup failed", err);
     }
-  }
-
-  // Try UPCItemDB (uses trial endpoint if no API key, authenticated if key provided).
-  try {
-    const endpoint = UPCITEMDB_KEY ? UPCITEMDB_AUTH_ENDPOINT : UPCITEMDB_TRIAL_ENDPOINT;
-    const upcDbUrl = `${endpoint}?upc=${encodeURIComponent(upc)}`;
-
-    const headers: HeadersInit = {
-      Accept: "application/json",
-    };
-    if (UPCITEMDB_KEY) {
-      headers["user_key"] = UPCITEMDB_KEY;
-    }
-
-    const resp = await fetch(upcDbUrl, { headers });
-    if (resp.ok) {
-      const json: any = await resp.json();
-      const item = json?.items?.[0];
-      if (item) {
-        return {
-          upc,
-          title: item.title ?? item.brand,
-          brand: item.brand ?? item.manufacturer,
-          model: item.model ?? item.asin ?? "",
-          description: item.description ?? item.title ?? "",
-          imageUrl: item.images?.[0] ?? "",
-          category: item.category ?? item.categoryName ?? "",
-        };
-      }
-    } else if (resp.status === 401 || resp.status === 403) {
-      console.warn("UPCItemDB unauthorized; check VITE_UPCITEMDB_KEY");
-    }
-  } catch (err) {
-    console.error("UPCItemDB lookup failed", err);
   }
 
   // Fallback to OpenFoodFacts; not all UPCs will exist here.
