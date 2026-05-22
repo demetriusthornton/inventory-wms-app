@@ -519,6 +519,10 @@ const App: React.FC = () => {
   const [addStockItemId, setAddStockItemId] = useState("");
   const [addStockQty, setAddStockQty] = useState(1);
   const [addStockSaving, setAddStockSaving] = useState(false);
+  const [addFromPoOpen, setAddFromPoOpen] = useState(false);
+  const [addFromPoId, setAddFromPoId] = useState("");
+  const [addFromPoSelections, setAddFromPoSelections] = useState<Record<number, number>>({});
+  const [addFromPoSaving, setAddFromPoSaving] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [projectStatusFilter, setProjectStatusFilter] = useState("all");
 
@@ -1797,6 +1801,40 @@ const App: React.FC = () => {
     }
   };
 
+  const handleAddFromPo = async () => {
+    if (!db || !basePath || !selectedProjectId || !addFromPoId) return;
+    const po = purchaseOrders.find((p) => p.id === addFromPoId);
+    if (!po) return;
+    const entries = Object.entries(addFromPoSelections).filter(([, qty]) => qty > 0);
+    if (entries.length === 0) return;
+    setAddFromPoSaving(true);
+    try {
+      const batch = writeBatch(db);
+      entries.forEach(([idxStr, qty]) => {
+        const item = po.items[Number(idxStr)];
+        if (!item) return;
+        const id = crypto.randomUUID();
+        const ref = doc(collection(db, `${basePath}/projectItems`), id);
+        const pi: ProjectItem = {
+          id,
+          projectId: selectedProjectId,
+          name: item.itemName,
+          modelNumber: item.modelNumber,
+          category: item.category,
+          qty,
+          source: "po",
+        };
+        batch.set(ref, pi);
+      });
+      await batch.commit();
+      setAddFromPoOpen(false);
+      setAddFromPoId("");
+      setAddFromPoSelections({});
+    } finally {
+      setAddFromPoSaving(false);
+    }
+  };
+
   const handleWarehouseCsvImport = async (file: File) => {
     if (!db || !basePath) return;
     const text = await file.text();
@@ -1915,7 +1953,11 @@ const App: React.FC = () => {
                 }`}
                 onClick={() => setProjectDetailTab(tab)}
               >
-                {tab === "inventory" ? `Inventory ${pItems.length}` : tab === "pos" ? "Purchase Orders 0" : "Shipments 0"}
+                {tab === "inventory"
+                  ? `Inventory ${pItems.length}`
+                  : tab === "pos"
+                    ? `Purchase Orders ${purchaseOrders.filter((po) => po.ipNumber === project.ipNumber && po.status !== "deleted").length}`
+                    : "Shipments 0"}
               </button>
             ))}
           </div>
@@ -1993,9 +2035,82 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {projectDetailTab === "pos" && (
-          <p className="text-sm text-slate-400 py-8 text-center">No purchase orders linked to this project.</p>
-        )}
+        {projectDetailTab === "pos" && (() => {
+          const linkedPos = purchaseOrders.filter(
+            (po) => po.ipNumber === project.ipNumber && po.status !== "deleted",
+          );
+          return (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-700">Linked Purchase Orders</h3>
+                {project.status === "active" && (
+                  <button
+                    className="px-3 py-1.5 rounded-md bg-[var(--accent)] text-white text-xs hover:bg-[var(--accent-hover)]"
+                    onClick={() => {
+                      resetPoForm();
+                      setPoForm((prev) => ({ ...prev, ipNumber: project.ipNumber }));
+                      setPage("pos");
+                      setPoModalOpen(true);
+                    }}
+                  >
+                    + New PO
+                  </button>
+                )}
+              </div>
+              {linkedPos.length === 0 ? (
+                <p className="text-sm text-slate-400 py-8 text-center">No purchase orders linked to IP {project.ipNumber} yet.</p>
+              ) : (
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <table className="min-w-full text-sm">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Order #</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Vendor</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Items</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Status</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-slate-500">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {linkedPos.map((po) => (
+                        <tr key={po.id} className="hover:bg-slate-50">
+                          <td className="px-4 py-2 font-mono text-xs text-slate-700">{po.orderNumber}</td>
+                          <td className="px-4 py-2 text-slate-600">{po.vendor}</td>
+                          <td className="px-4 py-2 text-slate-600">{po.items.length}</td>
+                          <td className="px-4 py-2">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                              po.status === "received"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : "bg-amber-100 text-amber-700"
+                            }`}>
+                              {po.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2">
+                            {project.status === "active" && (
+                              <button
+                                className="px-2 py-0.5 rounded text-xs bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
+                                onClick={() => {
+                                  setAddFromPoId(po.id);
+                                  setAddFromPoSelections(
+                                    Object.fromEntries(po.items.map((_, i) => [i, 1])),
+                                  );
+                                  setAddFromPoOpen(true);
+                                }}
+                              >
+                                Add to Project
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })()}
         {projectDetailTab === "shipments" && (
           <p className="text-sm text-slate-400 py-8 text-center">No shipments for this project.</p>
         )}
@@ -2056,6 +2171,79 @@ const App: React.FC = () => {
             </div>
           </div>
         </Modal>
+
+        {/* Add from PO modal */}
+        {(() => {
+          const po = purchaseOrders.find((p) => p.id === addFromPoId);
+          const hasSelections = Object.values(addFromPoSelections).some((q) => q > 0);
+          return (
+            <Modal
+              open={addFromPoOpen}
+              onClose={() => setAddFromPoOpen(false)}
+              title="Add Items from Purchase Order"
+              footer={
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
+                    onClick={() => setAddFromPoOpen(false)}
+                    disabled={addFromPoSaving}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
+                    onClick={handleAddFromPo}
+                    disabled={addFromPoSaving || !hasSelections}
+                  >
+                    {addFromPoSaving ? "Adding..." : "Add to Project"}
+                  </button>
+                </div>
+              }
+            >
+              {po ? (
+                <div className="space-y-3">
+                  <p className="text-xs text-slate-500">
+                    PO <span className="font-mono font-medium text-slate-700">{po.orderNumber}</span> — {po.vendor}
+                  </p>
+                  <div className="rounded-lg border border-slate-200 overflow-hidden">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Item</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Model #</th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 w-24">Qty to Add</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {po.items.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50">
+                            <td className="px-3 py-2 text-slate-800">{item.itemName}</td>
+                            <td className="px-3 py-2 text-slate-500 font-mono text-xs">{item.modelNumber}</td>
+                            <td className="px-3 py-2">
+                              <input
+                                type="number"
+                                min={0}
+                                max={item.amountOrdered}
+                                className="w-20 border border-slate-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+                                value={addFromPoSelections[idx] ?? 0}
+                                onChange={(e) =>
+                                  setAddFromPoSelections((prev) => ({
+                                    ...prev,
+                                    [idx]: Math.max(0, Number(e.target.value)),
+                                  }))
+                                }
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : null}
+            </Modal>
+          );
+        })()}
       </div>
     );
   };
@@ -4318,6 +4506,32 @@ const App: React.FC = () => {
                 onOpenAdjust={(itm) => {
                   setAdjustItem(itm);
                   setAdjustModalOpen(true);
+                }}
+                onBuildTransfer={() => {
+                  setTransferForm({
+                    label: "",
+                    trackingNumber: "",
+                    sourceBranchId: item.assignedBranchId,
+                    destinationBranchId: "",
+                    lines: [{ itemId: item.id, quantity: 1 }],
+                  });
+                  setPage("transfers");
+                  setTransferModalOpen(true);
+                }}
+                onRequestQuote={() => {
+                  const partNumber = item.manufacturePartNumber || item.modelNumber || "N/A";
+                  const name = item.name || item.modelNumber || "Unnamed Item";
+                  const subject = encodeURIComponent("Quote Request");
+                  const body = encodeURIComponent(
+                    [
+                      "Dear <Vendor>",
+                      "",
+                      "Please provide a quote for the following Items. Please feel free to contact me with any questions or concerns.",
+                      "",
+                      `(ADD ORD QTY) - ${name} - ${partNumber}`,
+                    ].join("\n"),
+                  );
+                  window.open(`mailto:?subject=${subject}&body=${body}`, "_blank", "noopener,noreferrer");
                 }}
               />
             );

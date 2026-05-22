@@ -10,6 +10,8 @@ interface ItemDetailPageProps {
   activityHistory: ActivityLog[];
   onBack: () => void;
   onOpenAdjust: (item: InventoryItem) => void;
+  onBuildTransfer?: () => void;
+  onRequestQuote?: () => void;
 }
 
 type TabKey = "overview" | "activity" | "metadata";
@@ -20,6 +22,8 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
   activityHistory,
   onBack,
   onOpenAdjust,
+  onBuildTransfer,
+  onRequestQuote,
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const status = getStockStatus(item);
@@ -104,26 +108,70 @@ export const ItemDetailPage: React.FC<ItemDetailPageProps> = ({
             </div>
           </div>
 
-          {/* Adjust button */}
-          <button
-            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--accent)] text-white rounded-lg font-medium text-sm hover:opacity-90 shadow-sm shrink-0"
-            onClick={() => onOpenAdjust(item)}
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+            <button
+              className="flex items-center gap-2 px-5 py-2.5 bg-[var(--accent)] text-white rounded-lg font-medium text-sm hover:opacity-90 shadow-sm"
+              onClick={() => onOpenAdjust(item)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            Adjust Quantity
-          </button>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Adjust Quantity
+            </button>
+            {onBuildTransfer && (
+              <button
+                className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-lg font-medium text-sm hover:bg-emerald-700 shadow-sm"
+                onClick={onBuildTransfer}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                  />
+                </svg>
+                Build Transfer
+              </button>
+            )}
+            {onRequestQuote && (
+              <button
+                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-medium text-sm hover:bg-indigo-700 shadow-sm"
+                onClick={onRequestQuote}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                Request Quote
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Hero quantity block */}
