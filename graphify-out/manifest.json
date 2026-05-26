@@ -1,0 +1,1482 @@
+{
+  "/Users/kingdem/Projects/BenchStockdev/skills-lock.json": {
+    "mtime": 1779209141.0703564,
+    "ast_hash": "25fc4465133b33b551bf3b5ad13607fd",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/App.tsx": {
+    "mtime": 1770349434.4406455,
+    "ast_hash": "5e2c3b1e71cc88d84134a25f5fee4f0b",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/tsconfig.node.json": {
+    "mtime": 1763237603.3148656,
+    "ast_hash": "eec85c9d7c6b599801557f1afd86672c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/tsconfig.app.json": {
+    "mtime": 1763237603.3139927,
+    "ast_hash": "06fed9d2d293837c0571529eaae7204a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/scripts:replaceLabels.mjs": {
+    "mtime": 1764450258.5579846,
+    "ast_hash": "1c7072ae75f3e890be673cb25304bad4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/AuthPage.tsx": {
+    "mtime": 1769471608.0274315,
+    "ast_hash": "132286bd35e298ef323a58d2ffc76335",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/package.json": {
+    "mtime": 1770087748.2131562,
+    "ast_hash": "08c59a427e7d4e6f92a51c3d9447d0db",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/tsconfig.json": {
+    "mtime": 1763237603.3145134,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/firebase.json": {
+    "mtime": 1770384637.234827,
+    "ast_hash": "d1d71599754d4a033b1b0a044baf47cc",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/eslint.config.js": {
+    "mtime": 1763237603.308419,
+    "ast_hash": "b8893da386a89dfd3672dad848f4ec7e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/vite.config.ts": {
+    "mtime": 1770096417.60243,
+    "ast_hash": "27dc3f3329f6f64f688a7932c59a543f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-accept.mjs": {
+    "mtime": 1779209141.0553787,
+    "ast_hash": "5b6cf671bb292c4052cc320d7c53090d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/command-metadata.json": {
+    "mtime": 1779209141.0546157,
+    "ast_hash": "be041003b8f0a0bee2d188622433f3ad",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/detect-csp.mjs": {
+    "mtime": 1779209141.0551295,
+    "ast_hash": "02c5a9a8ad69f87d23af72bf580fd3f4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-complete.mjs": {
+    "mtime": 1779209141.0553458,
+    "ast_hash": "ac0ba59701ad5fa70d0dea5b05dc1ac7",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-poll.mjs": {
+    "mtime": 1779209141.055999,
+    "ast_hash": "be4a28a1fceaa4d58613a871a569299c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-status.mjs": {
+    "mtime": 1779209141.0560095,
+    "ast_hash": "88bba34d5e6a399b76be7cbfa6b8f003",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/load-context.mjs": {
+    "mtime": 1779209141.0563157,
+    "ast_hash": "f6a444442298b457279893432648016d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-wrap.mjs": {
+    "mtime": 1779209141.056454,
+    "ast_hash": "7b9232a1c4ae561ba9ae7460b133cc13",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/design-parser.mjs": {
+    "mtime": 1779209141.0547082,
+    "ast_hash": "7a7bf9ea0250f5cb3ddb972e3f909cfd",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live.mjs": {
+    "mtime": 1779209141.0563266,
+    "ast_hash": "831c1fb0e6d3799ed99d3abdd075192d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/impeccable-paths.mjs": {
+    "mtime": 1779209141.0548844,
+    "ast_hash": "a6a072cd51da418e9c95034820555a78",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-completion.mjs": {
+    "mtime": 1779209141.0553257,
+    "ast_hash": "10ef700bb4d62ae8548f4940aaa4ddd3",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/is-generated.mjs": {
+    "mtime": 1779209141.055213,
+    "ast_hash": "edd718b1a4737edbf9631ff7f6f512ef",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/critique-storage.mjs": {
+    "mtime": 1779209141.054742,
+    "ast_hash": "2609dfc633db44ef5990ec2376069ce5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-browser.js": {
+    "mtime": 1779209141.0560532,
+    "ast_hash": "e4c109452e660506a421058f4527593f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-resume.mjs": {
+    "mtime": 1779209141.055873,
+    "ast_hash": "0c2be72d8326ab714baeee6f61deaf2c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/pin.mjs": {
+    "mtime": 1779209141.0566535,
+    "ast_hash": "1b1389e2c3af604305e18377204eaad8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/cleanup-deprecated.mjs": {
+    "mtime": 1779209141.0544517,
+    "ast_hash": "95307241a1c8d204b9d7ad3b0772f9dd",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/detect.mjs": {
+    "mtime": 1779209141.0548668,
+    "ast_hash": "11dbeb9341477d06d1a24c3ad1f37ac9",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-browser-session.js": {
+    "mtime": 1779209141.0551329,
+    "ast_hash": "5dec3dae6158050d69762fb79facaf48",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-inject.mjs": {
+    "mtime": 1779209141.055567,
+    "ast_hash": "7c921f7706aacc52aee069d5f8ccd94c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/modern-screenshot.umd.js": {
+    "mtime": 1779209141.0566685,
+    "ast_hash": "4fe5f9e490ab4f107afc707d7eafc819",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-session-store.mjs": {
+    "mtime": 1779209141.0557597,
+    "ast_hash": "320fc0e3b9ef3435bb087edb2d0ee9ac",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/scripts/live-server.mjs": {
+    "mtime": 1779209141.0557265,
+    "ast_hash": "3fb0510d6ce57f10337a28a07c24f2f2",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/settings.json": {
+    "mtime": 1779254192.6751437,
+    "ast_hash": "5a7a2d1410365306f1e2e1faeb7c5ec2",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/settings.local.json": {
+    "mtime": 1779280925.530483,
+    "ast_hash": "54d6f1974e3de522a85a0ac39cb108f2",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/App.tsx": {
+    "mtime": 1773271463.6493053,
+    "ast_hash": "277d4a53070c851ea7016e5e69ab8cd8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/tsconfig.node.json": {
+    "mtime": 1773271463.6692178,
+    "ast_hash": "eec85c9d7c6b599801557f1afd86672c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/tsconfig.app.json": {
+    "mtime": 1773271463.6681566,
+    "ast_hash": "06fed9d2d293837c0571529eaae7204a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/scripts:replaceLabels.mjs": {
+    "mtime": 1773271463.6607635,
+    "ast_hash": "1c7072ae75f3e890be673cb25304bad4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/AuthPage.tsx": {
+    "mtime": 1773271463.6497428,
+    "ast_hash": "132286bd35e298ef323a58d2ffc76335",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/package.json": {
+    "mtime": 1773271463.6592057,
+    "ast_hash": "08c59a427e7d4e6f92a51c3d9447d0db",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/tsconfig.json": {
+    "mtime": 1773271463.6687489,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/firebase.json": {
+    "mtime": 1773271463.652818,
+    "ast_hash": "fdf1a3b089fdaf3186c3b1d16bae0c4f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/eslint.config.js": {
+    "mtime": 1773271463.6519558,
+    "ast_hash": "b8893da386a89dfd3672dad848f4ec7e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/vite.config.ts": {
+    "mtime": 1773271463.6694033,
+    "ast_hash": "27dc3f3329f6f64f688a7932c59a543f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/.claude/settings.local.json": {
+    "mtime": 1773271463.6866684,
+    "ast_hash": "912413c4c556edb13781775e9d44de10",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/.claude/launch.json": {
+    "mtime": 1773271494.5221596,
+    "ast_hash": "13d552e9d6e18a8c558c5ad407e91708",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/functions/package.json": {
+    "mtime": 1773271463.6545277,
+    "ast_hash": "25553ca9de9c10044a342bf4b95e9d85",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/functions/tsconfig.json": {
+    "mtime": 1773271463.6553166,
+    "ast_hash": "e3680fa2a028661715cd377ee3dd40ce",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/functions/src/index.ts": {
+    "mtime": 1773271463.6548147,
+    "ast_hash": "567e2127a60b8e1597fcbf942b6e3a9e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/App.tsx": {
+    "mtime": 1773271463.662183,
+    "ast_hash": "500cedfbd367a18dac6a548b91e9ca1e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/main.tsx": {
+    "mtime": 1773271463.6661055,
+    "ast_hash": "1d90a444cc0598b9ab6b1baae9de52a8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/AuthPage.tsx": {
+    "mtime": 1773271463.6625404,
+    "ast_hash": "da6b64fd40a80c6c9762702cd6824d1d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/types.ts": {
+    "mtime": 1773271463.6664639,
+    "ast_hash": "84b76f92412649ceb2226aa61e828c3c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/features/transfers/TransfersTable.tsx": {
+    "mtime": 1773271463.6652482,
+    "ast_hash": "02304bd1bcac745984b8c4c338c6393d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/features/transfers/TransferTrackingModal.tsx": {
+    "mtime": 1773271463.6650279,
+    "ast_hash": "54722d2dbc5458e1416a76b8edac0c34",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/utils/helpers.ts": {
+    "mtime": 1773271463.667524,
+    "ast_hash": "e53579d429b20c08d775cabe479a5041",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/utils/authErrors.test.ts": {
+    "mtime": 1773271463.666755,
+    "ast_hash": "701d73b1f98f1ba4f3907aae302c0879",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/utils/authErrors.ts": {
+    "mtime": 1773271463.6671805,
+    "ast_hash": "8d972d5a2de3793c2c669225ec613998",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/MessageBox.tsx": {
+    "mtime": 1773271463.6641674,
+    "ast_hash": "8e0bc2364ed5980c1d923befe1c5c652",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/LoadingSpinner.tsx": {
+    "mtime": 1773271463.6638582,
+    "ast_hash": "0ee9c28a5e337a2656d628f56e10c870",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/DataTable.tsx": {
+    "mtime": 1773271463.6634655,
+    "ast_hash": "2d8c4c2a1a971a27a8876219678dc14c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/Modal.tsx": {
+    "mtime": 1773271463.664464,
+    "ast_hash": "fc21e0d852f4253632dd6a5b2ceb3ce9",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/hooks/useCollection.ts": {
+    "mtime": 1773271463.6655753,
+    "ast_hash": "b0031e30aed35330a12916cc02d766ca",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/App.tsx": {
+    "mtime": 1771420534.3653965,
+    "ast_hash": "5e2c3b1e71cc88d84134a25f5fee4f0b",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/tsconfig.node.json": {
+    "mtime": 1771420534.3868072,
+    "ast_hash": "eec85c9d7c6b599801557f1afd86672c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/tsconfig.app.json": {
+    "mtime": 1771420534.386262,
+    "ast_hash": "06fed9d2d293837c0571529eaae7204a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/scripts:replaceLabels.mjs": {
+    "mtime": 1771420534.3774314,
+    "ast_hash": "1c7072ae75f3e890be673cb25304bad4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/AuthPage.tsx": {
+    "mtime": 1771420534.3660567,
+    "ast_hash": "132286bd35e298ef323a58d2ffc76335",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/package.json": {
+    "mtime": 1771420534.3758464,
+    "ast_hash": "08c59a427e7d4e6f92a51c3d9447d0db",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/tsconfig.json": {
+    "mtime": 1771420534.3866403,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/firebase.json": {
+    "mtime": 1771420534.3687663,
+    "ast_hash": "d1d71599754d4a033b1b0a044baf47cc",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/eslint.config.js": {
+    "mtime": 1771420534.3684819,
+    "ast_hash": "b8893da386a89dfd3672dad848f4ec7e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/vite.config.ts": {
+    "mtime": 1771420534.3870716,
+    "ast_hash": "27dc3f3329f6f64f688a7932c59a543f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/.claude/settings.local.json": {
+    "mtime": 1771422513.5256443,
+    "ast_hash": "8cb2bd3b393212b5d591e457f50cd7e3",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/functions/package.json": {
+    "mtime": 1771420534.3713017,
+    "ast_hash": "25553ca9de9c10044a342bf4b95e9d85",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/functions/tsconfig.json": {
+    "mtime": 1771420534.3719456,
+    "ast_hash": "e3680fa2a028661715cd377ee3dd40ce",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/functions/src/index.ts": {
+    "mtime": 1771420534.3716936,
+    "ast_hash": "567e2127a60b8e1597fcbf942b6e3a9e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/App.tsx": {
+    "mtime": 1771422577.902628,
+    "ast_hash": "3a775ce368cad30ee91ad5561904dc1e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/main.tsx": {
+    "mtime": 1771420534.3831942,
+    "ast_hash": "1d90a444cc0598b9ab6b1baae9de52a8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/AuthPage.tsx": {
+    "mtime": 1771420534.3791826,
+    "ast_hash": "da6b64fd40a80c6c9762702cd6824d1d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/types.ts": {
+    "mtime": 1771421661.3695107,
+    "ast_hash": "20b342dfdb5753841ac9cfc096c0b14b",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/transfers/TransfersTable.tsx": {
+    "mtime": 1771420534.3821533,
+    "ast_hash": "02304bd1bcac745984b8c4c338c6393d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/transfers/TransferTrackingModal.tsx": {
+    "mtime": 1771420534.3816776,
+    "ast_hash": "54722d2dbc5458e1416a76b8edac0c34",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPanel.tsx": {
+    "mtime": 1771421750.4068685,
+    "ast_hash": "2c81732ffd30c8a22abd47732ccf688d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx": {
+    "mtime": 1771422585.5325165,
+    "ast_hash": "8dd5f14f41ac595e051b779ec1f3bccd",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/inventory/AdjustQuantityModal.tsx": {
+    "mtime": 1771421747.4599574,
+    "ast_hash": "6feea06bd0ff4444fc4788f129fde8bf",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/inventory/ItemDetailPage.tsx": {
+    "mtime": 1771421860.0696895,
+    "ast_hash": "a6ff7b5295b8698040dc47de6abc158a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/activityHistory/ActivityHistoryPage.tsx": {
+    "mtime": 1771421889.3956184,
+    "ast_hash": "b483bf0391d35df03da5006f24a93115",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/utils/helpers.ts": {
+    "mtime": 1771420534.3852832,
+    "ast_hash": "e53579d429b20c08d775cabe479a5041",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/utils/authErrors.test.ts": {
+    "mtime": 1771420534.3842368,
+    "ast_hash": "701d73b1f98f1ba4f3907aae302c0879",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/utils/authErrors.ts": {
+    "mtime": 1771420534.3849459,
+    "ast_hash": "8d972d5a2de3793c2c669225ec613998",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/utils/stockStatus.ts": {
+    "mtime": 1771421672.298253,
+    "ast_hash": "51d8775e93b1ec5bc3d9761d2a939d87",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/MessageBox.tsx": {
+    "mtime": 1771420534.3807693,
+    "ast_hash": "8e0bc2364ed5980c1d923befe1c5c652",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/StatusChip.tsx": {
+    "mtime": 1771421674.9236763,
+    "ast_hash": "5c37b85507a569b607765ed734c4369a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/LoadingSpinner.tsx": {
+    "mtime": 1771420534.38052,
+    "ast_hash": "0ee9c28a5e337a2656d628f56e10c870",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/DataTable.tsx": {
+    "mtime": 1771420534.3800902,
+    "ast_hash": "2d8c4c2a1a971a27a8876219678dc14c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/GlobalSearch.tsx": {
+    "mtime": 1771421709.3183532,
+    "ast_hash": "2ccfc27f5649275a26d1e6d021cba403",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/Modal.tsx": {
+    "mtime": 1771420534.3811162,
+    "ast_hash": "fc21e0d852f4253632dd6a5b2ceb3ce9",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/Toast.tsx": {
+    "mtime": 1771421682.7353265,
+    "ast_hash": "a1a9696a8edcafba8acc8454704d2207",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/hooks/useCollection.ts": {
+    "mtime": 1771420534.3825035,
+    "ast_hash": "b0031e30aed35330a12916cc02d766ca",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/App.tsx": {
+    "mtime": 1773109503.1273103,
+    "ast_hash": "277d4a53070c851ea7016e5e69ab8cd8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/tsconfig.node.json": {
+    "mtime": 1773109503.146106,
+    "ast_hash": "eec85c9d7c6b599801557f1afd86672c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/tsconfig.app.json": {
+    "mtime": 1773109503.1453846,
+    "ast_hash": "06fed9d2d293837c0571529eaae7204a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/scripts:replaceLabels.mjs": {
+    "mtime": 1773109503.1384351,
+    "ast_hash": "1c7072ae75f3e890be673cb25304bad4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/AuthPage.tsx": {
+    "mtime": 1773109503.1277032,
+    "ast_hash": "132286bd35e298ef323a58d2ffc76335",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/package.json": {
+    "mtime": 1773109503.136932,
+    "ast_hash": "08c59a427e7d4e6f92a51c3d9447d0db",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/tsconfig.json": {
+    "mtime": 1773109503.145843,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/firebase.json": {
+    "mtime": 1773109503.1305964,
+    "ast_hash": "fdf1a3b089fdaf3186c3b1d16bae0c4f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/eslint.config.js": {
+    "mtime": 1773109503.1300714,
+    "ast_hash": "b8893da386a89dfd3672dad848f4ec7e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/vite.config.ts": {
+    "mtime": 1773109503.1462543,
+    "ast_hash": "27dc3f3329f6f64f688a7932c59a543f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/.claude/settings.local.json": {
+    "mtime": 1773109503.1593676,
+    "ast_hash": "912413c4c556edb13781775e9d44de10",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/functions/package.json": {
+    "mtime": 1773109503.1320865,
+    "ast_hash": "25553ca9de9c10044a342bf4b95e9d85",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/functions/tsconfig.json": {
+    "mtime": 1773109503.1327467,
+    "ast_hash": "e3680fa2a028661715cd377ee3dd40ce",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/functions/src/index.ts": {
+    "mtime": 1773109503.1324282,
+    "ast_hash": "567e2127a60b8e1597fcbf942b6e3a9e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/App.tsx": {
+    "mtime": 1773109503.1396666,
+    "ast_hash": "500cedfbd367a18dac6a548b91e9ca1e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/main.tsx": {
+    "mtime": 1773109503.1435537,
+    "ast_hash": "1d90a444cc0598b9ab6b1baae9de52a8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/AuthPage.tsx": {
+    "mtime": 1773109503.140056,
+    "ast_hash": "da6b64fd40a80c6c9762702cd6824d1d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/types.ts": {
+    "mtime": 1773109503.1439323,
+    "ast_hash": "84b76f92412649ceb2226aa61e828c3c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/features/transfers/TransfersTable.tsx": {
+    "mtime": 1773109503.142769,
+    "ast_hash": "02304bd1bcac745984b8c4c338c6393d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/features/transfers/TransferTrackingModal.tsx": {
+    "mtime": 1773109503.1425743,
+    "ast_hash": "54722d2dbc5458e1416a76b8edac0c34",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/utils/helpers.ts": {
+    "mtime": 1773109503.144851,
+    "ast_hash": "e53579d429b20c08d775cabe479a5041",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/utils/authErrors.test.ts": {
+    "mtime": 1773109503.1442037,
+    "ast_hash": "701d73b1f98f1ba4f3907aae302c0879",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/utils/authErrors.ts": {
+    "mtime": 1773109503.1446629,
+    "ast_hash": "8d972d5a2de3793c2c669225ec613998",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/MessageBox.tsx": {
+    "mtime": 1773109503.1415308,
+    "ast_hash": "8e0bc2364ed5980c1d923befe1c5c652",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/LoadingSpinner.tsx": {
+    "mtime": 1773109503.1412,
+    "ast_hash": "0ee9c28a5e337a2656d628f56e10c870",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/DataTable.tsx": {
+    "mtime": 1773109503.1408415,
+    "ast_hash": "2d8c4c2a1a971a27a8876219678dc14c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/Modal.tsx": {
+    "mtime": 1773109503.141955,
+    "ast_hash": "fc21e0d852f4253632dd6a5b2ceb3ce9",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/hooks/useCollection.ts": {
+    "mtime": 1773109503.143057,
+    "ast_hash": "b0031e30aed35330a12916cc02d766ca",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/App.tsx": {
+    "mtime": 1773009742.060057,
+    "ast_hash": "5e2c3b1e71cc88d84134a25f5fee4f0b",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/tsconfig.node.json": {
+    "mtime": 1773009742.0796897,
+    "ast_hash": "eec85c9d7c6b599801557f1afd86672c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/tsconfig.app.json": {
+    "mtime": 1773009742.079,
+    "ast_hash": "06fed9d2d293837c0571529eaae7204a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/scripts:replaceLabels.mjs": {
+    "mtime": 1773009742.0697515,
+    "ast_hash": "1c7072ae75f3e890be673cb25304bad4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/AuthPage.tsx": {
+    "mtime": 1773009742.0604548,
+    "ast_hash": "132286bd35e298ef323a58d2ffc76335",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/package.json": {
+    "mtime": 1773009742.0688863,
+    "ast_hash": "08c59a427e7d4e6f92a51c3d9447d0db",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/tsconfig.json": {
+    "mtime": 1773009742.0794466,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/firebase.json": {
+    "mtime": 1773009742.063006,
+    "ast_hash": "d1d71599754d4a033b1b0a044baf47cc",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/eslint.config.js": {
+    "mtime": 1773009742.0626442,
+    "ast_hash": "b8893da386a89dfd3672dad848f4ec7e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/vite.config.ts": {
+    "mtime": 1773009742.0798979,
+    "ast_hash": "27dc3f3329f6f64f688a7932c59a543f",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/project-summary.json": {
+    "mtime": 1773010492.7555418,
+    "ast_hash": "42e55bee4040dc73d94c70e4cc37b393",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/.claude/settings.local.json": {
+    "mtime": 1773009742.0916839,
+    "ast_hash": "912413c4c556edb13781775e9d44de10",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/functions/package.json": {
+    "mtime": 1773009742.065666,
+    "ast_hash": "25553ca9de9c10044a342bf4b95e9d85",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/functions/tsconfig.json": {
+    "mtime": 1773009742.0661054,
+    "ast_hash": "e3680fa2a028661715cd377ee3dd40ce",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/functions/src/index.ts": {
+    "mtime": 1773009742.0658705,
+    "ast_hash": "567e2127a60b8e1597fcbf942b6e3a9e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/App.tsx": {
+    "mtime": 1773009742.0705698,
+    "ast_hash": "3a775ce368cad30ee91ad5561904dc1e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/main.tsx": {
+    "mtime": 1773009742.0766542,
+    "ast_hash": "1d90a444cc0598b9ab6b1baae9de52a8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/AuthPage.tsx": {
+    "mtime": 1773009742.0709188,
+    "ast_hash": "da6b64fd40a80c6c9762702cd6824d1d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/types.ts": {
+    "mtime": 1773009742.0768912,
+    "ast_hash": "20b342dfdb5753841ac9cfc096c0b14b",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/transfers/TransfersTable.tsx": {
+    "mtime": 1773009742.075927,
+    "ast_hash": "02304bd1bcac745984b8c4c338c6393d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/transfers/TransferTrackingModal.tsx": {
+    "mtime": 1773009742.0757337,
+    "ast_hash": "54722d2dbc5458e1416a76b8edac0c34",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPanel.tsx": {
+    "mtime": 1773009742.0746799,
+    "ast_hash": "2c81732ffd30c8a22abd47732ccf688d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx": {
+    "mtime": 1773009742.0744414,
+    "ast_hash": "8dd5f14f41ac595e051b779ec1f3bccd",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/inventory/AdjustQuantityModal.tsx": {
+    "mtime": 1773009742.0749743,
+    "ast_hash": "6feea06bd0ff4444fc4788f129fde8bf",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/inventory/ItemDetailPage.tsx": {
+    "mtime": 1773009742.0753047,
+    "ast_hash": "a6ff7b5295b8698040dc47de6abc158a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/activityHistory/ActivityHistoryPage.tsx": {
+    "mtime": 1773009742.0739946,
+    "ast_hash": "b483bf0391d35df03da5006f24a93115",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/utils/helpers.ts": {
+    "mtime": 1773009742.0778666,
+    "ast_hash": "e53579d429b20c08d775cabe479a5041",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/utils/authErrors.test.ts": {
+    "mtime": 1773009742.0772767,
+    "ast_hash": "701d73b1f98f1ba4f3907aae302c0879",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/utils/authErrors.ts": {
+    "mtime": 1773009742.0775898,
+    "ast_hash": "8d972d5a2de3793c2c669225ec613998",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/utils/stockStatus.ts": {
+    "mtime": 1773009742.078094,
+    "ast_hash": "51d8775e93b1ec5bc3d9761d2a939d87",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/MessageBox.tsx": {
+    "mtime": 1773009742.0727525,
+    "ast_hash": "8e0bc2364ed5980c1d923befe1c5c652",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/StatusChip.tsx": {
+    "mtime": 1773009742.0732899,
+    "ast_hash": "5c37b85507a569b607765ed734c4369a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/LoadingSpinner.tsx": {
+    "mtime": 1773009742.0721848,
+    "ast_hash": "0ee9c28a5e337a2656d628f56e10c870",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/DataTable.tsx": {
+    "mtime": 1773009742.0715985,
+    "ast_hash": "2d8c4c2a1a971a27a8876219678dc14c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/GlobalSearch.tsx": {
+    "mtime": 1773009742.0719056,
+    "ast_hash": "2ccfc27f5649275a26d1e6d021cba403",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/Modal.tsx": {
+    "mtime": 1773009742.0730503,
+    "ast_hash": "fc21e0d852f4253632dd6a5b2ceb3ce9",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/Toast.tsx": {
+    "mtime": 1773009742.0736618,
+    "ast_hash": "a1a9696a8edcafba8acc8454704d2207",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/hooks/useCollection.ts": {
+    "mtime": 1773009742.0761802,
+    "ast_hash": "b0031e30aed35330a12916cc02d766ca",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/functions/package.json": {
+    "mtime": 1770126113.066255,
+    "ast_hash": "25553ca9de9c10044a342bf4b95e9d85",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/functions/tsconfig.json": {
+    "mtime": 1770126114.0873082,
+    "ast_hash": "e3680fa2a028661715cd377ee3dd40ce",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/functions/src/index.ts": {
+    "mtime": 1779233852.5843759,
+    "ast_hash": "8e7ba83e3e554b65ae08d07398b9b066",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/App.tsx": {
+    "mtime": 1779253469.4637208,
+    "ast_hash": "231b5f43622ac87ebe42b64b26002138",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/main.tsx": {
+    "mtime": 1763255956.164386,
+    "ast_hash": "1d90a444cc0598b9ab6b1baae9de52a8",
+    "semantic_hash": "1d90a444cc0598b9ab6b1baae9de52a8"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/AuthPage.tsx": {
+    "mtime": 1775518889.0615702,
+    "ast_hash": "760d982e967e9aba98583f74ba910eb6",
+    "semantic_hash": "760d982e967e9aba98583f74ba910eb6"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/types.ts": {
+    "mtime": 1779250235.720046,
+    "ast_hash": "5177ba95aa8c14b43cbde9b93f1975e7",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/settings/UserSettingsModal.tsx": {
+    "mtime": 1779159548.1494555,
+    "ast_hash": "780a690e549d3d50b58063f34927dee4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/warehouses/AddWarehouseModal.tsx": {
+    "mtime": 1779250228.8488667,
+    "ast_hash": "0343decb8399f03f95facf359d4532cc",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/projects/ProjectModal.tsx": {
+    "mtime": 1779254457.9085577,
+    "ast_hash": "9ccd74fc08fb8d1b912540d83727b7e7",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransfersTable.tsx": {
+    "mtime": 1779232034.297191,
+    "ast_hash": "49c70287af11b17d50e98130f68925dd",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransferTrackingModal.tsx": {
+    "mtime": 1769471608.029115,
+    "ast_hash": "54722d2dbc5458e1416a76b8edac0c34",
+    "semantic_hash": "54722d2dbc5458e1416a76b8edac0c34"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPanel.tsx": {
+    "mtime": 1771535172.9342508,
+    "ast_hash": "2c81732ffd30c8a22abd47732ccf688d",
+    "semantic_hash": "2c81732ffd30c8a22abd47732ccf688d"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx": {
+    "mtime": 1775563364.259209,
+    "ast_hash": "2ca09a312a29e4fd2f7bb504d029be02",
+    "semantic_hash": "2ca09a312a29e4fd2f7bb504d029be02"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/inventory/AdjustQuantityModal.tsx": {
+    "mtime": 1771535172.9347255,
+    "ast_hash": "6feea06bd0ff4444fc4788f129fde8bf",
+    "semantic_hash": "6feea06bd0ff4444fc4788f129fde8bf"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/inventory/ItemDetailPage.tsx": {
+    "mtime": 1771535172.9350314,
+    "ast_hash": "a6ff7b5295b8698040dc47de6abc158a",
+    "semantic_hash": "a6ff7b5295b8698040dc47de6abc158a"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/features/activityHistory/ActivityHistoryPage.tsx": {
+    "mtime": 1771535172.933437,
+    "ast_hash": "b483bf0391d35df03da5006f24a93115",
+    "semantic_hash": "b483bf0391d35df03da5006f24a93115"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/utils/helpers.ts": {
+    "mtime": 1779233847.8657465,
+    "ast_hash": "65608c3dd4c45fd11970c69d874c0105",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/utils/authErrors.test.ts": {
+    "mtime": 1769471608.030221,
+    "ast_hash": "701d73b1f98f1ba4f3907aae302c0879",
+    "semantic_hash": "701d73b1f98f1ba4f3907aae302c0879"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/utils/authErrors.ts": {
+    "mtime": 1769471608.030456,
+    "ast_hash": "8d972d5a2de3793c2c669225ec613998",
+    "semantic_hash": "8d972d5a2de3793c2c669225ec613998"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/utils/stockStatus.ts": {
+    "mtime": 1771535172.936352,
+    "ast_hash": "51d8775e93b1ec5bc3d9761d2a939d87",
+    "semantic_hash": "51d8775e93b1ec5bc3d9761d2a939d87"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/MessageBox.tsx": {
+    "mtime": 1775518884.998096,
+    "ast_hash": "c7e7f2c3fdf6606d2d89948fb51b1091",
+    "semantic_hash": "c7e7f2c3fdf6606d2d89948fb51b1091"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/StatusChip.tsx": {
+    "mtime": 1771535172.9324856,
+    "ast_hash": "5c37b85507a569b607765ed734c4369a",
+    "semantic_hash": "5c37b85507a569b607765ed734c4369a"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/LoadingSpinner.tsx": {
+    "mtime": 1775518881.979692,
+    "ast_hash": "1f4437ffd105926e0f99cde5dfa417f3",
+    "semantic_hash": "1f4437ffd105926e0f99cde5dfa417f3"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/DataTable.tsx": {
+    "mtime": 1775563348.6678197,
+    "ast_hash": "9b32245fd8e01d984564dfdf2903dab2",
+    "semantic_hash": "9b32245fd8e01d984564dfdf2903dab2"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/GlobalSearch.tsx": {
+    "mtime": 1775563341.6259391,
+    "ast_hash": "f8428385ddc4ba61e445f7be3e5d64f7",
+    "semantic_hash": "f8428385ddc4ba61e445f7be3e5d64f7"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/Modal.tsx": {
+    "mtime": 1775563331.3281345,
+    "ast_hash": "8efd9c7a96102bd6c4995fa133fdc3e9",
+    "semantic_hash": "8efd9c7a96102bd6c4995fa133fdc3e9"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/components/Toast.tsx": {
+    "mtime": 1775563335.829074,
+    "ast_hash": "af0c168eb7f1410a94696b58ba787150",
+    "semantic_hash": "af0c168eb7f1410a94696b58ba787150"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/hooks/useCollection.ts": {
+    "mtime": 1779038389.992996,
+    "ast_hash": "b50a8638a3fcd3859e8de70e61fd6509",
+    "semantic_hash": "b50a8638a3fcd3859e8de70e61fd6509"
+  },
+  "/Users/kingdem/Projects/BenchStockdev/PRODUCT.md": {
+    "mtime": 1779230416.7461061,
+    "ast_hash": "ef5301a701bf9fce52d7957caa05bde0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/index.html": {
+    "mtime": 1763255623.6595953,
+    "ast_hash": "66ff5fa31e0f6fd857661d426eaa7195",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/firestore-rules-test.md": {
+    "mtime": 1770388266.2107193,
+    "ast_hash": "b3c07a2c38f5ea647dbef74f66f64cd5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/README.md": {
+    "mtime": 1770174360.5365758,
+    "ast_hash": "73dc95dc96d0dd13efdc8c9c4f57d185",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/CLOUD_FUNCTIONS_SETUP.md": {
+    "mtime": 1770126309.9795518,
+    "ast_hash": "545009ead1d19ef5218358fd4d439266",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/QUICKSTART_CLOUD_FUNCTIONS.md": {
+    "mtime": 1770126381.4690094,
+    "ast_hash": "f47031eddcc14c5fdc4314eb2905fa46",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/CLAUDE.md": {
+    "mtime": 1779032508.3905203,
+    "ast_hash": "4a74778e465e3c66ba19099e7cc3dd89",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/SECURITY.md": {
+    "mtime": 1770125981.0232868,
+    "ast_hash": "df78704496868f34e15c692d65d41d58",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/tasks/todo.md": {
+    "mtime": 1770487210.4440231,
+    "ast_hash": "a144ceb0a721d0dccaeb2a25184057f0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/SKILL.md": {
+    "mtime": 1779209141.0477195,
+    "ast_hash": "1e93a584828f31faf97db24566a437b2",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/agents/impeccable-asset-producer.md": {
+    "mtime": 1779209141.0502172,
+    "ast_hash": "8cac978c0a903cd889f443ca53bf3c7c",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/document.md": {
+    "mtime": 1779209141.0514965,
+    "ast_hash": "a6fb0b8d06bd182a3a037559c0b057c9",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/ux-writing.md": {
+    "mtime": 1779209141.0543835,
+    "ast_hash": "4372081cccf2d3cae2dda4365286c27d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/distill.md": {
+    "mtime": 1779209141.0521817,
+    "ast_hash": "d73355d80b876f0421361159e96df478",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/shape.md": {
+    "mtime": 1779209141.0535493,
+    "ast_hash": "498591efc03a33a61194aaee978071b1",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/product.md": {
+    "mtime": 1779209141.0534558,
+    "ast_hash": "41692c6cfb61d391d221be49981308a6",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/adapt.md": {
+    "mtime": 1779209141.0501688,
+    "ast_hash": "e0ede4493698e28a2fe582bd5366a7f5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/live.md": {
+    "mtime": 1779209141.0531552,
+    "ast_hash": "6cb26cf50c92edfbbff103601c4beca6",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/bolder.md": {
+    "mtime": 1779209141.0507705,
+    "ast_hash": "7033c256497ceb25be2387e3fc27dc80",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/harden.md": {
+    "mtime": 1779209141.05139,
+    "ast_hash": "244327cb684a938c497bd40593d1b9c0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/extract.md": {
+    "mtime": 1779209141.0519307,
+    "ast_hash": "88b616c2be9a4a91553237dcf5cc79c8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/brand.md": {
+    "mtime": 1779209141.0514095,
+    "ast_hash": "d9f1c9bf8e4a88c32f9230b91473fc4d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/polish.md": {
+    "mtime": 1779209141.053999,
+    "ast_hash": "fc9090e027c5727f7863abd191582894",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/spatial-design.md": {
+    "mtime": 1779209141.0538118,
+    "ast_hash": "9af5ed3dfb4a5560ffbcfc1610e926fb",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/typeset.md": {
+    "mtime": 1779209141.053899,
+    "ast_hash": "d78c649fb34c4310163887e6714173ce",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/quieter.md": {
+    "mtime": 1779209141.053423,
+    "ast_hash": "6a6bfd68d147a6ebf46981df655b6801",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/heuristics-scoring.md": {
+    "mtime": 1779209141.0523725,
+    "ast_hash": "8620ea69160ca53e97bccfffde2b902d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/critique.md": {
+    "mtime": 1779209141.0511072,
+    "ast_hash": "01360d757c1a6a9d1746f316f4e145ec",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/colorize.md": {
+    "mtime": 1779209141.0510886,
+    "ast_hash": "044a3eb7ef18c681ad0143f2c983e08d",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/audit.md": {
+    "mtime": 1779209141.050216,
+    "ast_hash": "6f958ff90c4e67d6877a607e02f16553",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/craft.md": {
+    "mtime": 1779209141.0514414,
+    "ast_hash": "5c0decfbc5e4011d2d02ccb96a26b087",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/clarify.md": {
+    "mtime": 1779209141.0507565,
+    "ast_hash": "66dad8f334e530bd9fb07f3b59ef6180",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/codex.md": {
+    "mtime": 1779209141.050891,
+    "ast_hash": "dc20c0839c5b3454dbcc6ead6b3e4f62",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/onboard.md": {
+    "mtime": 1779209141.052589,
+    "ast_hash": "9a359c12f2d6785fe586d313e0be5eaa",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/optimize.md": {
+    "mtime": 1779209141.0531647,
+    "ast_hash": "6ec8469d7a74266115b59747a9772374",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/animate.md": {
+    "mtime": 1779209141.050471,
+    "ast_hash": "88cab546cd013d84339c02b92bba58e5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/overdrive.md": {
+    "mtime": 1779209141.0536013,
+    "ast_hash": "fcd853d2fabd1f04b2d2562e992ec266",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/motion-design.md": {
+    "mtime": 1779209141.0530183,
+    "ast_hash": "5e8464e05b80b9f754021f6775673e1a",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/personas.md": {
+    "mtime": 1779209141.0534253,
+    "ast_hash": "2fb1a7e3461ea4ed976c1f52f59db505",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/typography.md": {
+    "mtime": 1779209141.0538106,
+    "ast_hash": "7845ab35446e5d4df790096ab3582f4e",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/interaction-design.md": {
+    "mtime": 1779209141.055134,
+    "ast_hash": "af8ee67d75be74424f33acb14b12fc53",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/color-and-contrast.md": {
+    "mtime": 1779209141.0510871,
+    "ast_hash": "c4bd07b970b5a51fbdd160122be9c2d5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/cognitive-load.md": {
+    "mtime": 1779209141.0508986,
+    "ast_hash": "45ea35a19d49049cdda7ef9a8f9441a0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/delight.md": {
+    "mtime": 1779209141.0517719,
+    "ast_hash": "a7667abc05a7e67bd0eca341dd2f8661",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/layout.md": {
+    "mtime": 1779209141.052881,
+    "ast_hash": "9e96dfecdad66058c0bcad91797a1da0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/responsive-design.md": {
+    "mtime": 1779209141.0539567,
+    "ast_hash": "63aba44e803e67013f01721584f3c1d8",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.agents/skills/impeccable/reference/teach.md": {
+    "mtime": 1779209141.0546112,
+    "ast_hash": "a1b59bc35d39a4ef3e23b632bd6e5426",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/docs/architectural_patterns.md": {
+    "mtime": 1770487059.7543318,
+    "ast_hash": "f35e49348fc991b5a8cf9f9aa0c289e4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/index.html": {
+    "mtime": 1773271463.6567066,
+    "ast_hash": "66ff5fa31e0f6fd857661d426eaa7195",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/README.md": {
+    "mtime": 1773271463.6510105,
+    "ast_hash": "5b482aef55c10022eaf934440ee12158",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/CLOUD_FUNCTIONS_SETUP.md": {
+    "mtime": 1773271463.6503093,
+    "ast_hash": "545009ead1d19ef5218358fd4d439266",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/QUICKSTART_CLOUD_FUNCTIONS.md": {
+    "mtime": 1773271463.6506324,
+    "ast_hash": "f47031eddcc14c5fdc4314eb2905fa46",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/SECURITY.md": {
+    "mtime": 1773271463.6515353,
+    "ast_hash": "df78704496868f34e15c692d65d41d58",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/.claude/docs/architectural_patterns.md": {
+    "mtime": 1773271463.6840253,
+    "ast_hash": "f35e49348fc991b5a8cf9f9aa0c289e4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/.github/workflows/firebase-hosting-pull-request.yml": {
+    "mtime": 1773271463.6476078,
+    "ast_hash": "ce8b720af1d4e5a2a68ba18c56836851",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/functions/README.md": {
+    "mtime": 1773271463.6540692,
+    "ast_hash": "da4cb65870d9e4925b699d9807d78dc5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/index.html": {
+    "mtime": 1771420534.3726437,
+    "ast_hash": "66ff5fa31e0f6fd857661d426eaa7195",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/firestore-rules-test.md": {
+    "mtime": 1771420534.3690226,
+    "ast_hash": "b3c07a2c38f5ea647dbef74f66f64cd5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/README.md": {
+    "mtime": 1771420534.3674192,
+    "ast_hash": "73dc95dc96d0dd13efdc8c9c4f57d185",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/CLOUD_FUNCTIONS_SETUP.md": {
+    "mtime": 1771420534.3666768,
+    "ast_hash": "545009ead1d19ef5218358fd4d439266",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/QUICKSTART_CLOUD_FUNCTIONS.md": {
+    "mtime": 1771420534.3669624,
+    "ast_hash": "f47031eddcc14c5fdc4314eb2905fa46",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/claude.md": {
+    "mtime": 1771420534.367928,
+    "ast_hash": "be358805c3a9b0f1e51c713e8f603727",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/SECURITY.md": {
+    "mtime": 1771420534.3676958,
+    "ast_hash": "df78704496868f34e15c692d65d41d58",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/tasks/todo.md": {
+    "mtime": 1771420534.3859575,
+    "ast_hash": "a144ceb0a721d0dccaeb2a25184057f0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/.claude/docs/architectural_patterns.md": {
+    "mtime": 1771420534.399353,
+    "ast_hash": "f35e49348fc991b5a8cf9f9aa0c289e4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/.github/workflows/firebase-hosting-pull-request.yml": {
+    "mtime": 1771420534.3638706,
+    "ast_hash": "ce8b720af1d4e5a2a68ba18c56836851",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/functions/README.md": {
+    "mtime": 1771420534.3703551,
+    "ast_hash": "da4cb65870d9e4925b699d9807d78dc5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/index.html": {
+    "mtime": 1773109503.1341484,
+    "ast_hash": "66ff5fa31e0f6fd857661d426eaa7195",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/README.md": {
+    "mtime": 1773109503.1291683,
+    "ast_hash": "5b482aef55c10022eaf934440ee12158",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/CLOUD_FUNCTIONS_SETUP.md": {
+    "mtime": 1773109503.1282828,
+    "ast_hash": "545009ead1d19ef5218358fd4d439266",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/QUICKSTART_CLOUD_FUNCTIONS.md": {
+    "mtime": 1773109503.1287115,
+    "ast_hash": "f47031eddcc14c5fdc4314eb2905fa46",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/SECURITY.md": {
+    "mtime": 1773109503.1296487,
+    "ast_hash": "df78704496868f34e15c692d65d41d58",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/.claude/docs/architectural_patterns.md": {
+    "mtime": 1773109503.1589918,
+    "ast_hash": "f35e49348fc991b5a8cf9f9aa0c289e4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/.github/workflows/firebase-hosting-pull-request.yml": {
+    "mtime": 1773109503.1250286,
+    "ast_hash": "ce8b720af1d4e5a2a68ba18c56836851",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/functions/README.md": {
+    "mtime": 1773109503.1316316,
+    "ast_hash": "da4cb65870d9e4925b699d9807d78dc5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/index.html": {
+    "mtime": 1773009742.0669463,
+    "ast_hash": "66ff5fa31e0f6fd857661d426eaa7195",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/firestore-rules-test.md": {
+    "mtime": 1773009742.063368,
+    "ast_hash": "b3c07a2c38f5ea647dbef74f66f64cd5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/README.md": {
+    "mtime": 1773009742.061357,
+    "ast_hash": "73dc95dc96d0dd13efdc8c9c4f57d185",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/CLOUD_FUNCTIONS_SETUP.md": {
+    "mtime": 1773009742.0607831,
+    "ast_hash": "545009ead1d19ef5218358fd4d439266",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/QUICKSTART_CLOUD_FUNCTIONS.md": {
+    "mtime": 1773009742.0610619,
+    "ast_hash": "f47031eddcc14c5fdc4314eb2905fa46",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/claude.md": {
+    "mtime": 1773009742.0619626,
+    "ast_hash": "be358805c3a9b0f1e51c713e8f603727",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/SECURITY.md": {
+    "mtime": 1773009742.0616152,
+    "ast_hash": "df78704496868f34e15c692d65d41d58",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/tasks/todo.md": {
+    "mtime": 1773009742.0787766,
+    "ast_hash": "a144ceb0a721d0dccaeb2a25184057f0",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/.claude/docs/architectural_patterns.md": {
+    "mtime": 1773009742.0914457,
+    "ast_hash": "f35e49348fc991b5a8cf9f9aa0c289e4",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/.github/workflows/firebase-hosting-pull-request.yml": {
+    "mtime": 1773009742.0588906,
+    "ast_hash": "ce8b720af1d4e5a2a68ba18c56836851",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/functions/README.md": {
+    "mtime": 1773009742.0646305,
+    "ast_hash": "da4cb65870d9e4925b699d9807d78dc5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.github/workflows/firebase-hosting-pull-request.yml": {
+    "mtime": 1764015210.402841,
+    "ast_hash": "ce8b720af1d4e5a2a68ba18c56836851",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/functions/README.md": {
+    "mtime": 1770126337.7497287,
+    "ast_hash": "da4cb65870d9e4925b699d9807d78dc5",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/public/vite.svg": {
+    "mtime": 1773271463.6603453,
+    "ast_hash": "8e3a10e157f75ada21ab742c022d5430",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/assets/react.svg": {
+    "mtime": 1773271463.662977,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/public/vite.svg": {
+    "mtime": 1771420534.3770025,
+    "ast_hash": "8e3a10e157f75ada21ab742c022d5430",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/assets/react.svg": {
+    "mtime": 1771420534.3796687,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/public/vite.svg": {
+    "mtime": 1773109503.138089,
+    "ast_hash": "8e3a10e157f75ada21ab742c022d5430",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/assets/react.svg": {
+    "mtime": 1773109503.1404893,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/public/vite.svg": {
+    "mtime": 1773009742.0695028,
+    "ast_hash": "8e3a10e157f75ada21ab742c022d5430",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/assets/react.svg": {
+    "mtime": 1773009742.0712874,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/public/vite.svg": {
+    "mtime": 1763237603.3099673,
+    "ast_hash": "8e3a10e157f75ada21ab742c022d5430",
+    "semantic_hash": ""
+  },
+  "/Users/kingdem/Projects/BenchStockdev/src/assets/react.svg": {
+    "mtime": 1763237603.3127103,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": "f0402b67b6ce880f65666bb49e841696"
+  }
+}

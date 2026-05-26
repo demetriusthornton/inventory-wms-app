@@ -1,0 +1,23 @@
+{
+  "0": "Core App Shell",
+  "1": "Data Tables & Activity Logs",
+  "2": "Search & Status Display",
+  "3": "Firestore Collections & Pages",
+  "4": "Multi-tenancy & UPC Lookup",
+  "5": "Toast Notifications & Undo",
+  "6": "Modal Components",
+  "7": "Dashboard UI",
+  "8": "Auth & Error Handling",
+  "9": "React Assets",
+  "10": "Firebase Config",
+  "11": "Component Composition",
+  "12": "Type System",
+  "13": "Monolithic Architecture",
+  "14": "Health Check Function",
+  "15": "Build Tool Assets",
+  "16": "Framework Assets",
+  "17": "Community 17",
+  "18": "Community 18",
+  "19": "Community 19",
+  "20": "Community 20"
+}

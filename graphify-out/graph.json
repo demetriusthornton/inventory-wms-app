@@ -1,0 +1,5362 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "cloud_functions_security_pattern",
+        "label": "Cloud Functions with Auth and API Key Protection",
+        "nodes": [
+          "docs_architectural_patterns_cloudfunctions",
+          "docs_architectural_patterns_security",
+          "functions_readme_lookupupc"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": ".claude/docs/architectural_patterns.md"
+      },
+      {
+        "id": "inventory_data_flow",
+        "label": "Inventory Data Flow: App distributes inventory to pages",
+        "nodes": [
+          "src_app_appcomponent",
+          "dashboard_dashboardpage_dashboardpage",
+          "inventory_itemdetailpage_itemdetailpage",
+          "activityhistory_activityhistorypage_activityhistorypage"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "src/App.tsx"
+      },
+      {
+        "id": "stockstatus_evaluation_consumers",
+        "label": "Stock Status Pipeline Consumers",
+        "nodes": [
+          "utils_stockstatus_getstockstatus",
+          "components_statuschip_statuschip",
+          "components_globalsearch_globalsearch",
+          "dashboard_dashboardpage_dashboardpage"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "src/utils/stockStatus.ts"
+      },
+      {
+        "id": "modal_pattern_components",
+        "label": "Modal-based Interaction Pattern Components",
+        "nodes": [
+          "components_modal_modal",
+          "inventory_adjustquantitymodal_adjustquantitymodal",
+          "transfers_transfertrackingmodal_transfertrackingmodal"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "src/components/Modal.tsx"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "settings.json",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L1",
+      "id": "claude_settings_json",
+      "community": 17,
+      "norm_label": "settings.json"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L2",
+      "id": "claude_settings_permissions",
+      "community": 17,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "allow",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L3",
+      "id": "claude_settings_permissions_allow",
+      "community": 17,
+      "norm_label": "allow"
+    },
+    {
+      "label": "hooks",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L8",
+      "id": "claude_settings_hooks",
+      "community": 17,
+      "norm_label": "hooks"
+    },
+    {
+      "label": "PreToolUse",
+      "file_type": "code",
+      "source_file": ".claude/settings.json",
+      "source_location": "L9",
+      "id": "claude_settings_hooks_pretooluse",
+      "community": 17,
+      "norm_label": "pretooluse"
+    },
+    {
+      "label": "PRODUCT.md",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L1",
+      "id": "product_md",
+      "community": 7,
+      "norm_label": "product.md"
+    },
+    {
+      "label": "Product",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L1",
+      "id": "benchstockdev_product_product",
+      "community": 7,
+      "norm_label": "product"
+    },
+    {
+      "label": "Register",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L3",
+      "id": "benchstockdev_product_register",
+      "community": 7,
+      "norm_label": "register"
+    },
+    {
+      "label": "Users",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L7",
+      "id": "benchstockdev_product_users",
+      "community": 7,
+      "norm_label": "users"
+    },
+    {
+      "label": "Product Purpose",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L11",
+      "id": "benchstockdev_product_product_purpose",
+      "community": 7,
+      "norm_label": "product purpose"
+    },
+    {
+      "label": "Brand Personality",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L15",
+      "id": "benchstockdev_product_brand_personality",
+      "community": 7,
+      "norm_label": "brand personality"
+    },
+    {
+      "label": "Anti-references",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L19",
+      "id": "benchstockdev_product_anti_references",
+      "community": 7,
+      "norm_label": "anti-references"
+    },
+    {
+      "label": "Design Principles",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L24",
+      "id": "benchstockdev_product_design_principles",
+      "community": 7,
+      "norm_label": "design principles"
+    },
+    {
+      "label": "Accessibility & Inclusion",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L32",
+      "id": "benchstockdev_product_accessibility_inclusion",
+      "community": 7,
+      "norm_label": "accessibility & inclusion"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L1",
+      "id": "functions_src_index_ts",
+      "community": 19,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "ProductLookupResult",
+      "file_type": "code",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L10",
+      "id": "src_index_productlookupresult",
+      "community": 19,
+      "norm_label": "productlookupresult"
+    },
+    {
+      "label": "lookupUPC",
+      "file_type": "code",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L31",
+      "id": "src_index_lookupupc",
+      "community": 19,
+      "norm_label": "lookupupc"
+    },
+    {
+      "label": "healthCheck",
+      "file_type": "code",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L203",
+      "id": "src_index_healthcheck",
+      "community": 19,
+      "norm_label": "healthcheck"
+    },
+    {
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L1",
+      "id": "src_app_tsx",
+      "community": 4,
+      "norm_label": "app.tsx"
+    },
+    {
+      "label": "PageKey",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L67",
+      "id": "src_app_pagekey",
+      "community": 0,
+      "norm_label": "pagekey"
+    },
+    {
+      "label": "makeEmptyPoForm()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L79",
+      "id": "src_app_makeemptypoform",
+      "community": 0,
+      "norm_label": "makeemptypoform()"
+    },
+    {
+      "label": "getInitialDarkMode()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L103",
+      "id": "src_app_getinitialdarkmode",
+      "community": 0,
+      "norm_label": "getinitialdarkmode()"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L105",
+      "id": "src_app_app",
+      "community": 0,
+      "norm_label": "app()"
+    },
+    {
+      "label": "SidebarItemProps",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L4414",
+      "id": "src_app_sidebaritemprops",
+      "community": 0,
+      "norm_label": "sidebaritemprops"
+    },
+    {
+      "label": "SidebarItem()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L4421",
+      "id": "src_app_sidebaritem",
+      "community": 0,
+      "norm_label": "sidebaritem()"
+    },
+    {
+      "label": "ProjectModal.tsx",
+      "file_type": "code",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L1",
+      "id": "src_features_projects_projectmodal_tsx",
+      "community": 4,
+      "norm_label": "projectmodal.tsx"
+    },
+    {
+      "label": "ProjectModalProps",
+      "file_type": "code",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L5",
+      "id": "projects_projectmodal_projectmodalprops",
+      "community": 4,
+      "norm_label": "projectmodalprops"
+    },
+    {
+      "label": "ProjectModal()",
+      "file_type": "code",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L13",
+      "id": "projects_projectmodal_projectmodal",
+      "community": 4,
+      "norm_label": "projectmodal()"
+    },
+    {
+      "label": "UserSettingsModal.tsx",
+      "file_type": "code",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L1",
+      "id": "src_features_settings_usersettingsmodal_tsx",
+      "community": 4,
+      "norm_label": "usersettingsmodal.tsx"
+    },
+    {
+      "label": "UserSettingsModalProps",
+      "file_type": "code",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L10",
+      "id": "settings_usersettingsmodal_usersettingsmodalprops",
+      "community": 4,
+      "norm_label": "usersettingsmodalprops"
+    },
+    {
+      "label": "UserSettingsModal()",
+      "file_type": "code",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L19",
+      "id": "settings_usersettingsmodal_usersettingsmodal",
+      "community": 4,
+      "norm_label": "usersettingsmodal()"
+    },
+    {
+      "label": "TransfersTable.tsx",
+      "file_type": "code",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L1",
+      "id": "src_features_transfers_transferstable_tsx",
+      "community": 1,
+      "norm_label": "transferstable.tsx"
+    },
+    {
+      "label": "Option",
+      "file_type": "code",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L5",
+      "id": "transfers_transferstable_option",
+      "community": 1,
+      "norm_label": "option"
+    },
+    {
+      "label": "TransfersTableProps",
+      "file_type": "code",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L10",
+      "id": "transfers_transferstable_transferstableprops",
+      "community": 1,
+      "norm_label": "transferstableprops"
+    },
+    {
+      "label": "TransfersTable()",
+      "file_type": "code",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L24",
+      "id": "transfers_transferstable_transferstable",
+      "community": 1,
+      "norm_label": "transferstable()"
+    },
+    {
+      "label": "AddWarehouseModal.tsx",
+      "file_type": "code",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L1",
+      "id": "src_features_warehouses_addwarehousemodal_tsx",
+      "community": 4,
+      "norm_label": "addwarehousemodal.tsx"
+    },
+    {
+      "label": "AddWarehouseModalProps",
+      "file_type": "code",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L7",
+      "id": "warehouses_addwarehousemodal_addwarehousemodalprops",
+      "community": 4,
+      "norm_label": "addwarehousemodalprops"
+    },
+    {
+      "label": "AddWarehouseModal()",
+      "file_type": "code",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L19",
+      "id": "warehouses_addwarehousemodal_addwarehousemodal",
+      "community": 4,
+      "norm_label": "addwarehousemodal()"
+    },
+    {
+      "label": "types.ts",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L1",
+      "id": "src_types_ts",
+      "community": 1,
+      "norm_label": "types.ts"
+    },
+    {
+      "label": "TransferStatus",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L1",
+      "id": "src_types_transferstatus",
+      "community": 1,
+      "norm_label": "transferstatus"
+    },
+    {
+      "label": "Warehouse",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L3",
+      "id": "src_types_warehouse",
+      "community": 2,
+      "norm_label": "warehouse"
+    },
+    {
+      "label": "Project",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L13",
+      "id": "src_types_project",
+      "community": 4,
+      "norm_label": "project"
+    },
+    {
+      "label": "ProjectItem",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L25",
+      "id": "src_types_projectitem",
+      "community": 1,
+      "norm_label": "projectitem"
+    },
+    {
+      "label": "InventoryItem",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L36",
+      "id": "src_types_inventoryitem",
+      "community": 2,
+      "norm_label": "inventoryitem"
+    },
+    {
+      "label": "PurchaseOrderItem",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L53",
+      "id": "src_types_purchaseorderitem",
+      "community": 1,
+      "norm_label": "purchaseorderitem"
+    },
+    {
+      "label": "PurchaseOrder",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L66",
+      "id": "src_types_purchaseorder",
+      "community": 1,
+      "norm_label": "purchaseorder"
+    },
+    {
+      "label": "PoFormState",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L80",
+      "id": "src_types_poformstate",
+      "community": 1,
+      "norm_label": "poformstate"
+    },
+    {
+      "label": "TransferLine",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L89",
+      "id": "src_types_transferline",
+      "community": 1,
+      "norm_label": "transferline"
+    },
+    {
+      "label": "Transfer",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L96",
+      "id": "src_types_transfer",
+      "community": 1,
+      "norm_label": "transfer"
+    },
+    {
+      "label": "ActivityLog",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L110",
+      "id": "src_types_activitylog",
+      "community": 1,
+      "norm_label": "activitylog"
+    },
+    {
+      "label": "StockStatus",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L127",
+      "id": "src_types_stockstatus",
+      "community": 2,
+      "norm_label": "stockstatus"
+    },
+    {
+      "label": "UserRole",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L129",
+      "id": "src_types_userrole",
+      "community": 1,
+      "norm_label": "userrole"
+    },
+    {
+      "label": "ToastMessage",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L131",
+      "id": "src_types_toastmessage",
+      "community": 5,
+      "norm_label": "toastmessage"
+    },
+    {
+      "label": "AdjustUndoPayload",
+      "file_type": "code",
+      "source_file": "src/types.ts",
+      "source_location": "L138",
+      "id": "src_types_adjustundopayload",
+      "community": 5,
+      "norm_label": "adjustundopayload"
+    },
+    {
+      "label": "helpers.ts",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L1",
+      "id": "src_utils_helpers_ts",
+      "community": 4,
+      "norm_label": "helpers.ts"
+    },
+    {
+      "label": "jsonSafeParse()",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L1",
+      "id": "utils_helpers_jsonsafeparse",
+      "community": 4,
+      "norm_label": "jsonsafeparse()"
+    },
+    {
+      "label": "sanitizeImageUrl()",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L18",
+      "id": "utils_helpers_sanitizeimageurl",
+      "community": 4,
+      "norm_label": "sanitizeimageurl()"
+    },
+    {
+      "label": "buildBasePath()",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L91",
+      "id": "utils_helpers_buildbasepath",
+      "community": 4,
+      "norm_label": "buildbasepath()"
+    },
+    {
+      "label": "parseCsvSimple()",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L96",
+      "id": "utils_helpers_parsecsvsimple",
+      "community": 4,
+      "norm_label": "parsecsvsimple()"
+    },
+    {
+      "label": "ProductLookupResult",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L101",
+      "id": "utils_helpers_productlookupresult",
+      "community": 4,
+      "norm_label": "productlookupresult"
+    },
+    {
+      "label": "lookupProductByUpc()",
+      "file_type": "code",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L128",
+      "id": "utils_helpers_lookupproductbyupc",
+      "community": 4,
+      "norm_label": "lookupproductbyupc()"
+    },
+    {
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L1",
+      "community": 0,
+      "norm_label": "app.tsx",
+      "id": "app_tsx"
+    },
+    {
+      "label": "Warehouse",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L63",
+      "community": 0,
+      "norm_label": "warehouse",
+      "id": "src_app_warehouse"
+    },
+    {
+      "label": "InventoryItem",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L73",
+      "community": 0,
+      "norm_label": "inventoryitem",
+      "id": "src_app_inventoryitem"
+    },
+    {
+      "label": "PurchaseOrderItem",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L90",
+      "community": 0,
+      "norm_label": "purchaseorderitem",
+      "id": "src_app_purchaseorderitem"
+    },
+    {
+      "label": "PurchaseOrder",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L103",
+      "community": 0,
+      "norm_label": "purchaseorder",
+      "id": "src_app_purchaseorder"
+    },
+    {
+      "label": "PoFormState",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L117",
+      "community": 0,
+      "norm_label": "poformstate",
+      "id": "src_app_poformstate"
+    },
+    {
+      "label": "TransferStatus",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L148",
+      "community": 0,
+      "norm_label": "transferstatus",
+      "id": "src_app_transferstatus"
+    },
+    {
+      "label": "TransferLine",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L150",
+      "community": 0,
+      "norm_label": "transferline",
+      "id": "src_app_transferline"
+    },
+    {
+      "label": "Transfer",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L157",
+      "community": 0,
+      "norm_label": "transfer",
+      "id": "src_app_transfer"
+    },
+    {
+      "label": "ActivityLog",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L171",
+      "community": 0,
+      "norm_label": "activitylog",
+      "id": "src_app_activitylog"
+    },
+    {
+      "label": "AddWarehouseModalProps",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L188",
+      "community": 0,
+      "norm_label": "addwarehousemodalprops",
+      "id": "src_app_addwarehousemodalprops"
+    },
+    {
+      "label": "AddWarehouseModal()",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L200",
+      "community": 0,
+      "norm_label": "addwarehousemodal()",
+      "id": "src_app_addwarehousemodal"
+    },
+    {
+      "label": "UserSettingsModalProps",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L4207",
+      "community": 0,
+      "norm_label": "usersettingsmodalprops",
+      "id": "src_app_usersettingsmodalprops"
+    },
+    {
+      "label": "UserSettingsModal()",
+      "file_type": "code",
+      "source_file": "App.tsx",
+      "source_location": "L4216",
+      "community": 0,
+      "norm_label": "usersettingsmodal()",
+      "id": "src_app_usersettingsmodal"
+    },
+    {
+      "label": "main.tsx",
+      "file_type": "code",
+      "source_file": "main.tsx",
+      "source_location": "L1",
+      "community": 0,
+      "norm_label": "main.tsx",
+      "id": "main_tsx"
+    },
+    {
+      "label": "AuthPage.tsx",
+      "file_type": "code",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L1",
+      "community": 8,
+      "norm_label": "authpage.tsx",
+      "id": "authpage_tsx"
+    },
+    {
+      "label": "AuthPageProps",
+      "file_type": "code",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L11",
+      "community": 8,
+      "norm_label": "authpageprops",
+      "id": "src_authpage_authpageprops"
+    },
+    {
+      "label": "AuthPage()",
+      "file_type": "code",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L15",
+      "community": 8,
+      "norm_label": "authpage()",
+      "id": "src_authpage_authpage"
+    },
+    {
+      "label": "types.ts",
+      "file_type": "code",
+      "source_file": "types.ts",
+      "source_location": "L1",
+      "community": 1,
+      "norm_label": "types.ts",
+      "id": "types_ts"
+    },
+    {
+      "label": "TransfersTable.tsx",
+      "file_type": "code",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L1",
+      "community": 1,
+      "norm_label": "transferstable.tsx",
+      "id": "features_transfers_transferstable_tsx"
+    },
+    {
+      "label": "TransferTrackingModal.tsx",
+      "file_type": "code",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L1",
+      "community": 6,
+      "norm_label": "transfertrackingmodal.tsx",
+      "id": "features_transfers_transfertrackingmodal_tsx"
+    },
+    {
+      "label": "TransferTrackingModalProps",
+      "file_type": "code",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L5",
+      "community": 6,
+      "norm_label": "transfertrackingmodalprops",
+      "id": "transfers_transfertrackingmodal_transfertrackingmodalprops"
+    },
+    {
+      "label": "TransferTrackingModal()",
+      "file_type": "code",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L14",
+      "community": 6,
+      "norm_label": "transfertrackingmodal()",
+      "id": "transfers_transfertrackingmodal_transfertrackingmodal"
+    },
+    {
+      "label": "DashboardPanel.tsx",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPanel.tsx",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "dashboardpanel.tsx",
+      "id": "features_dashboard_dashboardpanel_tsx"
+    },
+    {
+      "label": "DashboardPanelProps",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPanel.tsx",
+      "source_location": "L4",
+      "community": 2,
+      "norm_label": "dashboardpanelprops",
+      "id": "dashboard_dashboardpanel_dashboardpanelprops"
+    },
+    {
+      "label": "DashboardPanel()",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPanel.tsx",
+      "source_location": "L14",
+      "community": 2,
+      "norm_label": "dashboardpanel()",
+      "id": "dashboard_dashboardpanel_dashboardpanel"
+    },
+    {
+      "label": "DashboardPage.tsx",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "dashboardpage.tsx",
+      "id": "features_dashboard_dashboardpage_tsx"
+    },
+    {
+      "label": "PageKey",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "community": 2,
+      "norm_label": "pagekey",
+      "id": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "label": "DashboardPageProps",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "community": 2,
+      "norm_label": "dashboardpageprops",
+      "id": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "label": "DashboardPage()",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "community": 2,
+      "norm_label": "dashboardpage()",
+      "id": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "label": "StatCard()",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L425",
+      "community": 2,
+      "norm_label": "statcard()",
+      "id": "dashboard_dashboardpage_statcard"
+    },
+    {
+      "label": "QuickAction()",
+      "file_type": "code",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L438",
+      "community": 2,
+      "norm_label": "quickaction()",
+      "id": "dashboard_dashboardpage_quickaction"
+    },
+    {
+      "label": "AdjustQuantityModal.tsx",
+      "file_type": "code",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L1",
+      "community": 6,
+      "norm_label": "adjustquantitymodal.tsx",
+      "id": "features_inventory_adjustquantitymodal_tsx"
+    },
+    {
+      "label": "AdjustQuantityModalProps",
+      "file_type": "code",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L7",
+      "community": 6,
+      "norm_label": "adjustquantitymodalprops",
+      "id": "inventory_adjustquantitymodal_adjustquantitymodalprops"
+    },
+    {
+      "label": "AdjustQuantityModal()",
+      "file_type": "code",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L23",
+      "community": 6,
+      "norm_label": "adjustquantitymodal()",
+      "id": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "label": "ItemDetailPage.tsx",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "itemdetailpage.tsx",
+      "id": "features_inventory_itemdetailpage_tsx"
+    },
+    {
+      "label": "ItemDetailPageProps",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L7",
+      "community": 2,
+      "norm_label": "itemdetailpageprops",
+      "id": "inventory_itemdetailpage_itemdetailpageprops"
+    },
+    {
+      "label": "TabKey",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L15",
+      "community": 2,
+      "norm_label": "tabkey",
+      "id": "inventory_itemdetailpage_tabkey"
+    },
+    {
+      "label": "ItemDetailPage()",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L17",
+      "community": 2,
+      "norm_label": "itemdetailpage()",
+      "id": "inventory_itemdetailpage_itemdetailpage"
+    },
+    {
+      "label": "OverviewTab()",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L184",
+      "community": 2,
+      "norm_label": "overviewtab()",
+      "id": "inventory_itemdetailpage_overviewtab"
+    },
+    {
+      "label": "ActivityTab()",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L216",
+      "community": 2,
+      "norm_label": "activitytab()",
+      "id": "inventory_itemdetailpage_activitytab"
+    },
+    {
+      "label": "MetadataTab()",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L291",
+      "community": 2,
+      "norm_label": "metadatatab()",
+      "id": "inventory_itemdetailpage_metadatatab"
+    },
+    {
+      "label": "FieldPair()",
+      "file_type": "code",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L321",
+      "community": 2,
+      "norm_label": "fieldpair()",
+      "id": "inventory_itemdetailpage_fieldpair"
+    },
+    {
+      "label": "ActivityHistoryPage.tsx",
+      "file_type": "code",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L1",
+      "community": 1,
+      "norm_label": "activityhistorypage.tsx",
+      "id": "features_activityhistory_activityhistorypage_tsx"
+    },
+    {
+      "label": "ActivityHistoryPageProps",
+      "file_type": "code",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L5",
+      "community": 1,
+      "norm_label": "activityhistorypageprops",
+      "id": "activityhistory_activityhistorypage_activityhistorypageprops"
+    },
+    {
+      "label": "ActivityHistoryPage()",
+      "file_type": "code",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L12",
+      "community": 1,
+      "norm_label": "activityhistorypage()",
+      "id": "activityhistory_activityhistorypage_activityhistorypage"
+    },
+    {
+      "label": "helpers.ts",
+      "file_type": "code",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L1",
+      "community": 4,
+      "norm_label": "helpers.ts",
+      "id": "utils_helpers_ts"
+    },
+    {
+      "label": "authErrors.test.ts",
+      "file_type": "code",
+      "source_file": "utils/authErrors.test.ts",
+      "source_location": "L1",
+      "community": 8,
+      "norm_label": "autherrors.test.ts",
+      "id": "utils_autherrors_test_ts"
+    },
+    {
+      "label": "authErrors.ts",
+      "file_type": "code",
+      "source_file": "utils/authErrors.ts",
+      "source_location": "L1",
+      "community": 8,
+      "norm_label": "autherrors.ts",
+      "id": "utils_autherrors_ts"
+    },
+    {
+      "label": "getAuthErrorMessage()",
+      "file_type": "code",
+      "source_file": "utils/authErrors.ts",
+      "source_location": "L5",
+      "community": 8,
+      "norm_label": "getautherrormessage()",
+      "id": "utils_autherrors_getautherrormessage"
+    },
+    {
+      "label": "stockStatus.ts",
+      "file_type": "code",
+      "source_file": "utils/stockStatus.ts",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "stockstatus.ts",
+      "id": "utils_stockstatus_ts"
+    },
+    {
+      "label": "getStockStatus()",
+      "file_type": "code",
+      "source_file": "utils/stockStatus.ts",
+      "source_location": "L3",
+      "community": 2,
+      "norm_label": "getstockstatus()",
+      "id": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "label": "MessageBox.tsx",
+      "file_type": "code",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L1",
+      "community": 0,
+      "norm_label": "messagebox.tsx",
+      "id": "components_messagebox_tsx"
+    },
+    {
+      "label": "MessageBoxType",
+      "file_type": "code",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L3",
+      "community": 0,
+      "norm_label": "messageboxtype",
+      "id": "components_messagebox_messageboxtype"
+    },
+    {
+      "label": "MessageBoxHandle",
+      "file_type": "code",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L5",
+      "community": 0,
+      "norm_label": "messageboxhandle",
+      "id": "components_messagebox_messageboxhandle"
+    },
+    {
+      "label": "MessageBoxState",
+      "file_type": "code",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L10",
+      "community": 0,
+      "norm_label": "messageboxstate",
+      "id": "components_messagebox_messageboxstate"
+    },
+    {
+      "label": "MessageBox",
+      "file_type": "code",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L16",
+      "community": 0,
+      "norm_label": "messagebox",
+      "id": "components_messagebox_messagebox"
+    },
+    {
+      "label": "StatusChip.tsx",
+      "file_type": "code",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "statuschip.tsx",
+      "id": "components_statuschip_tsx"
+    },
+    {
+      "label": "statusStyles",
+      "file_type": "code",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L4",
+      "community": 2,
+      "norm_label": "statusstyles",
+      "id": "components_statuschip_statusstyles"
+    },
+    {
+      "label": "statusLabels",
+      "file_type": "code",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L10",
+      "community": 2,
+      "norm_label": "statuslabels",
+      "id": "components_statuschip_statuslabels"
+    },
+    {
+      "label": "StatusChipProps",
+      "file_type": "code",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L16",
+      "community": 2,
+      "norm_label": "statuschipprops",
+      "id": "components_statuschip_statuschipprops"
+    },
+    {
+      "label": "StatusChip()",
+      "file_type": "code",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L20",
+      "community": 2,
+      "norm_label": "statuschip()",
+      "id": "components_statuschip_statuschip"
+    },
+    {
+      "label": "LoadingSpinner.tsx",
+      "file_type": "code",
+      "source_file": "components/LoadingSpinner.tsx",
+      "source_location": "L1",
+      "community": 0,
+      "norm_label": "loadingspinner.tsx",
+      "id": "components_loadingspinner_tsx"
+    },
+    {
+      "label": "LoadingSpinner()",
+      "file_type": "code",
+      "source_file": "components/LoadingSpinner.tsx",
+      "source_location": "L3",
+      "community": 0,
+      "norm_label": "loadingspinner()",
+      "id": "components_loadingspinner_loadingspinner"
+    },
+    {
+      "label": "DataTable.tsx",
+      "file_type": "code",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L1",
+      "community": 1,
+      "norm_label": "datatable.tsx",
+      "id": "components_datatable_tsx"
+    },
+    {
+      "label": "DataTableColumn",
+      "file_type": "code",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L4",
+      "community": 1,
+      "norm_label": "datatablecolumn",
+      "id": "components_datatable_datatablecolumn"
+    },
+    {
+      "label": "DataTableFilterField",
+      "file_type": "code",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L11",
+      "community": 1,
+      "norm_label": "datatablefilterfield",
+      "id": "components_datatable_datatablefilterfield"
+    },
+    {
+      "label": "DataTableProps",
+      "file_type": "code",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L18",
+      "community": 1,
+      "norm_label": "datatableprops",
+      "id": "components_datatable_datatableprops"
+    },
+    {
+      "label": "DataTable()",
+      "file_type": "code",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L33",
+      "community": 1,
+      "norm_label": "datatable()",
+      "id": "components_datatable_datatable"
+    },
+    {
+      "label": "GlobalSearch.tsx",
+      "file_type": "code",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "globalsearch.tsx",
+      "id": "components_globalsearch_tsx"
+    },
+    {
+      "label": "GlobalSearchProps",
+      "file_type": "code",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L6",
+      "community": 2,
+      "norm_label": "globalsearchprops",
+      "id": "components_globalsearch_globalsearchprops"
+    },
+    {
+      "label": "GlobalSearch()",
+      "file_type": "code",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L14",
+      "community": 2,
+      "norm_label": "globalsearch()",
+      "id": "components_globalsearch_globalsearch"
+    },
+    {
+      "label": "Modal.tsx",
+      "file_type": "code",
+      "source_file": "components/Modal.tsx",
+      "source_location": "L1",
+      "community": 6,
+      "norm_label": "modal.tsx",
+      "id": "components_modal_tsx"
+    },
+    {
+      "label": "ModalProps",
+      "file_type": "code",
+      "source_file": "components/Modal.tsx",
+      "source_location": "L4",
+      "community": 6,
+      "norm_label": "modalprops",
+      "id": "components_modal_modalprops"
+    },
+    {
+      "label": "Modal()",
+      "file_type": "code",
+      "source_file": "components/Modal.tsx",
+      "source_location": "L13",
+      "community": 6,
+      "norm_label": "modal()",
+      "id": "components_modal_modal"
+    },
+    {
+      "label": "Toast.tsx",
+      "file_type": "code",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L1",
+      "community": 5,
+      "norm_label": "toast.tsx",
+      "id": "components_toast_tsx"
+    },
+    {
+      "label": "ToastProps",
+      "file_type": "code",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L4",
+      "community": 5,
+      "norm_label": "toastprops",
+      "id": "components_toast_toastprops"
+    },
+    {
+      "label": "typeStyles",
+      "file_type": "code",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L10",
+      "community": 5,
+      "norm_label": "typestyles",
+      "id": "components_toast_typestyles"
+    },
+    {
+      "label": "Toast()",
+      "file_type": "code",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L16",
+      "community": 5,
+      "norm_label": "toast()",
+      "id": "components_toast_toast"
+    },
+    {
+      "label": "ToastItemProps",
+      "file_type": "code",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L33",
+      "community": 5,
+      "norm_label": "toastitemprops",
+      "id": "components_toast_toastitemprops"
+    },
+    {
+      "label": "ToastItem()",
+      "file_type": "code",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L39",
+      "community": 5,
+      "norm_label": "toastitem()",
+      "id": "components_toast_toastitem"
+    },
+    {
+      "label": "useCollection.ts",
+      "file_type": "code",
+      "source_file": "hooks/useCollection.ts",
+      "source_location": "L1",
+      "community": 0,
+      "norm_label": "usecollection.ts",
+      "id": "hooks_usecollection_ts"
+    },
+    {
+      "label": "UseCollectionOptions",
+      "file_type": "code",
+      "source_file": "hooks/useCollection.ts",
+      "source_location": "L15",
+      "community": 0,
+      "norm_label": "usecollectionoptions",
+      "id": "hooks_usecollection_usecollectionoptions"
+    },
+    {
+      "label": "useCollection()",
+      "file_type": "code",
+      "source_file": "hooks/useCollection.ts",
+      "source_location": "L26",
+      "community": 0,
+      "norm_label": "usecollection()",
+      "id": "hooks_usecollection_usecollection"
+    },
+    {
+      "label": "React Logo",
+      "file_type": "image",
+      "source_file": "src/assets/react.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 9,
+      "norm_label": "react logo",
+      "id": "assets_react_svg"
+    },
+    {
+      "label": "React Framework",
+      "file_type": "concept",
+      "source_file": null,
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 9,
+      "norm_label": "react framework",
+      "id": "concept_react_framework"
+    },
+    {
+      "label": "SVG Vector Graphic",
+      "file_type": "concept",
+      "source_file": null,
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 9,
+      "norm_label": "svg vector graphic",
+      "id": "concept_svg_vector_graphic"
+    },
+    {
+      "label": "Multi-Tenancy Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 18,
+      "norm_label": "multi-tenancy pattern",
+      "id": "docs_architectural_patterns_multitenancy"
+    },
+    {
+      "label": "Custom Hooks Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 0,
+      "norm_label": "custom hooks pattern",
+      "id": "docs_architectural_patterns_customhooks"
+    },
+    {
+      "label": "Component Composition Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 11,
+      "norm_label": "component composition pattern",
+      "id": "docs_architectural_patterns_componentcomposition"
+    },
+    {
+      "label": "Security Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 18,
+      "norm_label": "security pattern",
+      "id": "docs_architectural_patterns_security"
+    },
+    {
+      "label": "Type System Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 12,
+      "norm_label": "type system pattern",
+      "id": "docs_architectural_patterns_typesystem"
+    },
+    {
+      "label": "State Management Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 0,
+      "norm_label": "state management pattern",
+      "id": "docs_architectural_patterns_statemanagement"
+    },
+    {
+      "label": "Cloud Functions Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 18,
+      "norm_label": "cloud functions pattern",
+      "id": "docs_architectural_patterns_cloudfunctions"
+    },
+    {
+      "label": "Monolithic Architecture Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 13,
+      "norm_label": "monolithic architecture pattern",
+      "id": "docs_architectural_patterns_monolithic"
+    },
+    {
+      "label": "Firebase Initialization Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 10,
+      "norm_label": "firebase initialization pattern",
+      "id": "docs_architectural_patterns_firebaseinit"
+    },
+    {
+      "label": "Activity Logging Pattern",
+      "file_type": "rationale",
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 3,
+      "norm_label": "activity logging pattern",
+      "id": "docs_architectural_patterns_activitylogging"
+    },
+    {
+      "label": "Firebase Hosting PR Deployment Workflow",
+      "file_type": "document",
+      "source_file": ".github/workflows/firebase-hosting-pull-request.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 10,
+      "norm_label": "firebase hosting pr deployment workflow",
+      "id": "workflows_firebase_hosting_pull_request"
+    },
+    {
+      "label": "lookupUPC Cloud Function",
+      "file_type": "document",
+      "source_file": "functions/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 18,
+      "norm_label": "lookupupc cloud function",
+      "id": "functions_readme_lookupupc"
+    },
+    {
+      "label": "healthCheck Cloud Function",
+      "file_type": "document",
+      "source_file": "functions/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 14,
+      "norm_label": "healthcheck cloud function",
+      "id": "functions_readme_healthcheck"
+    },
+    {
+      "label": "Three-Tier UPC API Fallback Chain",
+      "file_type": "concept",
+      "source_file": "functions/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 18,
+      "norm_label": "three-tier upc api fallback chain",
+      "id": "functions_readme_upcfallback"
+    },
+    {
+      "label": "Vite Build Tool Logo",
+      "file_type": "image",
+      "source_file": "public/vite.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 15,
+      "norm_label": "vite build tool logo",
+      "id": "public_vite_logo"
+    },
+    {
+      "label": "React Framework Logo",
+      "file_type": "image",
+      "source_file": "src/assets/react.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 16,
+      "norm_label": "react framework logo",
+      "id": "assets_react_logo"
+    },
+    {
+      "label": "Main Entry Point",
+      "file_type": "code",
+      "source_file": "src/main.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 20,
+      "norm_label": "main entry point",
+      "id": "src_main_main"
+    },
+    {
+      "label": "getAuthErrorMessage Function",
+      "file_type": "code",
+      "source_file": "src/utils/authErrors.ts",
+      "source_location": "line 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 8,
+      "norm_label": "getautherrormessage function",
+      "id": "utils_autherrors_getautherrmessage"
+    },
+    {
+      "label": "Stock Status Evaluation Pipeline",
+      "file_type": "concept",
+      "source_file": "src/utils/stockStatus.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 2,
+      "norm_label": "stock status evaluation pipeline",
+      "id": "concept_stockstatus_pipeline"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "claude_settings_json",
+      "target": "claude_settings_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "claude_settings_json",
+      "target": "claude_settings_hooks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "claude_settings_permissions",
+      "target": "claude_settings_permissions_allow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.json",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "claude_settings_hooks",
+      "target": "claude_settings_hooks_pretooluse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "product_md",
+      "target": "benchstockdev_product_product",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_register",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_product_purpose",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_brand_personality",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_anti_references",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_design_principles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PRODUCT.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "benchstockdev_product_product",
+      "target": "benchstockdev_product_accessibility_inclusion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "functions_src_index_ts",
+      "target": "src_index_productlookupresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "functions_src_index_ts",
+      "target": "src_index_lookupupc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "functions/src/index.ts",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "functions_src_index_ts",
+      "target": "src_index_healthcheck",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_authpage_authpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_datatable_datatable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_loadingspinner_loadingspinner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_messagebox_messagebox",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_messagebox_messageboxhandle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_modal_modal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "hooks_usecollection_usecollection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_utils_helpers_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "utils_helpers_buildbasepath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "utils_helpers_jsonsafeparse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "utils_helpers_parsecsvsimple",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "utils_helpers_lookupproductbyupc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "utils_helpers_sanitizeimageurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_warehouse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_inventoryitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_purchaseorder",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_purchaseorderitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_poformstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_transfer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_transferline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_transferstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_activitylog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_toastmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_adjustundopayload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_project",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_types_projectitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_toast_toast",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "components_globalsearch_globalsearch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "inventory_itemdetailpage_itemdetailpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "activityhistory_activityhistorypage_activityhistorypage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_features_warehouses_addwarehousemodal_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "warehouses_addwarehousemodal_addwarehousemodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_features_projects_projectmodal_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "projects_projectmodal_projectmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_features_settings_usersettingsmodal_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "settings_usersettingsmodal_usersettingsmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_pagekey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_makeemptypoform",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_getinitialdarkmode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L4414",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_sidebaritemprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L4421",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_sidebaritem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L126",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_makeemptypoform"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L381",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_app",
+      "target": "src_app_getinitialdarkmode"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L368",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_getinitialdarkmode"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L370",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_app"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "App.tsx",
+      "source_location": "L513",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "hooks_usecollection_usecollection"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L4479",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_sidebaritemprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L4486",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_sidebaritem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_features_projects_projectmodal_tsx",
+      "target": "components_modal_modal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_projects_projectmodal_tsx",
+      "target": "src_types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_projects_projectmodal_tsx",
+      "target": "src_types_project",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_projects_projectmodal_tsx",
+      "target": "src_types_warehouse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_features_projects_projectmodal_tsx",
+      "target": "projects_projectmodal_projectmodalprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/projects/ProjectModal.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_features_projects_projectmodal_tsx",
+      "target": "projects_projectmodal_projectmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_features_settings_usersettingsmodal_tsx",
+      "target": "src_types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_features_settings_usersettingsmodal_tsx",
+      "target": "src_types_warehouse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_features_settings_usersettingsmodal_tsx",
+      "target": "settings_usersettingsmodal_usersettingsmodalprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/settings/UserSettingsModal.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "src_features_settings_usersettingsmodal_tsx",
+      "target": "settings_usersettingsmodal_usersettingsmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "components_datatable_datatable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "src_types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "src_types_activitylog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "src_types_transfer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "src_types_transferstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "transfers_transferstable_option",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "transfers_transferstable_transferstableprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "src_features_transfers_transferstable_tsx",
+      "target": "transfers_transferstable_transferstable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "transfers_transferstable_option"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "transfers_transferstable_transferstableprops"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "transfers_transferstable_transferstable",
+      "target": "src_types_transferstatus"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "transfers_transferstable_transferstable",
+      "target": "src_types_transfer"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "transfers_transferstable_transferstable",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "transfers_transferstable_transferstable"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/transfers/TransfersTable.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "transfers_transferstable_transferstable",
+      "target": "components_datatable_datatable"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_features_warehouses_addwarehousemodal_tsx",
+      "target": "components_modal_modal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_features_warehouses_addwarehousemodal_tsx",
+      "target": "src_types_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_features_warehouses_addwarehousemodal_tsx",
+      "target": "src_types_warehouse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_features_warehouses_addwarehousemodal_tsx",
+      "target": "src_types_activitylog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_features_warehouses_addwarehousemodal_tsx",
+      "target": "warehouses_addwarehousemodal_addwarehousemodalprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "src_features_warehouses_addwarehousemodal_tsx",
+      "target": "warehouses_addwarehousemodal_addwarehousemodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_transferstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_warehouse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_project",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_projectitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_inventoryitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_purchaseorderitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_purchaseorder",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_poformstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_transferline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_transfer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_activitylog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L127",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_stockstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_userrole",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_toastmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types.ts",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "src_types_ts",
+      "target": "src_types_adjustundopayload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_transferstatus"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "src_types_transferstatus"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/types.ts",
+      "source_location": "line 80",
+      "weight": 1.0,
+      "source": "src_types_transfer",
+      "target": "src_types_transferstatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "line 5",
+      "weight": 1.0,
+      "source": "inventory_adjustquantitymodal_adjustquantitymodal",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "activityhistory_activityhistorypage_activityhistorypage",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/GlobalSearch.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "components_globalsearch_globalsearch",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/stockStatus.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_stockstatus_ts",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "line 5",
+      "weight": 1.0,
+      "source": "inventory_adjustquantitymodal_adjustquantitymodal",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "activityhistory_activityhistorypage_activityhistorypage",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/GlobalSearch.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "components_globalsearch_globalsearch",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/utils/stockStatus.ts",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "source": "utils_stockstatus_getstockstatus",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_purchaseorderitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/types.ts",
+      "source_location": "line 50",
+      "weight": 1.0,
+      "source": "src_types_purchaseorder",
+      "target": "src_types_purchaseorderitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/types.ts",
+      "source_location": "line 63",
+      "weight": 1.0,
+      "source": "src_types_poformstate",
+      "target": "src_types_purchaseorderitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L43",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_purchaseorder"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_poformstate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L66",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_transferline"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/types.ts",
+      "source_location": "line 84",
+      "weight": 1.0,
+      "source": "src_types_transfer",
+      "target": "src_types_transferline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L73",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_transfer"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "src_types_transfer"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transfertrackingmodal_tsx",
+      "target": "src_types_transfer"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/transfers/TransferTrackingModal.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "transfers_transfertrackingmodal_transfertrackingmodal",
+      "target": "src_types_transfer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L87",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "line 5",
+      "weight": 1.0,
+      "source": "inventory_adjustquantitymodal_adjustquantitymodal",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "activityhistory_activityhistorypage_activityhistorypage",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L104",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_stockstatus"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/stockStatus.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_stockstatus_ts",
+      "target": "src_types_stockstatus"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_statuschip_tsx",
+      "target": "src_types_stockstatus"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/StatusChip.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "components_statuschip_statuschip",
+      "target": "src_types_stockstatus"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/utils/stockStatus.ts",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "source": "utils_stockstatus_getstockstatus",
+      "target": "src_types_stockstatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L106",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_userrole"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L45",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_types_toastmessage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L108",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_toastmessage"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "src_types_toastmessage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/Toast.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "components_toast_toast",
+      "target": "src_types_toastmessage"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/types.ts",
+      "source_location": "line 112",
+      "weight": 1.0,
+      "source": "src_types_toastmessage",
+      "target": "src_types_adjustundopayload"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L45",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_types_adjustundopayload"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "types.ts",
+      "source_location": "L115",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "types_ts",
+      "target": "src_types_adjustundopayload"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "src_types_adjustundopayload"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/Toast.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "components_toast_toast",
+      "target": "src_types_adjustundopayload"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_utils_helpers_ts",
+      "target": "utils_helpers_jsonsafeparse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_utils_helpers_ts",
+      "target": "utils_helpers_sanitizeimageurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "src_utils_helpers_ts",
+      "target": "utils_helpers_buildbasepath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_utils_helpers_ts",
+      "target": "utils_helpers_parsecsvsimple",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_utils_helpers_ts",
+      "target": "utils_helpers_productlookupresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "src_utils_helpers_ts",
+      "target": "utils_helpers_lookupproductbyupc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "utils_helpers_jsonsafeparse"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_helpers_ts",
+      "target": "utils_helpers_jsonsafeparse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "utils_helpers_sanitizeimageurl"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "utils_helpers_sanitizeimageurl"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 5",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "utils_helpers_sanitizeimageurl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_helpers_ts",
+      "target": "utils_helpers_sanitizeimageurl"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "utils_helpers_buildbasepath"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L91",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_helpers_ts",
+      "target": "utils_helpers_buildbasepath"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "utils_helpers_parsecsvsimple"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L96",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_helpers_ts",
+      "target": "utils_helpers_parsecsvsimple"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_helpers_ts",
+      "target": "utils_helpers_productlookupresult"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "line 128",
+      "weight": 1.0,
+      "source": "utils_helpers_lookupproductbyupc",
+      "target": "utils_helpers_productlookupresult"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "utils_helpers_lookupproductbyupc"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/helpers.ts",
+      "source_location": "L128",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_helpers_ts",
+      "target": "utils_helpers_lookupproductbyupc"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/utils/helpers.ts",
+      "source_location": "line 128",
+      "weight": 1.0,
+      "source": "utils_helpers_lookupproductbyupc",
+      "target": "functions_readme_upcfallback"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "authpage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_authpage_authpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_datatable_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_datatable_datatable"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_loadingspinner_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_loadingspinner_loadingspinner"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_messagebox_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_messagebox_messagebox"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_messagebox_messageboxhandle"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_modal_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_modal_modal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "hooks_usecollection_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "hooks_usecollection_usecollection"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "utils_helpers_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L45",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_toast_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_toast_toast"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_globalsearch_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "components_globalsearch_globalsearch"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "features_inventory_adjustquantitymodal_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "features_dashboard_dashboardpage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "features_inventory_itemdetailpage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "inventory_itemdetailpage_itemdetailpage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L51",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "features_activityhistory_activityhistorypage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L51",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "activityhistory_activityhistorypage_activityhistorypage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_warehouse"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L73",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_inventoryitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L90",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_purchaseorderitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L103",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_purchaseorder"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L117",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_poformstate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L148",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_transferstatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L150",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_transferline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L157",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_transfer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L171",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_activitylog"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L188",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_addwarehousemodalprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L200",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_addwarehousemodal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L4207",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_usersettingsmodalprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L4216",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "src_app_usersettingsmodal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "main.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "main_tsx",
+      "target": "app_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "authpage_tsx",
+      "target": "utils_autherrors_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "authpage_tsx",
+      "target": "utils_autherrors_getautherrormessage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "authpage_tsx",
+      "target": "src_authpage_authpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AuthPage.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "authpage_tsx",
+      "target": "src_authpage_authpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/AuthPage.tsx",
+      "source_location": "line 70",
+      "weight": 1.0,
+      "source": "src_authpage_authpage",
+      "target": "utils_autherrors_getautherrmessage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transfertrackingmodal_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/stockStatus.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_stockstatus_ts",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_statuschip_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "types_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "components_datatable_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransfersTable.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transferstable_tsx",
+      "target": "components_datatable_datatable"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transfertrackingmodal_tsx",
+      "target": "components_modal_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transfertrackingmodal_tsx",
+      "target": "components_modal_modal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transfertrackingmodal_tsx",
+      "target": "transfers_transfertrackingmodal_transfertrackingmodalprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/transfers/TransferTrackingModal.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_transfers_transfertrackingmodal_tsx",
+      "target": "transfers_transfertrackingmodal_transfertrackingmodal"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/transfers/TransferTrackingModal.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "transfers_transfertrackingmodal_transfertrackingmodal",
+      "target": "components_modal_modal"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "src/features/inventory/AdjustQuantityModal.tsx",
+      "source_location": null,
+      "weight": 0.75,
+      "source": "inventory_adjustquantitymodal_adjustquantitymodal",
+      "target": "transfers_transfertrackingmodal_transfertrackingmodal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPanel.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpanel_tsx",
+      "target": "dashboard_dashboardpanel_dashboardpanelprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPanel.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpanel_tsx",
+      "target": "dashboard_dashboardpanel_dashboardpanel"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "features_dashboard_dashboardpanel_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpanel_dashboardpanel"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 4",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "dashboard_dashboardpanel_dashboardpanel"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "utils_stockstatus_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L425",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_statcard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L438",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_quickaction"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "concept_stockstatus_pipeline"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 216",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "components_modal_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "components_modal_modal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodalprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_adjustquantitymodal_tsx",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/AdjustQuantityModal.tsx",
+      "source_location": "line 4",
+      "weight": 1.0,
+      "source": "inventory_adjustquantitymodal_adjustquantitymodal",
+      "target": "components_modal_modal"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 12",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "utils_stockstatus_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "components_statuschip_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "components_statuschip_statuschip"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "utils_helpers_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_itemdetailpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_tabkey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_itemdetailpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L184",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_overviewtab"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L216",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_activitytab"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L291",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_metadatatab"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/inventory/ItemDetailPage.tsx",
+      "source_location": "L321",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_inventory_itemdetailpage_tsx",
+      "target": "inventory_itemdetailpage_fieldpair"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": "line 4",
+      "weight": 1.0,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "components_statuschip_statuschip"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "concept_stockstatus_pipeline"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "src/features/inventory/ItemDetailPage.tsx",
+      "source_location": null,
+      "weight": 0.65,
+      "source": "inventory_itemdetailpage_itemdetailpage",
+      "target": "activityhistory_activityhistorypage_activityhistorypage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "components_datatable_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "components_datatable_datatable"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "activityhistory_activityhistorypage_activityhistorypageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_activityhistory_activityhistorypage_tsx",
+      "target": "activityhistory_activityhistorypage_activityhistorypage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/activityHistory/ActivityHistoryPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "activityhistory_activityhistorypage_activityhistorypage",
+      "target": "components_datatable_datatable"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/authErrors.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_autherrors_test_ts",
+      "target": "utils_autherrors_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/authErrors.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_autherrors_test_ts",
+      "target": "utils_autherrors_getautherrormessage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/authErrors.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_autherrors_ts",
+      "target": "utils_autherrors_getautherrormessage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "utils/stockStatus.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "utils_stockstatus_ts",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "utils_stockstatus_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/GlobalSearch.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "components_globalsearch_globalsearch",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/utils/stockStatus.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "utils_stockstatus_getstockstatus",
+      "target": "concept_stockstatus_pipeline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_messagebox_tsx",
+      "target": "components_messagebox_messageboxtype"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_messagebox_tsx",
+      "target": "components_messagebox_messageboxhandle"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_messagebox_tsx",
+      "target": "components_messagebox_messageboxstate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/MessageBox.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_messagebox_tsx",
+      "target": "components_messagebox_messagebox"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_statuschip_tsx",
+      "target": "components_statuschip_statusstyles"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_statuschip_tsx",
+      "target": "components_statuschip_statuslabels"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_statuschip_tsx",
+      "target": "components_statuschip_statuschipprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/StatusChip.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_statuschip_tsx",
+      "target": "components_statuschip_statuschip"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "components_statuschip_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "components_statuschip_statuschip"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/GlobalSearch.tsx",
+      "source_location": "line 4",
+      "weight": 1.0,
+      "source": "components_globalsearch_globalsearch",
+      "target": "components_statuschip_statuschip"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/components/StatusChip.tsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_statuschip_statuschip",
+      "target": "concept_stockstatus_pipeline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/LoadingSpinner.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_loadingspinner_tsx",
+      "target": "components_loadingspinner_loadingspinner"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_datatable_tsx",
+      "target": "components_datatable_datatablecolumn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_datatable_tsx",
+      "target": "components_datatable_datatablefilterfield"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_datatable_tsx",
+      "target": "components_datatable_datatableprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/DataTable.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_datatable_tsx",
+      "target": "components_datatable_datatable"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "components_globalsearch_globalsearchprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/GlobalSearch.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_globalsearch_tsx",
+      "target": "components_globalsearch_globalsearch"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/components/GlobalSearch.tsx",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "components_globalsearch_globalsearch",
+      "target": "concept_stockstatus_pipeline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Modal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_modal_tsx",
+      "target": "components_modal_modalprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Modal.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_modal_tsx",
+      "target": "components_modal_modal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "components_toast_toastprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "components_toast_typestyles"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "components_toast_toast"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "components_toast_toastitemprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/Toast.tsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_toast_tsx",
+      "target": "components_toast_toastitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/useCollection.ts",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_usecollection_ts",
+      "target": "hooks_usecollection_usecollectionoptions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/useCollection.ts",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "hooks_usecollection_ts",
+      "target": "hooks_usecollection_usecollection"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_architectural_patterns_customhooks",
+      "target": "hooks_usecollection_usecollection"
+    },
+    {
+      "type": "represents",
+      "relation": "EXTRACTED",
+      "confidence_score": 1.0,
+      "note": "The SVG file is the official React logo, depicting the React atom/orbital symbol in cyan (#00D8FF), the brand color of the React JavaScript framework.",
+      "source": "assets_react_svg",
+      "target": "concept_react_framework"
+    },
+    {
+      "type": "instance_of",
+      "relation": "EXTRACTED",
+      "confidence_score": 1.0,
+      "note": "The file is an SVG (Scalable Vector Graphics) format image using path elements to define the React logo shape.",
+      "source": "assets_react_svg",
+      "target": "concept_svg_vector_graphic"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_architectural_patterns_multitenancy",
+      "target": "docs_architectural_patterns_security"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_architectural_patterns_customhooks",
+      "target": "docs_architectural_patterns_statemanagement"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_architectural_patterns_security",
+      "target": "functions_readme_lookupupc"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".claude/docs/architectural_patterns.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_architectural_patterns_cloudfunctions",
+      "target": "functions_readme_lookupupc"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": ".github/workflows/firebase-hosting-pull-request.yml",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "workflows_firebase_hosting_pull_request",
+      "target": "docs_architectural_patterns_firebaseinit"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "functions/README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "functions_readme_lookupupc",
+      "target": "functions_readme_upcfallback"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "cloud_functions_security_pattern",
+      "label": "Cloud Functions with Auth and API Key Protection",
+      "nodes": [
+        "docs_architectural_patterns_cloudfunctions",
+        "docs_architectural_patterns_security",
+        "functions_readme_lookupupc"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".claude/docs/architectural_patterns.md"
+    },
+    {
+      "id": "inventory_data_flow",
+      "label": "Inventory Data Flow: App distributes inventory to pages",
+      "nodes": [
+        "src_app_appcomponent",
+        "dashboard_dashboardpage_dashboardpage",
+        "inventory_itemdetailpage_itemdetailpage",
+        "activityhistory_activityhistorypage_activityhistorypage"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/App.tsx"
+    },
+    {
+      "id": "stockstatus_evaluation_consumers",
+      "label": "Stock Status Pipeline Consumers",
+      "nodes": [
+        "utils_stockstatus_getstockstatus",
+        "components_statuschip_statuschip",
+        "components_globalsearch_globalsearch",
+        "dashboard_dashboardpage_dashboardpage"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/utils/stockStatus.ts"
+    },
+    {
+      "id": "modal_pattern_components",
+      "label": "Modal-based Interaction Pattern Components",
+      "nodes": [
+        "components_modal_modal",
+        "inventory_adjustquantitymodal_adjustquantitymodal",
+        "transfers_transfertrackingmodal_transfertrackingmodal"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/components/Modal.tsx"
+    }
+  ],
+  "built_at_commit": "4c7844f3a87ee69563b931c2229b130d23042f23"
+}
