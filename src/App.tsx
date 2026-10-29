@@ -2608,7 +2608,7 @@ const App: React.FC = () => {
                     <div className="font-semibold text-slate-800 mb-1">
                       Description
                     </div>
-                    <div className="text-slate-700">
+                    <div className="text-slate-700 max-w-[650px]">
                       {row.description || "N/A"}
                     </div>
                   </div>

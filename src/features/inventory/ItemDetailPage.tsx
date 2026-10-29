@@ -254,7 +254,7 @@ const OverviewTab: React.FC<{
       }
     />
     {item.description && (
-      <div className="sm:col-span-2">
+      <div className="sm:col-span-2 max-w-[650px]">
         <FieldPair label="Description" value={item.description} />
       </div>
     )}
@@ -359,7 +359,7 @@ const MetadataTab: React.FC<{ item: InventoryItem }> = ({ item }) => (
       <FieldPair label="Tags" value={item.tags.join(", ")} />
     )}
     {item.description && (
-      <div className="sm:col-span-2">
+      <div className="sm:col-span-2 max-w-[650px]">
         <FieldPair label="Description" value={item.description} />
       </div>
     )}
