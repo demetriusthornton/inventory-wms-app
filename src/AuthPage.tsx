@@ -77,8 +77,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
     <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center p-4">
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg max-w-md w-full p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-[var(--fg)]">
-            In Stock - IMS
+          <h1 className="brand-title text-2xl font-bold text-[var(--fg)]">
+            KIICH
           </h1>
           <p className="text-[var(--muted)] mt-2">
             {isRegistering ? "Create a new account" : "Sign in to your account"}

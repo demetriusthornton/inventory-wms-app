@@ -4272,7 +4272,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       {/* ── Top Bar ── */}
-      <header className="fixed top-0 left-0 right-0 z-20 h-14 bg-[var(--topbar-bg)] border-b border-[var(--topbar-border)] flex items-center px-4 gap-4">
+      <header className="material-bar fixed top-0 left-0 right-0 z-20 h-14 border-b border-[var(--topbar-border)] flex items-center px-4 gap-4">
         {/* Burger button — mobile only */}
         <button
           className="lg:hidden p-2 rounded-lg text-[var(--muted)] hover:bg-[var(--surface-1)] transition-colors"
@@ -4287,10 +4287,10 @@ const App: React.FC = () => {
         {/* Logo area – same width as sidebar so content stays aligned */}
         <div className="w-44 lg:w-56 flex-shrink-0 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-[var(--accent)] flex items-center justify-center">
-            <span className="text-white text-[11px] font-bold tracking-tight">BLX</span>
+            <span className="text-white text-[11px] font-bold tracking-tight">KI</span>
           </div>
           <div className="leading-tight">
-            <p className="text-sm font-semibold text-[var(--fg)]">In Stock</p>
+            <p className="brand-title text-sm font-semibold text-[var(--fg)]">KIICH</p>
             <p className="text-[10px] text-[var(--muted)]">IMS Console</p>
           </div>
         </div>
@@ -4348,13 +4348,13 @@ const App: React.FC = () => {
         {/* Mobile overlay backdrop */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-20 bg-black/50 lg:hidden"
+            className="anim-overlay fixed inset-0 z-20 bg-black/50 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* Sidebar — drawer on mobile, fixed on desktop */}
-        <aside className={`fixed top-0 lg:top-14 left-0 bottom-0 w-64 lg:w-56 bg-[var(--sidebar-bg)] flex flex-col z-30 lg:z-10 transform transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <aside className={`fixed top-0 lg:top-14 left-0 bottom-0 w-64 lg:w-56 bg-[var(--sidebar-bg)] flex flex-col z-30 lg:z-10 transform transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
           {/* Mobile drawer header */}
           <div className="lg:hidden flex items-center justify-between px-4 py-4 border-b border-[var(--sidebar-hover)]">
             <span className="text-sm font-semibold text-[var(--sidebar-fg)]">Navigation</span>

@@ -17,7 +17,7 @@ export const Toast: React.FC<ToastProps> = ({ toasts, onDismiss, onUndo }) => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-[60] flex flex-col gap-2 sm:max-w-sm">
+    <div aria-live="polite" className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-[60] flex flex-col gap-2 sm:max-w-sm">
       {toasts.map((toast) => (
         <ToastItem
           key={toast.id}
@@ -46,7 +46,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss, onUndo }) => {
 
   return (
     <div
-      className={`${typeStyles[toast.type]} bg-[var(--card)] shadow-lg rounded-md px-4 py-3 flex items-start gap-3 transition-opacity duration-300 ${exiting ? "opacity-0" : "opacity-100"}`}
+      className={`anim-toast ${typeStyles[toast.type]} bg-[var(--card)] shadow-lg rounded-md px-4 py-3 flex items-start gap-3 transition-opacity duration-300 ${exiting ? "opacity-0" : "opacity-100"}`}
     >
       <div className="flex-1 min-w-0">
         <p className="text-sm text-[var(--fg)]">{toast.message}</p>
@@ -61,6 +61,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onDismiss, onUndo }) => {
       </div>
       <button
         className="text-[var(--muted)] hover:text-[var(--fg)] text-sm leading-none"
+        aria-label="Dismiss"
         onClick={() => onDismiss(toast.id)}
       >
         ×

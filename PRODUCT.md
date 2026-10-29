@@ -10,7 +10,7 @@ Two personas share the same interface. Warehouse staff execute real-time tasks: 
 
 ## Product Purpose
 
-BenchStock is a multi-warehouse inventory management system. It tracks stock across locations in real time, manages purchase orders from creation through history, handles inter-warehouse transfers, and logs all activity for audit. Success means every user can trust the number they see on screen is correct, and can act on it without navigating more than one step.
+KIICH is a multi-warehouse inventory management system. It tracks stock across locations in real time, manages purchase orders from creation through history, handles inter-warehouse transfers, and logs all activity for audit. Success means every user can trust the number they see on screen is correct, and can act on it without navigating more than one step.
 
 ## Brand Personality
 
@@ -19,7 +19,7 @@ Reliable, direct, fast. The software that warehouse workers actually want to use
 ## Anti-references
 
 - Consumer-warm / friendly: Notion, Duolingo, Linear's new-user onboarding. Rounded, soft, bright, over-explained. Wrong energy for ops work where every second costs.
-- Enterprise ERP aesthetic: dense forms, gray system chrome, dated UI patterns that feel like SAP. BenchStock should feel modern without feeling like a startup toy.
+- Enterprise ERP aesthetic: dense forms, gray system chrome, dated UI patterns that feel like SAP. KIICH should feel modern without feeling like a startup toy.
 
 ## Design Principles
 

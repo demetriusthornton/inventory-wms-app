@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { ReactNode } from "react";
 
 export interface ModalProps {
@@ -18,11 +18,28 @@ export const Modal: React.FC<ModalProps> = ({
   footer,
   maxWidthClass = "max-w-2xl",
 }) => {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+    <div
+      className="anim-overlay fixed inset-0 z-40 flex items-center justify-center bg-black/40"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
-        className={`bg-[var(--modal-bg)] rounded-lg shadow-xl w-full mx-4 sm:mx-0 ${maxWidthClass} max-h-[90vh] flex flex-col border border-[var(--modal-border)]`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={`anim-pop bg-[var(--modal-bg)] rounded-lg shadow-xl w-full mx-4 sm:mx-0 ${maxWidthClass} max-h-[90vh] flex flex-col border border-[var(--modal-border)]`}
       >
         <div className="flex justify-between items-center px-6 py-4 border-b border-[var(--modal-border)]">
           <h2 className="text-lg font-semibold text-[var(--fg)]">
@@ -30,6 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
           </h2>
           <button
             className="text-[var(--muted)] hover:text-[var(--fg)] text-xl leading-none"
+            aria-label="Close"
             onClick={onClose}
           >
             ×
