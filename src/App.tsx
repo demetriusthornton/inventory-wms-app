@@ -9,7 +9,11 @@ import React, {
 import { initializeApp, getApps } from "firebase/app";
 import type { FirebaseApp } from "firebase/app";
 
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 import type { User } from "firebase/auth";
 import { AuthPage } from "./AuthPage";
 
@@ -37,8 +41,34 @@ import {
   lookupProductByUpc,
   sanitizeImageUrl,
 } from "./utils/helpers";
+import type {
+  Warehouse,
+  InventoryItem,
+  PurchaseOrder,
+  PurchaseOrderItem,
+  PoFormState,
+  Transfer,
+  TransferLine,
+  TransferStatus,
+  ActivityLog,
+  ToastMessage,
+  AdjustUndoPayload,
+  Project,
+  ProjectInventoryItem,
+  ProjectShipment,
+} from "./types";
+import { Toast } from "./components/Toast";
+import { GlobalSearch } from "./components/GlobalSearch";
+import { AdjustQuantityModal } from "./features/inventory/AdjustQuantityModal";
+import { DashboardPage } from "./features/dashboard/DashboardPage";
+import { ItemDetailPage } from "./features/inventory/ItemDetailPage";
+import { ActivityHistoryPage } from "./features/activityHistory/ActivityHistoryPage";
+import { AddWarehouseModal } from "./features/warehouses/AddWarehouseModal";
+import { UserSettingsModal } from "./features/settings/UserSettingsModal";
 
 type PageKey =
+  | "dashboard"
+  | "itemDetail"
   | "inventory"
   | "pos"
   | "poHistory"
@@ -46,125 +76,6 @@ type PageKey =
   | "warehouses"
   | "activityHistory"
   | "projects";
-
-interface Warehouse {
-  id: string;
-  shortCode: string;
-  name: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  type?: "standard" | "project";
-  projectId?: string;
-}
-
-type ProjectStatus = "active" | "pending" | "on-hold" | "closed";
-
-interface Project {
-  id: string;
-  ipNumber: string;
-  projectNumber?: string;
-  projectName: string;
-  description?: string;
-  status: ProjectStatus;
-  parentBranchId: string;
-  createdAt: string;
-  createdBy: string;
-  closedDate?: string;
-}
-
-interface ProjectInventoryItem {
-  id: string;
-  projectId: string;
-  sourceItemId?: string;
-  sourcePurchaseOrderId?: string;
-  modelNumber: string;
-  name: string;
-  category: string;
-  manufactureName: string;
-  manufacturePartNumber: string;
-  imageUrl: string;
-  upc?: string;
-  description?: string;
-  quantity: number;
-  allocatedAt: string;
-  createdBy: string;
-}
-
-interface ProjectShipmentLine {
-  projectItemId: string;
-  name: string;
-  modelNumber: string;
-  quantity: number;
-}
-
-interface ProjectShipment {
-  id: string;
-  projectId: string;
-  destinationBranchId: string;
-  label?: string;
-  trackingNumber?: string;
-  status: "pending" | "shipped";
-  lines: ProjectShipmentLine[];
-  createdAt: string;
-  createdBy: string;
-  shippedAt?: string;
-}
-
-interface InventoryItem {
-  id: string;
-  upc?: string;
-  modelNumber: string;
-  name: string;
-  category: string;
-  tags?: string[];
-  description?: string;
-  amountInInventory: number;
-  numOnOrder: number;
-  manufactureName: string;
-  manufacturePartNumber: string;
-  imageUrl: string;
-  assignedBranchId: string;
-  minStockLevel: number;
-}
-
-interface PurchaseOrderItem {
-  upc?: string;
-  itemName: string;
-  modelNumber: string;
-  amountOrdered: number;
-  category: string;
-  orderCost: number;
-  amountReceived: number;
-  imageUrl?: string;
-  description?: string;
-  manufactureName?: string;
-}
-
-interface PurchaseOrder {
-  id: string;
-  orderNumber: string;
-  ipNumber?: string;
-  vendor: string;
-  manufacture: string;
-  receivingWarehouseId: string;
-  items: PurchaseOrderItem[];
-  status: "pending" | "received" | "deleted";
-  orderDate: string;
-  receivedDate?: string | null;
-  deletedDate?: string | null;
-  projectId?: string;
-}
-
-interface PoFormState {
-  orderNumber: string;
-  ipNumber?: string;
-  vendor: string;
-  manufacture: string;
-  receivingWarehouseId: string;
-  items: PurchaseOrderItem[];
-  projectId?: string;
-}
 
 const makeEmptyPoForm = (): PoFormState => ({
   orderNumber: "",
@@ -188,190 +99,6 @@ const makeEmptyPoForm = (): PoFormState => ({
   ],
 });
 
-type TransferStatus = "pending" | "in-transit" | "completed" | "cancelled";
-
-interface TransferLine {
-  itemId: string;
-  itemModelNumber: string;
-  itemName: string;
-  quantity: number;
-}
-
-interface Transfer {
-  id: string;
-  transferId: string;
-  label?: string;
-  trackingNumber?: string;
-  sourceBranchId: string;
-  destinationBranchId: string;
-  dateInitiated: string;
-  status: TransferStatus;
-  dateCompleted?: string;
-  statusUpdatedAt?: string;
-  lines: TransferLine[];
-}
-
-interface ActivityLog {
-  id: string;
-  timestamp: string;
-  userName: string;
-  action: string;
-  collection: string;
-  docId?: string;
-  summary: string;
-}
-
-interface AddWarehouseModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSaved: (warehouse: Warehouse) => void;
-  db: Firestore;
-  basePath: string;
-  existing?: Warehouse | null;
-  onLogActivity: (
-    entry: Omit<ActivityLog, "id" | "timestamp" | "userName">,
-  ) => Promise<void>;
-}
-
-const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
-  open,
-  onClose,
-  onSaved,
-  db,
-  basePath,
-  existing,
-  onLogActivity,
-}) => {
-  const [shortCode, setShortCode] = useState("");
-  const [name, setName] = useState("");
-  const [streetAddress, setStreetAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [stateVal, setStateVal] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (existing) {
-      setShortCode(existing.shortCode);
-      setName(existing.name);
-      setStreetAddress(existing.streetAddress);
-      setCity(existing.city);
-      setStateVal(existing.state);
-    } else {
-      setShortCode("");
-      setName("");
-      setStreetAddress("");
-      setCity("");
-      setStateVal("");
-    }
-  }, [existing, open]);
-
-  const handleSave = async () => {
-    if (!name.trim() || !shortCode.trim()) return;
-    setSaving(true);
-    const id = existing?.id ?? crypto.randomUUID();
-    const ref = doc(collection(db, `${basePath}/warehouses`), id);
-    const warehouse: Warehouse = {
-      id,
-      shortCode: shortCode.trim(),
-      name: name.trim(),
-      streetAddress: streetAddress.trim(),
-      city: city.trim(),
-      state: stateVal.trim(),
-    };
-    await setDoc(ref, warehouse);
-    await onLogActivity({
-      action: existing ? "warehouse_update" : "warehouse_create",
-      collection: "warehouses",
-      docId: id,
-      summary: `${existing ? "Updated" : "Created"} warehouse ${
-        warehouse.name
-      }`,
-    });
-    setSaving(false);
-    onSaved(warehouse);
-    onClose();
-  };
-
-  return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={existing ? "Edit Branch" : "Add Branch"}
-      footer={
-        <div className="flex justify-end gap-3">
-          <button
-            className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
-            onClick={onClose}
-            disabled={saving}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-        </div>
-      }
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Short Code <span className="text-red-500">*</span>
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-            value={shortCode}
-            onChange={(e) => setShortCode(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Street Address
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-            value={streetAddress}
-            onChange={(e) => setStreetAddress(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            City
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            State
-          </label>
-          <input
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
-            value={stateVal}
-            onChange={(e) => setStateVal(e.target.value)}
-          />
-        </div>
-      </div>
-    </Modal>
-  );
-};
-
 const THEME_STORAGE_KEY = "ui:darkMode";
 
 const getInitialDarkMode = (): boolean => false;
@@ -382,12 +109,14 @@ const App: React.FC = () => {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [appId, setAppId] = useState<string>("wms-app-prod");
   const [authInitDone, setAuthInitDone] = useState(false);
-  const [page, setPage] = useState<PageKey>("inventory");
+  const [page, setPage] = useState<PageKey>("dashboard");
   const [defaultWarehouseId, setDefaultWarehouseId] = useState<string | null>(
     null,
   );
 
   const [darkMode, setDarkMode] = useState<boolean>(getInitialDarkMode());
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -452,10 +181,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!authInitDone) return;
-    if (!authUser) {
-      setDefaultWarehouseId(null);
-      return;
-    }
+    if (!authUser) return;
     const stored = localStorage.getItem(
       getDefaultWarehouseStorageKey(authUser.uid),
     );
@@ -584,28 +310,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (
-      defaultWarehouseId &&
-      !warehouses.some((w) => w.id === defaultWarehouseId)
-    ) {
-      setDefaultWarehouseId(null);
-    }
-  }, [defaultWarehouseId, warehouses]);
-
-  const activityFilterOptions = useMemo(() => {
-    const actionSet = new Set<string>();
-    const userSet = new Set<string>();
-    activityHistory.forEach((entry) => {
-      if (entry.action) actionSet.add(entry.action);
-      if (entry.userName) userSet.add(entry.userName);
-    });
-    return {
-      actions: Array.from(actionSet).map((value) => ({
-        label: value,
-        value,
-      })),
-      users: Array.from(userSet).map((value) => ({ label: value, value })),
-    };
-  }, [activityHistory]);
+      loadingWarehouses ||
+      !defaultWarehouseId ||
+      warehouses.some((w) => w.id === defaultWarehouseId)
+    ) return;
+    setDefaultWarehouseId(null);
+  }, [defaultWarehouseId, warehouses, loadingWarehouses]);
 
   const filteredPurchaseOrders = useMemo(
     () =>
@@ -632,10 +342,14 @@ const App: React.FC = () => {
   );
 
   const filteredTransfers = useMemo(() => {
-    const cutoff =
-      transferRangeDays === "all"
-        ? 0
-        : Date.now() - transferRangeDays * 24 * 60 * 60 * 1000;
+    let cutoff = 0;
+    if (transferRangeDays === 0) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      cutoff = startOfToday.getTime();
+    } else if (transferRangeDays !== "all") {
+      cutoff = Date.now() - transferRangeDays * 24 * 60 * 60 * 1000;
+    }
     return transfers.filter(
       (t) =>
         (!defaultWarehouseId ||
@@ -725,6 +439,19 @@ const App: React.FC = () => {
     });
     return Array.from(set).map((c) => ({ label: c, value: c }));
   }, [enrichedInventory]);
+
+  const inventoryTagOptions = useMemo(() => {
+    const tagSet = new Set<string>();
+    enrichedInventory.forEach((item) => {
+      (item.tags ?? []).forEach((tag) => {
+        if (tag) tagSet.add(tag);
+      });
+    });
+    return Array.from(tagSet)
+      .sort()
+      .map((tag) => ({ label: tag, value: tag }));
+  }, [enrichedInventory]);
+
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   const poVendorOptions = useMemo(() => {
@@ -815,6 +542,7 @@ const App: React.FC = () => {
   const inventoryCsvInputRef = useRef<HTMLInputElement | null>(null);
   const inventoryImageInputRef = useRef<HTMLInputElement | null>(null);
 
+
   const [warehouseModalQuickOpen, setWarehouseModalQuickOpen] = useState(false);
   const [warehouseModalMainOpen, setWarehouseModalMainOpen] = useState(false);
   const [editingWarehouse, setEditingWarehouse] = useState<Warehouse | null>(
@@ -842,6 +570,71 @@ const App: React.FC = () => {
     useState(false);
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
   const [transferTrackingValue, setTransferTrackingValue] = useState("");
+
+  // PRD: New state for dashboard / item detail / adjust / search / toasts
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [adjustItem, setAdjustItem] = useState<InventoryItem | null>(null);
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+
+  // Keyboard shortcut for global search (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Toast helpers
+  const addToast = useCallback((msg: Omit<ToastMessage, "id">) => {
+    const id = crypto.randomUUID();
+    setToasts((prev) => [...prev, { ...msg, id }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const handleUndoAdjust = useCallback(
+    async (payload: AdjustUndoPayload) => {
+      if (!db || !basePath) return;
+      try {
+        const itemRef = doc(db, `${basePath}/inventory/${payload.itemId}`);
+        await updateDoc(itemRef, { amountInInventory: payload.previousQuantity });
+        await logActivity({
+          action: "inventory_adjust_undo",
+          collection: "inventory",
+          docId: payload.itemId,
+          summary: `Undid adjustment, reverted to ${payload.previousQuantity}`,
+          itemId: payload.itemId,
+          resultingQuantity: payload.previousQuantity,
+          undoOf: payload.activityLogId,
+        });
+        addToast({ message: "Adjustment undone.", type: "info" });
+      } catch (err) {
+        console.error("Undo failed:", err);
+        addToast({ message: "Undo failed. Please try again.", type: "error" });
+      }
+    },
+    [db, basePath, logActivity, addToast],
+  );
+
+  // Navigation helpers for item detail
+  const navigateToItem = useCallback((item: InventoryItem) => {
+    setSelectedItemId(item.id);
+    setPage("itemDetail");
+  }, []);
+
+  const navigateBack = useCallback(() => {
+    setSelectedItemId(null);
+    setPage("inventory");
+  }, []);
 
   const [inventoryForm, setInventoryForm] = useState<Partial<InventoryItem>>({
     upc: "",
@@ -1051,6 +844,10 @@ const App: React.FC = () => {
           modelNumber,
           name: row[idx("name")] ?? "",
           category: row[idx("category")] ?? "",
+          tags: (row[idx("tags")] ?? "")
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
           upc: row[idx("upc")] ?? "",
           amountInInventory: Number(
             row[idx("amountininventory")] ?? row[idx("amountInInventory")] ?? 0,
@@ -1095,6 +892,7 @@ const App: React.FC = () => {
       "modelNumber",
       "name",
       "category",
+      "tags",
       "amountInInventory",
       "manufactureName",
       "manufacturePartNumber",
@@ -1107,6 +905,7 @@ const App: React.FC = () => {
       "ABC-123",
       "Sample Item",
       "Lumber",
+      "Fragile, High-Value",
       "10",
       "Acme",
       "AC-100",
@@ -1877,10 +1676,6 @@ const App: React.FC = () => {
       return;
     }
 
-    if (newStatus === "in-transit" && transfer.status !== "pending") {
-      return;
-    }
-
     if (newStatus === "cancelled") {
       const confirmed = await messageBoxRef.current?.confirm(
         `Cancel transfer ${transfer.transferId}?`,
@@ -2131,6 +1926,12 @@ const App: React.FC = () => {
                 type: "select",
                 options: inventoryCategoryOptions,
               },
+              {
+                key: "tags",
+                label: "Tag",
+                type: "select",
+                options: inventoryTagOptions,
+              },
             ]}
             getRowId={(row) => row.id}
             columns={[
@@ -2223,7 +2024,7 @@ const App: React.FC = () => {
             ]}
             actions={(row) => (
               <button
-                className="px-2 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e] hover:text-white"
+                className="px-2 py-1 rounded-md bg-[var(--accent)] text-xs text-white hover:bg-[var(--accent-hover)] hover:text-white"
                 onClick={(e) => {
                   e.stopPropagation();
                   openInventoryModalForEdit(row);
@@ -2283,7 +2084,7 @@ const App: React.FC = () => {
                     <div className="font-semibold text-slate-800 mb-1">
                       Description
                     </div>
-                    <div className="text-slate-700">
+                    <div className="text-slate-700 max-w-[650px]">
                       {row.description || "N/A"}
                     </div>
                   </div>
@@ -2292,13 +2093,13 @@ const App: React.FC = () => {
             )}
           >
             <button
-              className="px-3 py-2 rounded-md bg-[#005691] text-white text-xs sm:text-sm hover:bg-[#00426e]"
+              className="px-3 py-2 rounded-md bg-[var(--accent)] text-white text-xs sm:text-sm hover:bg-[var(--accent-hover)]"
               onClick={openInventoryModalForNew}
             >
               Add Inventory
             </button>
             <button
-              className="px-3 py-2 rounded-md border border-[#005691] text-[#005691] text-xs sm:text-sm hover:bg-[#005691]/5"
+              className="px-3 py-2 rounded-md border border-[var(--accent)] text-[var(--accent)] text-xs sm:text-sm hover:bg-[var(--accent)]/10"
               onClick={() => setInventoryCsvModalOpen(true)}
             >
               Import Inventory (CSV)
@@ -2350,13 +2151,13 @@ const App: React.FC = () => {
                     </button>
                   )}
                   <button
-                    className="px-4 py-2 rounded-md bg-[#FF6347] text-sm text-white hover:bg-[#e4573d]"
+                    className="px-4 py-2 rounded-md bg-[var(--outline-bg)] text-sm border border-[var(--outline-border)] text-[var(--outline-fg)] hover:bg-[var(--outline-hover)]"
                     onClick={() => setInventoryModalOpen(false)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                    className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                     onClick={handleSaveInventory}
                   >
                     Save
@@ -2365,14 +2166,14 @@ const App: React.FC = () => {
               </div>
             }
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-slate-600 mb-1">
                   UPC
                 </label>
                 <div className="flex gap-2">
                   <input
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                     value={inventoryForm.upc ?? ""}
                     onChange={(e) =>
                       setInventoryForm((prev) => ({
@@ -2401,7 +2202,7 @@ const App: React.FC = () => {
                   Model Number <span className="text-red-500">*</span>
                 </label>
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.modelNumber ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2417,7 +2218,7 @@ const App: React.FC = () => {
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                     value={inventoryForm.category ?? ""}
                     onChange={(e) =>
                       setInventoryForm((prev) => ({
@@ -2463,7 +2264,7 @@ const App: React.FC = () => {
                   Tags
                 </label>
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   placeholder="Comma separated"
                   value={
                     Array.isArray(inventoryForm.tags)
@@ -2486,7 +2287,7 @@ const App: React.FC = () => {
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.name ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2501,7 +2302,7 @@ const App: React.FC = () => {
                   Description
                 </label>
                 <textarea
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   rows={3}
                   value={inventoryForm.description ?? ""}
                   onChange={(e) =>
@@ -2517,7 +2318,7 @@ const App: React.FC = () => {
                   Manufacture <span className="text-red-500">*</span>
                 </label>
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.manufactureName ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2533,7 +2334,7 @@ const App: React.FC = () => {
                   <span className="text-red-500">*</span>
                 </label>
                 <input
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.manufacturePartNumber ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2548,7 +2349,7 @@ const App: React.FC = () => {
                   Branch <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.assignedBranchId ?? ""}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2571,7 +2372,7 @@ const App: React.FC = () => {
                 </label>
                 <input
                   type="number"
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.amountInInventory ?? 0}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2587,7 +2388,7 @@ const App: React.FC = () => {
                 </label>
                 <input
                   type="number"
-                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                  className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={inventoryForm.minStockLevel ?? 0}
                   onChange={(e) =>
                     setInventoryForm((prev) => ({
@@ -2603,7 +2404,7 @@ const App: React.FC = () => {
                 </label>
                 <div className="flex gap-2">
                   <input
-                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#005691]"
+                    className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                     value={inventoryForm.imageUrl ?? ""}
                     onChange={(e) =>
                       setInventoryForm((prev) => ({
@@ -2654,7 +2455,7 @@ const App: React.FC = () => {
             title="Import Inventory from CSV"
             footer={
               <button
-                className="px-4 py-2 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                 onClick={() => {
                   if (inventoryCsvInputRef.current) {
                     inventoryCsvInputRef.current.value = "";
@@ -2668,7 +2469,7 @@ const App: React.FC = () => {
           >
             <p className="text-sm text-slate-700 mb-2">
               Upload a CSV file with headers such as modelNumber, name,
-              category, amountInInventory, manufactureName,
+              category, tags, amountInInventory, manufactureName,
               manufacturePartNumber, imageUrl, description, upc,
               assignedBranchId, minStockLevel.
             </p>
@@ -2813,7 +2614,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7]"
+                className="px-2 py-1 rounded-md bg-[var(--accent)] text-xs text-white hover:bg-[var(--accent-hover)]"
                 onClick={(e) => {
                   e.stopPropagation();
                   openPoModalForEdit(row);
@@ -2853,7 +2654,7 @@ const App: React.FC = () => {
         >
           <div className="flex gap-2">
             <button
-              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
+              className="px-3 py-2 rounded-md bg-[var(--accent)] text-white text-xs sm:text-sm hover:bg-[var(--accent-hover)]"
               onClick={openPoModalForNew}
             >
               Add New PO
@@ -2883,7 +2684,7 @@ const App: React.FC = () => {
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
+                  className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                   onClick={handleSavePurchaseOrder}
                 >
                   Save
@@ -2892,13 +2693,13 @@ const App: React.FC = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 PO Number <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={poForm.orderNumber ?? ""}
                 onChange={(e) =>
                   setPoForm((prev) => ({
@@ -2991,7 +2792,7 @@ const App: React.FC = () => {
                 Vendor <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={poForm.vendor ?? ""}
                 onChange={(e) =>
                   setPoForm((prev) => ({
@@ -3006,7 +2807,7 @@ const App: React.FC = () => {
                 Receiving Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={poForm.receivingWarehouseId ?? ""}
                 disabled={poForProject && !!poForm.projectId}
                 onChange={(e) =>
@@ -3201,7 +3002,7 @@ const App: React.FC = () => {
                 .
               </p>
               <button
-                className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
+                className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                 onClick={() => handleReceivePoFull(poReceiveMode.po)}
               >
                 Confirm Receive
@@ -3224,7 +3025,7 @@ const App: React.FC = () => {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
+                className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                 onClick={handleSubmitPartialReceive}
               >
                 Save
@@ -3466,7 +3267,7 @@ const App: React.FC = () => {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#0ea5e9] hover:underline"
+                    className="text-[var(--accent)] hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {row.trackingNumber}
@@ -3517,7 +3318,7 @@ const App: React.FC = () => {
           actions={(row) => (
             <div className="flex gap-1 justify-end">
               <button
-                className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7]"
+                className="px-2 py-1 rounded-md bg-[var(--accent)] text-xs text-white hover:bg-[var(--accent-hover)]"
                 onClick={(e) => {
                   e.stopPropagation();
                   openTransferTrackingEditor(row);
@@ -3593,7 +3394,7 @@ const App: React.FC = () => {
           <div className="flex gap-2">
             <select
               aria-label="Date range"
-              className="border border-slate-300 rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+              className="border border-slate-300 rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
               value={transferRangeDays}
               onChange={(e) =>
                 setTransferRangeDays(
@@ -3601,14 +3402,14 @@ const App: React.FC = () => {
                 )
               }
             >
-              <option value="all">All time</option>
-              <option value={1}>Past day</option>
+              <option value="all">Show all</option>
+              <option value={0}>Today</option>
               <option value={7}>Past 7 days</option>
               <option value={14}>Past 14 days</option>
               <option value={30}>Past 30 days</option>
             </select>
             <button
-              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
+              className="px-3 py-2 rounded-md bg-[var(--accent)] text-white text-xs sm:text-sm hover:bg-[var(--accent-hover)]"
               onClick={() => {
                 resetTransferForm();
                 setTransferModalOpen(true);
@@ -3640,7 +3441,7 @@ const App: React.FC = () => {
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
+                  className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                   onClick={handleSaveTransfer}
                 >
                   Save
@@ -3649,13 +3450,13 @@ const App: React.FC = () => {
             </div>
           }
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-slate-600 mb-1">
                 Order Label
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={transferForm.label ?? ""}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3671,7 +3472,7 @@ const App: React.FC = () => {
                 Source Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={transferForm.sourceBranchId}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3693,7 +3494,7 @@ const App: React.FC = () => {
                 Destination Branch <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={transferForm.destinationBranchId}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3715,7 +3516,7 @@ const App: React.FC = () => {
                 Tracking Number
               </label>
               <input
-                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 value={transferForm.trackingNumber ?? ""}
                 onChange={(e) =>
                   setTransferForm((prev) => ({
@@ -3840,7 +3641,7 @@ const App: React.FC = () => {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
+                className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
                 onClick={handleSaveTransferTracking}
               >
                 Save
@@ -3853,71 +3654,13 @@ const App: React.FC = () => {
               Tracking Number
             </label>
             <input
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
               value={transferTrackingValue}
               onChange={(e) => setTransferTrackingValue(e.target.value)}
               placeholder="Optional shipment tracking number"
             />
           </div>
         </Modal>
-      </div>
-    );
-  };
-
-  const activityHistorySorted = useMemo(
-    () =>
-      [...activityHistory].sort((a, b) =>
-        (b.timestamp || "").localeCompare(a.timestamp || ""),
-      ),
-    [activityHistory],
-  );
-
-  const renderActivityHistoryPage = () => {
-    return (
-      <div className="space-y-4">
-        <DataTable<ActivityLog>
-          title="Activity History"
-          data={activityHistorySorted}
-          defaultSortKey="timestamp"
-          defaultSortDir="desc"
-          searchFields={[
-            "summary",
-            "action",
-            "userName",
-            "collection",
-            "docId",
-          ]}
-          filterFields={[
-            {
-              key: "action",
-              label: "Action",
-              type: "select",
-              options: activityFilterOptions.actions,
-            },
-            {
-              key: "userName",
-              label: "User",
-              type: "select",
-              options: activityFilterOptions.users,
-            },
-          ]}
-          columns={[
-            {
-              key: "timestamp",
-              label: "Time",
-              render: (row) =>
-                row.timestamp ? new Date(row.timestamp).toLocaleString() : "—",
-              sortFn: (a, b) =>
-                (a.timestamp || "").localeCompare(b.timestamp || ""),
-            },
-            { key: "action", label: "Action" },
-            { key: "userName", label: "User" },
-            { key: "collection", label: "Collection" },
-            { key: "docId", label: "Doc ID" },
-            { key: "summary", label: "Summary" },
-          ]}
-          getRowId={(row) => row.id}
-        />
       </div>
     );
   };
@@ -4008,6 +3751,7 @@ const App: React.FC = () => {
             { key: "streetAddress", label: "Address" },
             { key: "city", label: "City" },
             { key: "state", label: "State" },
+            { key: "zip", label: "Zip" },
             {
               key: "default",
               label: "Default",
@@ -4034,7 +3778,7 @@ const App: React.FC = () => {
                 {row.id === defaultWarehouseId ? "Default" : "Set Default"}
               </button>
               <button
-                className="px-2 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7]"
+                className="px-2 py-1 rounded-md bg-[var(--accent)] text-xs text-white hover:bg-[var(--accent-hover)]"
                 onClick={(e) => {
                   e.stopPropagation();
                   setEditingWarehouse(row);
@@ -4057,7 +3801,7 @@ const App: React.FC = () => {
         >
           <div className="flex gap-2">
             <button
-              className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
+              className="px-3 py-2 rounded-md bg-[var(--accent)] text-white text-xs sm:text-sm hover:bg-[var(--accent-hover)]"
               onClick={() => {
                 setEditingWarehouse(null);
                 setWarehouseModalMainOpen(true);
@@ -4066,7 +3810,7 @@ const App: React.FC = () => {
               Add Warehouse
             </button>
             <button
-              className="px-3 py-2 rounded-md border border-[#0ea5e9] text-[#0ea5e9] text-xs sm:text-sm hover:bg-[#0ea5e9]/5"
+              className="px-3 py-2 rounded-md border border-[var(--accent)] text-[var(--accent)] text-xs sm:text-sm hover:bg-[var(--accent)]/10"
               onClick={() => setWarehouseCsvModalOpen(true)}
             >
               Import Warehouses (CSV)
@@ -4090,7 +3834,7 @@ const App: React.FC = () => {
           title="Import Warehouses from CSV"
           footer={
             <button
-              className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7]"
+              className="px-4 py-2 rounded-md bg-[var(--accent)] text-sm text-white hover:bg-[var(--accent-hover)]"
               onClick={() => {
                 if (warehouseCsvInputRef.current) {
                   warehouseCsvInputRef.current.value = "";
@@ -4144,92 +3888,203 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] flex flex-col">
-      <header className="bg-[var(--header-bg)] text-[var(--header-fg)] shadow-sm">
-        <div className="w-[90%] mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-bold">
-              BLX
-            </div>
-            <div>
-              <h1 className="text-sm sm:text-base font-semibold">
-                In Stock - IMS
-              </h1>
-              <p className="text-[11px] opacity-80">Operations Console</p>
-            </div>
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
+      {/* ── Top Bar ── */}
+      <header className="material-bar fixed top-0 left-0 right-0 z-20 h-14 border-b border-[var(--topbar-border)] flex items-center px-4 gap-4">
+        {/* Burger button — mobile only */}
+        <button
+          className="lg:hidden p-2 rounded-lg text-[var(--muted)] hover:bg-[var(--surface-1)] transition-colors"
+          onClick={() => setSidebarOpen(true)}
+          aria-label="Open navigation"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        {/* Logo area – same width as sidebar so content stays aligned */}
+        <div className="w-44 lg:w-56 flex-shrink-0 flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[var(--accent)] flex items-center justify-center">
+            <span className="text-white text-[11px] font-bold tracking-tight">KI</span>
           </div>
-          <nav className="flex-1 flex justify-center gap-1 sm:gap-2 items-center text-xs sm:text-sm">
-            <NavButton
-              label="Warehouses"
-              active={page === "warehouses"}
-              onClick={() => setPage("warehouses")}
-            />
-            <NavButton
-              label="Inventory"
-              active={page === "inventory"}
-              onClick={() => setPage("inventory")}
-            />
-            <NavButton
-              label="Purchase Orders"
-              active={page === "pos"}
-              onClick={() => setPage("pos")}
-            />
-            <NavButton
-              label="PO History"
-              active={page === "poHistory"}
-              onClick={() => setPage("poHistory")}
-            />
-            <NavButton
-              label="Transfers"
-              active={page === "transfers"}
-              onClick={() => setPage("transfers")}
-            />
-            <NavButton
-              label="Projects"
-              active={page === "projects"}
-              onClick={() => setPage("projects")}
-            />
-          </nav>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
-              onClick={() => setDarkMode((prev) => !prev)}
-              aria-pressed={darkMode}
-              aria-label="Toggle dark mode"
-            >
-              {darkMode ? "Light Mode" : "Dark Mode"}
-            </button>
-            <button
-              className="px-3 py-1 rounded-full text-xs sm:text-sm font-medium text-white/90 bg-white/10 hover:bg-white/20"
-              onClick={handleSignOut}
-            >
-              Sign Out
-            </button>
+          <div className="leading-tight">
+            <p className="brand-title text-sm font-semibold text-[var(--fg)]">KIICH</p>
+            <p className="text-[10px] text-[var(--muted)]">IMS Console</p>
           </div>
+        </div>
+
+        {/* Search trigger */}
+        <div className="flex-1">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--surface-1)] text-[var(--muted)] text-sm hover:border-[var(--accent)]/50 transition-colors w-full max-w-md"
+          >
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span>Search inventory...</span>
+            <kbd className="ml-auto text-[10px] bg-[var(--surface-2)] border border-[var(--border)] px-1.5 py-0.5 rounded font-mono hidden sm:inline">⌘K</kbd>
+          </button>
+        </div>
+
+        {/* Right controls */}
+        <div className="flex items-center gap-2">
+          <span className={`hidden sm:inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${db ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${db ? "bg-emerald-500" : "bg-red-500"}`} />
+            {db ? "Connected" : "Offline"}
+          </span>
+          <button
+            type="button"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--surface-1)] border border-[var(--border)] text-[var(--fg)] hover:bg-[var(--surface-2)] transition-colors"
+            onClick={() => setDarkMode((prev) => !prev)}
+            aria-pressed={darkMode}
+            aria-label="Toggle dark mode"
+          >
+            {darkMode ? "☀ Light" : "☾ Dark"}
+          </button>
+          <button
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface-1)] transition-colors border border-[var(--border)]"
+            onClick={() => setSettingsModalOpen(true)}
+            aria-label="User settings"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="hidden sm:inline">{getUserName().split("@")[0]}</span>
+          </button>
+          <button
+            className="px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface-1)] transition-colors"
+            onClick={handleSignOut}
+          >
+            Sign out
+          </button>
         </div>
       </header>
 
-      <div className="bg-[var(--status-bg)] text-[var(--status-fg)] text-xs sm:text-sm">
-        <div className="w-[90%] mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-3">
-            <span>System: {appId}</span>
-            <span>User: {getUserName()}</span>
-            <span>
-              Default Branch:{" "}
-              {defaultWarehouseId
-                ? warehouses.find((w) => w.id === defaultWarehouseId)?.name ||
-                  defaultWarehouseId
-                : "None"}
-            </span>
-          </div>
-          <div className="text-[var(--status-muted)]">
-            Status: {db ? "Connected" : "Offline"}
-          </div>
-        </div>
-      </div>
+      {/* ── Body: sidebar + content ── */}
+      <div className="flex pt-14 min-h-screen">
+        {/* Mobile overlay backdrop */}
+        {sidebarOpen && (
+          <div
+            className="anim-overlay fixed inset-0 z-20 bg-black/50 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-      <main className="flex-1 w-[90%] mx-auto px-4 sm:px-6 py-4 space-y-4">
+        {/* Sidebar — drawer on mobile, fixed on desktop */}
+        <aside className={`fixed top-0 lg:top-14 left-0 bottom-0 w-64 lg:w-56 bg-[var(--sidebar-bg)] flex flex-col z-30 lg:z-10 transform transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+          {/* Mobile drawer header */}
+          <div className="lg:hidden flex items-center justify-between px-4 py-4 border-b border-[var(--sidebar-hover)]">
+            <span className="text-sm font-semibold text-[var(--sidebar-fg)]">Navigation</span>
+            <button
+              className="text-[var(--sidebar-muted)] hover:text-[var(--sidebar-fg)] p-1"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close navigation"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
+            <SidebarItem
+              label="Dashboard"
+              active={page === "dashboard"}
+              onClick={() => { setPage("dashboard"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="Inventory"
+              active={page === "inventory" || page === "itemDetail"}
+              onClick={() => { setPage("inventory"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="Warehouses"
+              active={page === "warehouses"}
+              onClick={() => { setPage("warehouses"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="Projects"
+              active={page === "projects"}
+              onClick={() => { setPage("projects"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="Purchase Orders"
+              active={page === "pos"}
+              onClick={() => { setPage("pos"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="PO History"
+              active={page === "poHistory"}
+              onClick={() => { setPage("poHistory"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="Transfers"
+              active={page === "transfers"}
+              onClick={() => { setPage("transfers"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              }
+            />
+            <SidebarItem
+              label="Activity"
+              active={page === "activityHistory"}
+              onClick={() => { setPage("activityHistory"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              }
+            />
+          </nav>
+
+          {/* Sidebar footer: user info */}
+          <div className="px-3 py-3 border-t border-[var(--sidebar-hover)]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)] text-xs font-bold flex-shrink-0">
+                {getUserName().charAt(0).toUpperCase()}
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-xs font-medium text-[var(--sidebar-fg)] truncate">{getUserName()}</p>
+                <p className="text-[10px] text-[var(--sidebar-muted)] truncate">{appId}</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="flex-1 ml-0 lg:ml-56 px-4 sm:px-6 py-4 sm:py-6 space-y-4 min-h-[calc(100vh-3.5rem)] min-w-0">
         {(loadingInventory ||
           loadingWarehouses ||
           loadingPOs ||
@@ -4239,14 +4094,85 @@ const App: React.FC = () => {
           loadingProjects ||
           loadingProjectShipments ||
           loadingProjectInventory) && <LoadingSpinner />}
+        {page === "dashboard" && (
+          <DashboardPage
+            inventory={filteredInventory}
+            warehouses={warehouses}
+            activityHistory={activityHistory}
+            onNavigateToItem={navigateToItem}
+            onOpenAdjust={(item) => {
+              setAdjustItem(item);
+              setAdjustModalOpen(true);
+            }}
+            onNavigateTo={setPage}
+            onOpenSearch={() => setSearchOpen(true)}
+          />
+        )}
+        {page === "itemDetail" &&
+          selectedItemId &&
+          (() => {
+            const item = enrichedInventory.find(
+              (i) => i.id === selectedItemId,
+            );
+            if (!item) return null;
+            const wh = warehouses.find(
+              (w) => w.id === item.assignedBranchId,
+            );
+            return (
+              <ItemDetailPage
+                item={item}
+                warehouse={wh}
+                activityHistory={activityHistory}
+                onBack={navigateBack}
+                onOpenAdjust={(itm) => {
+                  setAdjustItem(itm);
+                  setAdjustModalOpen(true);
+                }}
+                onBuildTransfer={() => {
+                  setTransferForm({
+                    label: "",
+                    trackingNumber: "",
+                    sourceBranchId: item.assignedBranchId,
+                    destinationBranchId: "",
+                    lines: [{ itemId: item.id, quantity: 1 }],
+                  });
+                  setPage("transfers");
+                  setTransferModalOpen(true);
+                }}
+                onRequestQuote={() => {
+                  const partNumber = item.manufacturePartNumber || item.modelNumber || "N/A";
+                  const name = item.name || item.modelNumber || "Unnamed Item";
+                  const subject = encodeURIComponent("Quote Request");
+                  const body = encodeURIComponent(
+                    [
+                      "Dear <Vendor>",
+                      "",
+                      "Please provide a quote for the following Items. Please feel free to contact me with any questions or concerns.",
+                      "",
+                      `(ADD ORD QTY) - ${name} - ${partNumber}`,
+                    ].join("\n"),
+                  );
+                  window.open(`mailto:?subject=${subject}&body=${body}`, "_blank", "noopener,noreferrer");
+                }}
+              />
+            );
+          })()}
         {page === "inventory" && renderInventoryPage()}
         {page === "pos" && renderPendingPoPage()}
         {page === "poHistory" && renderPoHistoryPage()}
         {page === "transfers" && renderTransfersPage()}
         {page === "warehouses" && renderWarehousesPage()}
-        {page === "activityHistory" && renderActivityHistoryPage()}
         {page === "projects" && renderProjectsPage()}
+        {page === "activityHistory" && (
+          <ActivityHistoryPage
+            activityHistory={activityHistory}
+            inventory={enrichedInventory}
+            warehouses={warehouses}
+            onNavigateToItem={navigateToItem}
+          />
+        )}
       </main>
+      </div>{/* end flex body */}
 
       <AddWarehouseModal
         open={warehouseModalQuickOpen}
@@ -4257,24 +4183,85 @@ const App: React.FC = () => {
         onLogActivity={logActivity}
       />
 
+      <GlobalSearch
+        open={searchOpen}
+        items={enrichedInventory}
+        warehouses={warehouses}
+        onSelectItem={(item) => {
+          setSearchOpen(false);
+          navigateToItem(item);
+        }}
+        onClose={() => setSearchOpen(false)}
+      />
+
+      <AdjustQuantityModal
+        open={adjustModalOpen}
+        item={adjustItem}
+        warehouse={warehouses.find(
+          (w) => w.id === adjustItem?.assignedBranchId,
+        )}
+        onClose={() => {
+          setAdjustModalOpen(false);
+          setAdjustItem(null);
+        }}
+        onSaved={(delta, result, _reason) => {
+          setAdjustModalOpen(false);
+          const itemName = adjustItem?.name || adjustItem?.modelNumber || "";
+          setAdjustItem(null);
+          addToast({
+            message: `Adjusted ${itemName}: ${delta > 0 ? "+" : ""}${delta} → ${result}`,
+            type: "success",
+          });
+        }}
+        db={db!}
+        basePath={basePath!}
+        onLogActivity={logActivity}
+        onConfirm={(message) =>
+          messageBoxRef.current?.confirm(message) ?? Promise.resolve(false)
+        }
+      />
+
+      <Toast
+        toasts={toasts}
+        onDismiss={dismissToast}
+        onUndo={handleUndoAdjust}
+      />
+
       <MessageBox ref={messageBoxRef} />
+
+      {authUser && (
+        <UserSettingsModal
+          open={settingsModalOpen}
+          onClose={() => setSettingsModalOpen(false)}
+          authUser={authUser}
+          warehouses={warehouses}
+          defaultWarehouseId={defaultWarehouseId}
+          onSetDefaultWarehouse={setDefaultWarehouseId}
+        />
+      )}
     </div>
   );
 };
 
-interface NavButtonProps {
+// ── Sidebar nav item ─────────────────────────────────────────────────────────
+
+interface SidebarItemProps {
   label: string;
+  icon: React.ReactNode;
   active: boolean;
   onClick: () => void;
 }
 
-const NavButton: React.FC<NavButtonProps> = ({ label, active, onClick }) => (
+const SidebarItem: React.FC<SidebarItemProps> = ({ label, icon, active, onClick }) => (
   <button
-    className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
-      active ? "bg-[#0ea5e9] text-white" : "text-white/80 hover:bg-white/10"
+    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      active
+        ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)]"
+        : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-fg)]"
     }`}
     onClick={onClick}
   >
+    <span className="w-4 h-4 flex-shrink-0">{icon}</span>
     {label}
   </button>
 );

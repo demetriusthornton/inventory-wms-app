@@ -1,0 +1,355 @@
+{
+  "project": {
+    "name": "inventory-wms-app",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "description": "Warehouse management system (WMS) for tracking inventory, purchase orders, transfers, and warehouse operations. Single-page application with real-time Firebase sync.",
+    "purpose": "Multi-warehouse inventory management with real-time tracking, purchase orders, inter-warehouse transfers, activity logging, and UPC barcode lookup."
+  },
+
+  "techStack": {
+    "frontend": {
+      "framework": "React 18",
+      "language": "TypeScript 5",
+      "buildTool": "Vite 6",
+      "styling": "TailwindCSS 3 + PostCSS + CSS custom properties",
+      "testing": "Vitest 4"
+    },
+    "backend": {
+      "platform": "Firebase 11",
+      "services": ["Authentication", "Cloud Firestore", "Cloud Functions", "Hosting"],
+      "runtime": "Node.js 18"
+    }
+  },
+
+  "dependencies": {
+    "production": {
+      "firebase": "^11.0.0",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0",
+      "task-master-ai": "^0.42.0"
+    },
+    "development": {
+      "@types/react": "^18.0.0",
+      "@types/react-dom": "^18.0.0",
+      "@vitejs/plugin-react": "^5.1.1",
+      "autoprefixer": "^10.0.0",
+      "baseline-browser-mapping": "^2.9.18",
+      "postcss": "^8.0.0",
+      "tailwindcss": "^3.0.0",
+      "typescript": "^5.0.0",
+      "vite": "^6.0.0",
+      "vitest": "^4.0.18"
+    },
+    "cloudFunctions": {
+      "firebase-admin": "^12.0.0",
+      "firebase-functions": "^4.5.0"
+    }
+  },
+
+  "scripts": {
+    "dev": "vite (dev server with HMR)",
+    "build": "tsc -b && vite build (type-check + production build)",
+    "lint": "eslint .",
+    "test": "vitest",
+    "preview": "vite preview"
+  },
+
+  "architecture": {
+    "pattern": "Monolithic SPA with feature-based organization",
+    "stateManagement": "React hooks (useState/useEffect) — no external state library",
+    "dataSync": "Real-time Firestore via custom useCollection hook",
+    "multiTenancy": "Organization-based data isolation via basePath: artifacts/{appId}/shared/global/{collection}",
+    "routing": "Custom in-app page state (no React Router)",
+    "authentication": "Firebase Auth (email/password + Google provider)",
+    "security": [
+      "Email verification required for data access",
+      "Firestore security rules with deny-all default",
+      "Cloud Functions for server-side API key protection",
+      "URL sanitization to prevent XSS",
+      "Rate limiting on Cloud Functions"
+    ]
+  },
+
+  "sourceFiles": {
+    "totalFiles": 23,
+    "estimatedTotalLines": 8500,
+    "entryPoint": "src/main.tsx",
+    "core": [
+      {
+        "path": "src/App.tsx",
+        "lines": 4079,
+        "purpose": "Main monolithic component with all business logic, page navigation, modal states, Firebase CRUD, activity logging"
+      },
+      {
+        "path": "src/AuthPage.tsx",
+        "lines": 151,
+        "purpose": "Authentication UI — email/password signup/login and Google OAuth"
+      },
+      {
+        "path": "src/types.ts",
+        "lines": 118,
+        "purpose": "Centralized TypeScript interfaces for all data models"
+      },
+      {
+        "path": "src/main.tsx",
+        "lines": 10,
+        "purpose": "React DOM entry point"
+      }
+    ],
+    "components": [
+      {
+        "path": "src/components/DataTable.tsx",
+        "lines": 247,
+        "purpose": "Generic table component with search, sorting, filtering, expandable rows (uses TypeScript generics)"
+      },
+      {
+        "path": "src/components/GlobalSearch.tsx",
+        "lines": 164,
+        "purpose": "Command-palette-style global search for inventory items with keyboard navigation"
+      },
+      {
+        "path": "src/components/Modal.tsx",
+        "lines": 47,
+        "purpose": "Reusable modal dialog with title, children, and footer slots"
+      },
+      {
+        "path": "src/components/MessageBox.tsx",
+        "lines": 77,
+        "purpose": "Alert/confirm dialog with imperative API via useRef handle"
+      },
+      {
+        "path": "src/components/Toast.tsx",
+        "lines": 70,
+        "purpose": "Toast notification with auto-dismiss and undo support"
+      },
+      {
+        "path": "src/components/StatusChip.tsx",
+        "lines": 26,
+        "purpose": "Color-coded status badge for inventory health (healthy/low/negative)"
+      },
+      {
+        "path": "src/components/LoadingSpinner.tsx",
+        "lines": 7,
+        "purpose": "Animated loading spinner"
+      }
+    ],
+    "features": {
+      "dashboard": [
+        {
+          "path": "src/features/dashboard/DashboardPage.tsx",
+          "lines": 450,
+          "purpose": "Dashboard overview — low stock, negative stock, recent adjustments, frequent changes panels"
+        },
+        {
+          "path": "src/features/dashboard/DashboardPanel.tsx",
+          "lines": 43,
+          "purpose": "Reusable dashboard panel component"
+        }
+      ],
+      "inventory": [
+        {
+          "path": "src/features/inventory/AdjustQuantityModal.tsx",
+          "lines": 260,
+          "purpose": "Modal for adjusting inventory quantities with validation, large-adjustment warnings, activity logging"
+        },
+        {
+          "path": "src/features/inventory/ItemDetailPage.tsx",
+          "lines": 331,
+          "purpose": "Detailed item view with overview, activity history, and metadata tabs"
+        }
+      ],
+      "transfers": [
+        {
+          "path": "src/features/transfers/TransfersTable.tsx",
+          "lines": 206,
+          "purpose": "DataTable displaying inter-warehouse transfers with filtering and actions"
+        },
+        {
+          "path": "src/features/transfers/TransferTrackingModal.tsx",
+          "lines": 60,
+          "purpose": "Modal for managing transfer tracking numbers and labels"
+        }
+      ],
+      "activityHistory": [
+        {
+          "path": "src/features/activityHistory/ActivityHistoryPage.tsx",
+          "lines": 273,
+          "purpose": "Activity log viewer with date range filtering, CSV export, user/action filtering"
+        }
+      ]
+    },
+    "hooks": [
+      {
+        "path": "src/hooks/useCollection.ts",
+        "lines": 67,
+        "purpose": "Real-time Firestore collection sync with optional where-clause filters, generic type support, loading state"
+      }
+    ],
+    "utils": [
+      {
+        "path": "src/utils/helpers.ts",
+        "lines": 274,
+        "purpose": "Utility functions: jsonSafeParse, sanitizeImageUrl (XSS protection), UPC product lookup (Go-UPC/UPCItemDB/OpenFoodFacts), buildBasePath, parseCsvSimple"
+      },
+      {
+        "path": "src/utils/authErrors.ts",
+        "lines": 27,
+        "purpose": "Firebase auth error code to human-readable message mapping"
+      },
+      {
+        "path": "src/utils/stockStatus.ts",
+        "lines": 7,
+        "purpose": "Stock status calculation (healthy/low/negative)"
+      }
+    ],
+    "tests": [
+      {
+        "path": "src/utils/authErrors.test.ts",
+        "lines": 32,
+        "purpose": "Unit tests for auth error handling"
+      }
+    ],
+    "styling": [
+      {
+        "path": "src/index.css",
+        "lines": 181,
+        "purpose": "CSS custom properties for light/dark theme, Tailwind directives, theme colors"
+      },
+      {
+        "path": "src/App.css",
+        "lines": 42,
+        "purpose": "Minor app-specific styles"
+      }
+    ]
+  },
+
+  "cloudFunctions": {
+    "path": "functions/src/index.ts",
+    "endpoints": [
+      {
+        "name": "lookupUPC",
+        "type": "onCall",
+        "purpose": "Server-side UPC barcode product lookup with three-tier API fallback",
+        "apiFallbackChain": ["Go-UPC", "UPCItemDB", "OpenFoodFacts"],
+        "security": ["Requires authentication", "Requires email verification", "Rate limited"],
+        "validation": "UPC format validation (12-14 digits)"
+      }
+    ]
+  },
+
+  "dataModels": {
+    "Warehouse": {
+      "fields": ["id", "shortCode", "name", "streetAddress", "city", "state"],
+      "purpose": "Branch/location definition"
+    },
+    "InventoryItem": {
+      "fields": ["id", "upc?", "modelNumber", "name", "category", "tags?", "description?", "amountInInventory", "numOnOrder", "manufactureName", "manufacturePartNumber", "imageUrl", "assignedBranchId", "minStockLevel"],
+      "purpose": "Current inventory item with stock tracking"
+    },
+    "PurchaseOrder": {
+      "fields": ["id", "orderNumber", "ipNumber?", "vendor", "manufacture", "receivingWarehouseId", "items[]", "status", "orderDate", "receivedDate?", "deletedDate?"],
+      "statuses": ["pending", "received", "deleted"],
+      "purpose": "Purchase order with line items"
+    },
+    "PurchaseOrderItem": {
+      "fields": ["upc?", "itemName", "modelNumber", "amountOrdered", "category", "orderCost", "amountReceived", "imageUrl?", "description?", "manufactureName?"],
+      "purpose": "Individual line item within a purchase order"
+    },
+    "Transfer": {
+      "fields": ["id", "transferId", "label?", "trackingNumber?", "sourceBranchId", "destinationBranchId", "dateInitiated", "status", "dateCompleted?", "statusUpdatedAt?", "lines[]"],
+      "statuses": ["pending", "in-transit", "completed", "cancelled"],
+      "purpose": "Inter-warehouse inventory transfer"
+    },
+    "TransferLine": {
+      "fields": ["itemId", "itemModelNumber", "itemName", "quantity"],
+      "purpose": "Individual line item within a transfer"
+    },
+    "ActivityLog": {
+      "fields": ["id", "timestamp", "userName", "action", "collection", "docId?", "summary", "itemId?", "delta?", "resultingQuantity?", "reason?", "locationId?", "undoOf?"],
+      "purpose": "Audit trail entry for user actions"
+    },
+    "ToastMessage": {
+      "fields": ["id", "message", "type", "undoPayload?"],
+      "types": ["success", "error", "info"],
+      "purpose": "UI notification message"
+    }
+  },
+
+  "firestoreCollections": {
+    "basePath": "artifacts/{appId}/shared/global",
+    "collections": {
+      "warehouses": "Branch/location definitions",
+      "inventory": "Current inventory items",
+      "purchaseOrders": "Active purchase orders",
+      "poHistory": "Completed/deleted purchase orders",
+      "moves": "Inter-warehouse transfers",
+      "activityHistory": "Audit log entries",
+      "rateLimits": "Rate limiting data for Cloud Functions",
+      "users": "User profile data (optional)"
+    }
+  },
+
+  "firestoreRules": {
+    "defaultPolicy": "Deny all access",
+    "appData": "Requires authenticated + email-verified user",
+    "rateLimits": "Requires authenticated user, scoped to own userId",
+    "userProfiles": "Read: any authenticated user; Write: own profile only",
+    "optionalDomainRestriction": "Can restrict to specific email domains"
+  },
+
+  "environmentVariables": {
+    "VITE_GOUPC_API_KEY": "Go-UPC API key (optional, prefer Cloud Functions)",
+    "VITE_UPCITEMDB_KEY": "UPCItemDB API key (optional, prefer Cloud Functions)",
+    "VITE_USE_CLOUD_FUNCTIONS": "Feature flag to enable Cloud Functions for UPC lookup",
+    "VITE_ALLOWED_EMAIL_DOMAIN": "Optional domain restriction for registration"
+  },
+
+  "configFiles": {
+    "vite.config.ts": "Vite build config with API proxy for Go-UPC and UPCItemDB in development",
+    "tailwind.config.cjs": "TailwindCSS config with dark mode (class strategy) support",
+    "eslint.config.js": "ESLint with React and TypeScript plugins",
+    "firebase.json": "Firebase hosting (public: dist) and functions config with security headers",
+    "firestore.rules": "Firestore security rules with multi-tenancy isolation",
+    "tsconfig.json": "Root TypeScript config with project references",
+    "tsconfig.app.json": "App TypeScript config (ES2022 target, strict mode, JSX preserve)",
+    "tsconfig.node.json": "Node/tooling TypeScript config",
+    "postcss.config.js": "PostCSS with TailwindCSS and Autoprefixer plugins"
+  },
+
+  "documentation": {
+    "CLAUDE.md": "Project overview, structure, commands, and working guidelines",
+    "SECURITY.md": "Security best practices for API keys and Firebase",
+    "CLOUD_FUNCTIONS_SETUP.md": "Detailed Cloud Functions configuration guide",
+    "QUICKSTART_CLOUD_FUNCTIONS.md": "Quick start guide for Cloud Functions",
+    ".claude/docs/architectural_patterns.md": "Design patterns, conventions, and file:line references"
+  },
+
+  "keyPatterns": [
+    "Monolithic App.tsx (~4000 lines) centralizes all business logic and state",
+    "Feature-based directory organization (dashboard, inventory, transfers, activityHistory)",
+    "Generic TypeScript components (DataTable<T>, useCollection<T>)",
+    "Real-time Firestore sync via custom useCollection hook with onSnapshot",
+    "Multi-tenancy through Firebase path namespacing (artifacts/{appId}/...)",
+    "Three-tier UPC lookup fallback chain (Go-UPC -> UPCItemDB -> OpenFoodFacts)",
+    "Activity logging as audit trail for all data mutations",
+    "Imperative component APIs via useRef/useImperativeHandle (MessageBox)",
+    "Toast notifications with undo support for quantity adjustments",
+    "URL sanitization to prevent XSS attacks on image URLs",
+    "Dark mode support via CSS custom properties and Tailwind class strategy"
+  ],
+
+  "statistics": {
+    "totalSourceFiles": 23,
+    "estimatedTotalLines": 8500,
+    "reusableComponents": 7,
+    "featureModules": 4,
+    "customHooks": 1,
+    "utilityModules": 3,
+    "testFiles": 1,
+    "cloudFunctionEndpoints": 1,
+    "dataModels": 8,
+    "firestoreCollections": 8
+  }
+}

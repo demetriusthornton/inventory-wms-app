@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blue IT Inventory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body class="bg-slate-100">
+    <div id="root"></div>
+
+    <script>
+      // Replace these values with your real Firebase config
+      window.__firebase_config = {
+        apiKey: "AIzaSyBWj0hJRLHx1CFUCNUJJuSd1bks9617ur8",
+        authDomain: "inventory-wms.firebaseapp.com",
+        projectId: "inventory-wms",
+        storageBucket: "inventory-wms.firebasestorage.app",
+        messagingSenderId: "314116209522",
+        appId: "1:314116209522:web:0b1dc0c8c821ae08553beb",
+        measurementId: "G-D0Q1HDL303",
+      };
+
+      // Unique id for this app instance
+      window.__app_id = "wms-app-prod";
+
+      // Optional custom token from your backend
+      // Leave null to fall back to anonymous auth
+      window.__initial_auth_token = null;
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -3,78 +3,151 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f8fafc;
-  --fg: #0f172a;
+  /* Core palette */
+  --bg: #fafaf9;
+  --fg: #1c1917;
   --card: #ffffff;
-  --muted: #475569;
-  --border: #e2e8f0;
-  --accent: #0ea5e9;
-  --surface-1: #f1f5f9;
-  --surface-2: #e2e8f0;
+  --muted: #78716c;
+  --border: #e7e5e4;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  /* Surfaces */
+  --surface-1: #f5f5f4;
+  --surface-2: #e7e5e4;
+
+  /* Table rows */
   --row-odd: #ffffff;
-  --row-even: #f8fafc;
-  --row-hover: #eef2f6;
-  --header-bg: #1e3a5f;
-  --header-fg: #ffffff;
-  --status-bg: #e2e8f0;
-  --status-fg: #0f172a;
-  --status-muted: #475569;
+  --row-even: #fafaf9;
+  --row-hover: #fef9ee;
+
+  /* Sidebar */
+  --sidebar-bg: #11161D;
+  --sidebar-fg: #fafaf9;
+  --sidebar-muted: #8B95A3;
+  --sidebar-active-bg: #2563eb;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-hover: #1F2630;
+
+  /* Top bar */
+  --topbar-bg: #ffffff;
+  --topbar-border: #e7e5e4;
+
+  /* Status bar (kept for compat) */
+  --status-bg: #f5f5f4;
+  --status-fg: #1c1917;
+  --status-muted: #78716c;
+
+  /* Inputs */
   --input-bg: #ffffff;
-  --input-fg: #0f172a;
-  --input-border: #cbd5e1;
-  --input-placeholder: #64748b;
-  --outline-bg: #f8fafc;
-  --outline-border: #94a3b8;
-  --outline-fg: #0f172a;
-  --outline-hover: #e2e8f0;
+  --input-fg: #1c1917;
+  --input-border: #d6d3d1;
+  --input-placeholder: #a8a29e;
+
+  /* Outline buttons */
+  --outline-bg: #fafaf9;
+  --outline-border: #a8a29e;
+  --outline-fg: #1c1917;
+  --outline-hover: #f5f5f4;
+
+  /* Modals */
   --modal-bg: #ffffff;
-  --modal-border: #e2e8f0;
-  --modal-footer: #f1f5f9;
-  --error-bg: #fee2e2;
+  --modal-border: #e7e5e4;
+  --modal-footer: #f5f5f4;
+
+  /* Error states */
+  --error-bg: #fef2f2;
   --error-border: #fecaca;
   --error-fg: #991b1b;
+
+  /* Timeline */
+  --timeline-up: #10b981;
+  --timeline-down: #ef4444;
+  --timeline-neutral: #2563eb;
+
+  /* Header (kept for AuthPage compat) */
+  --header-bg: #292524;
+  --header-fg: #fafaf9;
+
   color-scheme: light;
 }
 
 .dark {
-  --bg: #0d0d0d;
-  --fg: #f8fafc;
-  --card: #15181d;
-  --muted: #cbd5e1;
-  --border: #3f3f46;
-  --accent: #0ea5e9;
-  --surface-1: #2d2d2d;
-  --surface-2: #1a1a1a;
-  --row-odd: #171c22;
-  --row-even: #12161b;
-  --row-hover: #1f2630;
-  --header-bg: #1e3a5f;
-  --header-fg: #ffffff;
-  --status-bg: #2d2d2d;
-  --status-fg: #e2e8f0;
-  --status-muted: #94a3b8;
-  --input-bg: #3a3a3a;
-  --input-fg: #f8fafc;
-  --input-border: #52525b;
-  --input-placeholder: #94a3b8;
-  --outline-bg: #2b2b2b;
-  --outline-border: #64748b;
-  --outline-fg: #e2e8f0;
-  --outline-hover: #343434;
-  --modal-bg: #15181d;
-  --modal-border: #475569;
-  --modal-footer: #1f242b;
+  /* Core palette */
+  --bg: #0D1117;
+  --fg: #fafaf9;
+  --card: #151B23;
+  --muted: #a8a29e;
+  --border: #2A323D;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+
+  /* Surfaces */
+  --surface-1: #151B23;
+  --surface-2: #1F2630;
+
+  /* Table rows */
+  --row-odd: #151B23;
+  --row-even: #11161D;
+  --row-hover: #1F2630;
+
+  /* Sidebar */
+  --sidebar-bg: #11161D;
+  --sidebar-fg: #fafaf9;
+  --sidebar-muted: #8B95A3;
+  --sidebar-active-bg: #3b82f6;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-hover: #1F2630;
+
+  /* Top bar */
+  --topbar-bg: #11161D;
+  --topbar-border: #2A323D;
+
+  /* Status bar */
+  --status-bg: #151B23;
+  --status-fg: #e7e5e4;
+  --status-muted: #a8a29e;
+
+  /* Inputs */
+  --input-bg: #1F2630;
+  --input-fg: #fafaf9;
+  --input-border: #3A4452;
+  --input-placeholder: #a8a29e;
+
+  /* Outline buttons */
+  --outline-bg: #1F2630;
+  --outline-border: #78716c;
+  --outline-fg: #e7e5e4;
+  --outline-hover: #2A323D;
+
+  /* Modals */
+  --modal-bg: #151B23;
+  --modal-border: #2A323D;
+  --modal-footer: #11161D;
+
+  /* Error states */
   --error-bg: #3b0a0a;
   --error-border: #7f1d1d;
   --error-fg: #fecaca;
+
+  /* Timeline */
+  --timeline-up: #34d399;
+  --timeline-down: #f87171;
+  --timeline-neutral: #3b82f6;
+
+  /* Header (kept for AuthPage compat) */
+  --header-bg: #11161D;
+  --header-fg: #fafaf9;
+
   color-scheme: dark;
 }
 
-/* Optional small global tweaks */
+/* Global base */
 body {
-  font-size: 16pt;
+  font-size: 15px;
   background-color: var(--bg);
   color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 input,
@@ -95,6 +168,7 @@ select option {
   color: var(--input-fg);
 }
 
+/* Tailwind class overrides for theming */
 .bg-slate-100 {
   background-color: var(--bg) !important;
 }
@@ -132,11 +206,11 @@ select option {
   color: #000 !important;
 }
 
-.hover\\:bg-slate-50:hover {
+.hover\:bg-slate-50:hover {
   background-color: var(--row-hover) !important;
 }
 
-.hover\\:bg-slate-100:hover {
+.hover\:bg-slate-100:hover {
   background-color: var(--row-hover) !important;
 }
 
@@ -154,7 +228,7 @@ select option {
   color: #111827 !important;
 }
 
-/* Table row hover text color */
+/* Table row hover */
 tr:hover,
 tr:hover td,
 tr:hover th {
@@ -165,10 +239,86 @@ tr:hover th {
 .dark tr:hover td,
 .dark tr:hover th {
   color: var(--fg) !important;
-  background-color: #021627 !important;
+  background-color: var(--row-hover) !important;
 }
 
 .dark tr:hover a,
 .dark tr:hover a * {
   color: var(--fg) !important;
+}
+
+/* ── Motion & feel (apple-design) ── */
+:root {
+  /* critically damped feel: fast out, no overshoot */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Feedback on press, instant */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  transform: scale(0.97);
+}
+
+/* Keyboard focus ring (mouse users unaffected) */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Entrances originate where the element lives, never from nowhere */
+@keyframes kiich-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes kiich-pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes kiich-toast-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+.anim-overlay { animation: kiich-fade-in 200ms ease-out; }
+.anim-pop { animation: kiich-pop-in 280ms var(--ease-settle); }
+.anim-toast { animation: kiich-toast-in 280ms var(--ease-settle); }
+
+/* Translucent chrome: content scrolls beneath */
+.material-bar {
+  background-color: color-mix(in srgb, var(--topbar-bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Large text tightens, as optical size grows */
+.brand-title { letter-spacing: -0.02em; line-height: 1.1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  button:not(:disabled):active,
+  [role="button"]:active {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .material-bar {
+    background-color: var(--topbar-bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root { --border: #57534e; --input-border: #44403c; }
+  .dark { --border: #a8a29e; --input-border: #a8a29e; }
 }

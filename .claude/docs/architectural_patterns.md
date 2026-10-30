@@ -1,136 +1,265 @@
-# Architectural Patterns & Conventions
+# Architectural Patterns
 
-## 1. Firestore CRUD Operations
+This document describes the architectural patterns, design decisions, and conventions used throughout the codebase.
 
-All Firestore operations use a shared `basePath` (`artifacts/{appId}/shared/global`) built by `buildBasePath()` in [helpers.ts:91](src/utils/helpers.ts#L91).
+## 1. Multi-Tenancy Pattern
 
-**Create/Update:** `setDoc(doc(collection(db, \`${basePath}/{collection}\`), id), data)`
-**Partial Update:** `updateDoc(ref, { field: value })`
-**Delete:** `deleteDoc(ref)`
+### Overview
+Organization-based data isolation using Firebase path-based security. Each organization has a separate data namespace.
 
-IDs are always generated client-side with `crypto.randomUUID()`. Timestamps use ISO 8601 strings via `new Date().toISOString()`.
+### Implementation
+- **Base Path Construction**: [src/utils/helpers.ts:32-37](../src/utils/helpers.ts#L32-L37) - `buildBasePath()` creates org-specific paths
+- **Path Usage**: [src/App.tsx:462-499](../src/App.tsx#L462-L499) - All `useCollection` hooks use `basePath` parameter
+- **Collection References**: Collections are prefixed with basePath: `${basePath}/warehouses`, `${basePath}/inventory`
+- **Document Operations**: [src/App.tsx:212](../src/App.tsx#L212) - All writes use `doc(collection(db, \`${basePath}/warehouses\`), id)`
 
-**Examples:** [App.tsx:221](src/App.tsx#L221) (warehouse create), [App.tsx:857](src/App.tsx#L857) (inventory), [App.tsx:1168](src/App.tsx#L1168) (purchase order)
+### Key Files
+- [src/App.tsx:351](../src/App.tsx#L351) - `basePath` computed from `appId`
+- [src/hooks/useCollection.ts:41](../src/hooks/useCollection.ts#L41) - Hook uses basePath for all queries
 
-## 2. Activity Logging
+## 2. Custom Hooks Pattern
 
-Every data mutation must be followed by a `logActivity()` call. Defined at [App.tsx:368-387](src/App.tsx#L368-L387).
+### Overview
+Reusable React hooks for Firebase Firestore operations with real-time updates.
 
-The caller provides `action`, `collection`, optional `docId`, and `summary`. The function auto-fills `id`, `timestamp`, and `userName`. Interface defined at [types.ts:86-94](src/types.ts#L86-L94).
+### useCollection Hook
+**Location**: [src/hooks/useCollection.ts:26-67](../src/hooks/useCollection.ts#L26-L67)
 
-**Action naming convention:** `{entity}_{verb}` in snake_case. Examples:
-- `warehouse_create`, `warehouse_update`, `warehouse_delete`, `warehouse_import`
-- `inventory_create`, `inventory_update`, `inventory_delete`, `inventory_import`
-- `purchase_order_create`, `purchase_order_receive_full`, `purchase_order_cancel`
-- `transfer_create`, `transfer_status_update`, `transfer_complete`
+**Purpose**: Real-time data synchronization with Firestore collections
 
-Logging failures are caught and logged to console but never block the operation.
+**Features**:
+- Generic type support: `useCollection<T>` for type-safe data
+- Optional query filters via `whereFilters` parameter
+- Automatic subscription cleanup
+- Loading state management
+- Error handling with console logging
 
-## 3. Real-Time Data via useCollection Hook
-
-[useCollection.ts:26-67](src/hooks/useCollection.ts#L26-L67) provides real-time Firestore subscriptions. Returns `{ data: T[], loading: boolean }`.
-
-**Usage pattern:**
+**Usage Examples**:
 ```typescript
-const { data: warehouses, loading: warehousesLoading } = useCollection<Warehouse>({
-  db, basePath, collectionName: "warehouses",
+// Basic collection fetch
+const { data: warehouses, loading } = useCollection<Warehouse>({
+  db, basePath, collectionName: "warehouses"
+});
+
+// With filters (not shown in current code but supported)
+const { data: items } = useCollection<InventoryItem>({
+  db, basePath, collectionName: "inventory",
+  whereFilters: [{ field: "assignedBranchId", op: "==", value: warehouseId }]
 });
 ```
 
-Supports optional `whereFilters` for server-side filtering. Auto-unsubscribes on unmount. Dependencies use `JSON.stringify(whereFilters)` for comparison.
+**Used In**:
+- [src/App.tsx:462-499](../src/App.tsx#L462-L499) - All data collections (warehouses, inventory, POs, transfers, activity logs)
 
-## 4. Batch Writes for Multi-Document Operations
+## 3. Component Composition Pattern
 
-Use `writeBatch(db)` when multiple documents must be atomically updated (max 500 ops per batch).
+### Overview
+Reusable, generic UI components with render props and TypeScript generics for flexibility.
 
-**Examples:**
-- CSV imports: [App.tsx:940-975](src/App.tsx#L940-L975) (inventory), [App.tsx:1880-1883](src/App.tsx#L1880-L1883) (warehouses)
-- PO receive (updates inventory + moves PO to history + deletes active PO): [App.tsx:1194-1265](src/App.tsx#L1194-L1265)
-- Transfer completion (decrements source inventory): [App.tsx:1764-1800](src/App.tsx#L1764-L1800)
+### DataTable Component
+**Location**: [src/components/DataTable.tsx:33-46](../src/components/DataTable.tsx#L33-L46)
 
-Always call `logActivity()` after `batch.commit()`, not before.
+**Features**:
+- Generic type parameter: `DataTable<T>`
+- Column definitions with custom render functions
+- Built-in search and filtering
+- Sortable columns
+- Expandable rows support
+- Actions per row
 
-## 5. Modal State Management
+**Configuration**:
+- `columns`: Define what to display - [src/components/DataTable.tsx:4-9](../src/components/DataTable.tsx#L4-L9)
+- `searchFields`: Which fields to search
+- `filterFields`: Dropdown filters - [src/components/DataTable.tsx:11-16](../src/components/DataTable.tsx#L11-L16)
+- `renderExpandedRow`: Optional expandable content
 
-Each modal uses a paired state pattern:
-- `useState<boolean>` for open/close
-- `useState<Entity | null>` for the editing target (null = create mode)
+### Modal Component
+**Location**: [src/components/Modal.tsx](../src/components/Modal.tsx)
 
-Declared at [App.tsx:712-744](src/App.tsx#L712-L744). The Modal component ([Modal.tsx:4-10](src/components/Modal.tsx#L4-L10)) accepts `open`, `onClose`, `title`, `children`, optional `footer`, and optional `maxWidthClass`.
+**Pattern**: Container component with slots for title, children, and footer
+**Usage**: [src/App.tsx:236-258](../src/App.tsx#L236-L258) - Warehouse modal example
 
-**Convention:** Specific handler functions `openForNew()` (clears editing state, opens) and `openForEdit(item)` (sets editing state, opens).
+### MessageBox Component
+**Location**: [src/components/MessageBox.tsx](../src/components/MessageBox.tsx)
 
-## 6. Form State Pattern
+**Pattern**: Imperative API via `useRef` and exposed handle - [src/components/MessageBox.tsx:28](../src/components/MessageBox.tsx#L28)
+**Usage**: Centralized user notifications throughout app
 
-Forms use individual `useState` per field (not a single object). A `useEffect` populates fields when the modal opens with an existing item. A reset function clears all fields.
+## 4. Security Patterns
 
-**Example:** Inventory form at [App.tsx:746-759](src/App.tsx#L746-L759), warehouse form at [App.tsx:185-206](src/App.tsx#L185-L206).
+### Input Sanitization
+**Location**: [src/utils/helpers.ts:18-46](../src/utils/helpers.ts#L18-L46)
 
-**Validation:** Inline checks before save (e.g., `if (!name.trim()) return;`). No form library used.
+**Functions**:
+- `sanitizeImageUrl()`: Validates and sanitizes image URLs
+  - Only allows http/https protocols
+  - Validates data URLs with proper MIME types
+  - Prevents XSS via javascript: URLs
+  - Returns empty string for invalid URLs
 
-## 7. MessageBox Imperative API
+### API Key Protection via Cloud Functions
+**Problem**: Client-side API keys are visible in JavaScript bundles
+**Solution**: [functions/src/index.ts:31-198](../functions/src/index.ts#L31-L198)
 
-[MessageBox.tsx](src/components/MessageBox.tsx) uses `forwardRef` + `useImperativeHandle` to expose:
-- `alert(message)` — fire-and-forget notification
-- `confirm(message)` — returns `Promise<boolean>`
+**Implementation**:
+- `lookupUPC` Cloud Function handles UPC lookups server-side
+- API keys stored in Cloud Function environment variables
+- Authentication required: [functions/src/index.ts:33-38](../functions/src/index.ts#L33-L38)
+- Email verification check: [functions/src/index.ts:41-46](../functions/src/index.ts#L41-L46)
+- Input validation: [functions/src/index.ts:51-75](../functions/src/index.ts#L51-L75)
+- Three-tier API fallback strategy (Go-UPC → UPCItemDB → OpenFoodFacts)
 
-Single instance created in App via ref at [App.tsx:345](src/App.tsx#L345). Use `confirm()` before destructive operations (deletes, cancellations).
+**Client Usage**: App calls Cloud Function instead of external APIs directly
 
-## 8. DataTable Generic Component
+### Firebase Security
+- Firestore rules: [firestore.rules](../firestore.rules)
+- Multi-tenancy path-based security enforced at database level
 
-[DataTable.tsx](src/components/DataTable.tsx) is the standard for all list views. Key props:
-- `columns`: define `key`, `label`, optional `render` function, optional `sortFn`
-- `searchFields`: which fields to include in text search
-- `filterFields`: dropdown filters with `type: "select"` and `options`
-- `actions`: render function for row action buttons
-- `expandable` + `renderExpandedRow`: collapsible detail rows
-- `children`: header-area action buttons (Create, Import, etc.)
+## 5. Type System Architecture
 
-**Feature table pattern:** Wrap DataTable in a feature-specific component under `src/features/{entity}/`. See [TransfersTable.tsx](src/features/transfers/TransfersTable.tsx) — accepts all data and callbacks as props, performs no direct database access.
+### Centralized Type Definitions
+**Location**: [src/types.ts](../src/types.ts)
 
-## 9. CSS Theming with Custom Properties
+**Pattern**: All shared interfaces defined in single file
+- `Warehouse`: [src/types.ts:3-10](../src/types.ts#L3-L10)
+- `InventoryItem`: [src/types.ts:12-27](../src/types.ts#L12-L27)
+- `PurchaseOrder`: [src/types.ts:42-54](../src/types.ts#L42-L54)
+- `Transfer`: [src/types.ts:72-84](../src/types.ts#L72-L84)
+- `ActivityLog`: [src/types.ts:86-94](../src/types.ts#L86-L94)
 
-Light/dark mode uses CSS custom properties defined in [index.css](src/index.css). Dark mode activates by adding `.dark` class to `<body>`.
+**Benefits**:
+- Single source of truth for data shapes
+- Easy to maintain and update
+- Shared between components without duplication
+- Type-safe data operations
 
-**Key variable groups:** `--bg`, `--fg`, `--card`, `--border` (layout); `--input-bg`, `--input-fg`, `--input-border` (forms); `--modal-bg`, `--modal-border` (modals); `--row-odd`, `--row-even`, `--row-hover` (tables).
+### Generic Components
+Pattern used throughout for reusable components:
+- `DataTable<T>` - [src/components/DataTable.tsx:33](../src/components/DataTable.tsx#L33)
+- `useCollection<T>` - [src/hooks/useCollection.ts:26](../src/hooks/useCollection.ts#L26)
 
-**In components:** Use Tailwind arbitrary values: `bg-[var(--card)]`, `text-[var(--fg)]`. Never hardcode colors except accent `#0ea5e9`.
+## 6. State Management Pattern
 
-Dark mode state persists to localStorage (`ui:darkMode`) and toggles the body class at [App.tsx:335-343](src/App.tsx#L335-L343).
+### Overview
+React hooks only - no external state management library (Redux, Zustand, etc.)
 
-## 10. Cloud Functions for Sensitive Operations
+### Local State
+**Pattern**: `useState` for component-local state
+**Example**: [src/App.tsx:185-190](../src/App.tsx#L185-L190) - Modal form states
 
-External API calls with secrets go through Cloud Functions ([functions/src/index.ts](functions/src/index.ts)). Pattern:
-1. Verify `context.auth` exists (authenticated)
-2. Verify `context.auth.token.email_verified` (email verified)
-3. Validate input
-4. Call external APIs with server-side env vars
-5. Return normalized result or throw `HttpsError`
+### Shared State
+**Pattern**: Props drilling and lifting state up
+- Top-level state in App component
+- Pass handlers down via props: [src/App.tsx:167-174](../src/App.tsx#L167-L174)
 
-Client calls via `httpsCallable()` from Firebase SDK. Toggle between direct API (dev) and Cloud Function (prod) via `VITE_USE_CLOUD_FUNCTIONS` env var — see [helpers.ts:116](src/utils/helpers.ts#L116).
+### Server State
+**Pattern**: Real-time sync via `useCollection` hook
+- No local caching layer needed
+- Firestore handles real-time updates
+- Component re-renders automatically on data changes
 
-## 11. Navigation (State-Based Routing)
+### Derived State
+**Pattern**: `useMemo` for computed values
+- Used extensively throughout App.tsx for filtering, sorting, transforming data
 
-No router library. Navigation uses a `page` state variable of type `PageKey` ([App.tsx:39-45](src/App.tsx#L39-L45)):
-`"inventory" | "pos" | "poHistory" | "transfers" | "warehouses" | "activityHistory"`
+## 7. Cloud Functions Pattern
 
-Each page renders via a `render{Page}Page()` function within App.tsx. Tab buttons in the top nav set the `page` state.
+### Overview
+Firebase Cloud Functions for backend operations requiring secrets or server-side logic.
 
-## 12. Error Handling Convention
+### Structure
+**Location**: [functions/src/index.ts](../functions/src/index.ts)
 
-- Validate inputs before async operations
-- Wrap Firestore/API calls in try-catch
-- `console.error()` for developer debugging
-- `messageBoxRef.current?.alert()` for user-facing errors
-- Never rethrow unless critical — fail gracefully
-- For non-critical operations (localStorage), silently catch errors
+**Functions**:
+1. **Callable Functions**: [functions/src/index.ts:31](../functions/src/index.ts#L31) - `lookupUPC`
+   - Used for authenticated operations
+   - Return data directly to client
+   - Built-in authentication context
 
-## 13. Adding a New Feature Checklist
+2. **HTTP Functions**: [functions/src/index.ts:203](../functions/src/index.ts#L203) - `healthCheck`
+   - Standard HTTP endpoints
+   - Used for monitoring and webhooks
 
-1. Add TypeScript interfaces to [types.ts](src/types.ts)
-2. Add `useCollection` hook call in App.tsx with the new collection name
-3. Add modal state (`modalOpen`, `editing{Entity}`) in App.tsx
-4. Implement CRUD handlers wrapping Firestore operations + `logActivity()`
-5. Create feature component in `src/features/{entity}/` using DataTable
-6. Add page navigation entry to `PageKey` type and nav bar
-7. Ensure Firestore security rules cover the new collection path
+### Security Patterns in Functions
+- Authentication checks: [functions/src/index.ts:33-46](../functions/src/index.ts#L33-L46)
+- Input validation: [functions/src/index.ts:51-75](../functions/src/index.ts#L51-L75)
+- Structured logging: [functions/src/index.ts:108](../functions/src/index.ts#L108)
+- Error handling with proper HTTP status codes
+
+## 8. Monolithic Component Architecture
+
+### Current State
+**Main Component**: [src/App.tsx](../src/App.tsx) - 3974 lines
+
+**Structure**:
+- Single App component contains most application logic
+- Multiple sub-components defined within App.tsx:
+  - `AddWarehouseModal` - [src/App.tsx:176-234](../src/App.tsx#L176-L234)
+  - Other modals and features inline
+
+**Pros**:
+- Simple mental model - everything in one place
+- No prop-drilling complexity between files
+- Easy to trace data flow
+
+**Cons**:
+- Large file size makes navigation harder
+- Potential for merge conflicts in team settings
+- Harder to unit test individual pieces
+
+**Note**: This is an architectural decision, not necessarily a problem. Many successful apps use this pattern for simplicity.
+
+## 9. Firebase Initialization Pattern
+
+### Overview
+Dynamic Firebase configuration loaded from window globals.
+
+### Implementation
+**Location**: [src/App.tsx:415-453](../src/App.tsx#L415-L453)
+
+**Pattern**:
+1. Read config from `window.__firebase_config`
+2. Read app ID from `window.__app_id`
+3. Check if Firebase already initialized via `getApps()`
+4. Initialize or reuse existing app
+5. Set up auth state listener
+
+**Benefits**:
+- No hardcoded credentials in source
+- Config can be injected at runtime
+- Supports multiple environments without rebuilds
+
+**Files**:
+- Config injection: [index.html](../index.html) - Likely contains script tags setting globals
+- Config parsing: [src/utils/helpers.ts:1-11](../src/utils/helpers.ts#L1-L11) - `jsonSafeParse()`
+
+## 10. Activity Logging Pattern
+
+### Overview
+Audit trail for all major operations in the system.
+
+### Implementation
+- Collection: `activityHistory` - [src/App.tsx:497-499](../src/App.tsx#L497-L499)
+- Type definition: [src/types.ts:86-94](../src/types.ts#L86-L94)
+
+**Log Entry Structure**:
+- `timestamp`: ISO string
+- `userName`: Who performed the action
+- `action`: Type of action (e.g., "warehouse_create", "warehouse_update")
+- `collection`: Which collection was affected
+- `docId`: Document ID that was modified
+- `summary`: Human-readable description
+
+**Usage Example**: [src/App.tsx:222-228](../src/App.tsx#L222-L228) - Logging warehouse creation
+
+**Pattern**: Passed down as callback `onLogActivity` to child components
+
+## Summary
+
+The codebase follows a pragmatic, security-conscious architecture:
+- **Simplicity**: React hooks without complex state management
+- **Security**: Input validation, sanitization, Cloud Functions for secrets
+- **Type Safety**: Centralized types with TypeScript generics
+- **Real-time**: Firestore subscriptions via custom hooks
+- **Multi-tenancy**: Path-based data isolation
+- **Monolithic**: Single large component for simplicity (trade-off accepted)

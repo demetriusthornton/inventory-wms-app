@@ -38,6 +38,7 @@ export function useCollection<T>({
       setLoading(false);
       return;
     }
+    setLoading(true);
     const colRef = collection(db, `${basePath}/${collectionName}`);
     let q: Query = query(colRef) as Query;
     if (whereFilters && whereFilters.length > 0) {

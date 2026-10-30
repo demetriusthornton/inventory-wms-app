@@ -7,6 +7,7 @@ export interface Warehouse {
   streetAddress: string;
   city: string;
   state: string;
+  zip?: string;
   type?: "standard" | "project";
   projectId?: string;
 }
@@ -116,6 +117,7 @@ export interface PoFormState {
   manufacture: string;
   receivingWarehouseId: string;
   items: PurchaseOrderItem[];
+  projectId?: string;
 }
 
 export interface TransferLine {
@@ -147,4 +149,28 @@ export interface ActivityLog {
   collection: string;
   docId?: string;
   summary: string;
+  // PRD audit fields (optional for backward compatibility)
+  itemId?: string;
+  delta?: number;
+  resultingQuantity?: number;
+  reason?: string;
+  locationId?: string;
+  undoOf?: string;
+}
+
+export type StockStatus = "healthy" | "low" | "negative";
+
+export type UserRole = "viewer" | "editor" | "manager" | "admin";
+
+export interface ToastMessage {
+  id: string;
+  message: string;
+  type: "success" | "error" | "info";
+  undoPayload?: AdjustUndoPayload;
+}
+
+export interface AdjustUndoPayload {
+  itemId: string;
+  previousQuantity: number;
+  activityLogId: string;
 }

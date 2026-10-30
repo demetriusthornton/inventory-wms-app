@@ -129,7 +129,7 @@ export function DataTable<T extends Record<string, any>>({
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
           <input
-            className="border border-[var(--input-border)] rounded-md px-3 py-1.5 text-sm bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-[#0ea5e9]"
+            className="w-full sm:w-64 border border-[var(--input-border)] rounded-md px-3 py-1.5 text-sm bg-[var(--input-bg)] text-[var(--input-fg)] placeholder:text-[var(--input-placeholder)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-[var(--accent)]"
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -139,7 +139,7 @@ export function DataTable<T extends Record<string, any>>({
               {filterFields.map((field) => (
                 <select
                   key={String(field.key)}
-                  className="border border-[var(--input-border)] rounded-md px-2 py-1 text-xs bg-[var(--input-bg)] text-[var(--input-fg)] focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+                  className="border border-[var(--input-border)] rounded-md px-2 py-1 text-xs bg-[var(--input-bg)] text-[var(--input-fg)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   value={filters[String(field.key)] ?? ""}
                   onChange={(e) =>
                     setFilters((prev) => ({
