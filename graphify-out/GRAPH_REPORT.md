@@ -1,139 +1,146 @@
-# Graph Report - BenchStockdev  (2026-05-20)
+# Graph Report - .  (2026-10-29)
 
 ## Corpus Check
-- 276 files · ~276,756 words
-- Verdict: corpus is large enough that graph structure adds value.
+- Large corpus: 296 files · ~277,566 words. Semantic extraction will be expensive (many Claude tokens). Consider running on a subfolder, or use --no-semantic to run AST-only.
 
 ## Summary
-- 167 nodes · 350 edges · 21 communities (12 shown, 9 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 16 edges (avg confidence: 0.86)
+- 318 nodes · 407 edges · 25 communities (18 shown, 7 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 8 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
-## Graph Freshness
-- Built from commit: `4c7844f3`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
-
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Core App Shell|Core App Shell]]
-- [[_COMMUNITY_Data Tables & Activity Logs|Data Tables & Activity Logs]]
-- [[_COMMUNITY_Search & Status Display|Search & Status Display]]
-- [[_COMMUNITY_Firestore Collections & Pages|Firestore Collections & Pages]]
-- [[_COMMUNITY_Multi-tenancy & UPC Lookup|Multi-tenancy & UPC Lookup]]
-- [[_COMMUNITY_Toast Notifications & Undo|Toast Notifications & Undo]]
-- [[_COMMUNITY_Modal Components|Modal Components]]
-- [[_COMMUNITY_Dashboard UI|Dashboard UI]]
-- [[_COMMUNITY_Auth & Error Handling|Auth & Error Handling]]
-- [[_COMMUNITY_React Assets|React Assets]]
-- [[_COMMUNITY_Firebase Config|Firebase Config]]
-- [[_COMMUNITY_Component Composition|Component Composition]]
-- [[_COMMUNITY_Type System|Type System]]
-- [[_COMMUNITY_Monolithic Architecture|Monolithic Architecture]]
-- [[_COMMUNITY_Health Check Function|Health Check Function]]
-- [[_COMMUNITY_Build Tool Assets|Build Tool Assets]]
-- [[_COMMUNITY_Framework Assets|Framework Assets]]
-- [[_COMMUNITY_Community 17|Community 17]]
-- [[_COMMUNITY_Community 18|Community 18]]
-- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 0|Community 0]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Community 2|Community 2]]
+- [[_COMMUNITY_Community 3|Community 3]]
+- [[_COMMUNITY_Community 4|Community 4]]
+- [[_COMMUNITY_Community 5|Community 5]]
+- [[_COMMUNITY_Community 6|Community 6]]
+- [[_COMMUNITY_Community 7|Community 7]]
+- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 22|Community 22]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Warehouse` - 16 edges
-2. `InventoryItem` - 15 edges
-3. `ActivityLog` - 15 edges
-4. `ItemDetailPage()` - 12 edges
-5. `Transfer` - 10 edges
-6. `DashboardPage()` - 10 edges
-7. `AdjustQuantityModal()` - 10 edges
-8. `getStockStatus()` - 10 edges
-9. `Modal()` - 9 edges
-10. `Product` - 8 edges
+1. `compilerOptions` - 20 edges
+2. `compilerOptions` - 18 edges
+3. `CLAUDE.md (project guide)` - 15 edges
+4. `devDependencies` - 10 edges
+5. `compilerOptions` - 10 edges
+6. `Warehouse` - 10 edges
+7. `scripts` - 8 edges
+8. `InventoryItem` - 8 edges
+9. `ActivityLog` - 8 edges
+10. `CLOUD_FUNCTIONS_SETUP.md (setup guide)` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `lookupProductByUpc()` --implements--> `Three-Tier UPC API Fallback Chain`  [INFERRED]
-  src/utils/helpers.ts → functions/README.md
-- `Custom Hooks Pattern` --rationale_for--> `useCollection()`  [INFERRED]
-  .claude/docs/architectural_patterns.md → hooks/useCollection.ts
-- `AdjustQuantityModal()` --references--> `Warehouse`  [EXTRACTED]
-  features/inventory/AdjustQuantityModal.tsx → src/types.ts
-- `ActivityHistoryPage()` --references--> `Warehouse`  [EXTRACTED]
-  features/activityHistory/ActivityHistoryPage.tsx → src/types.ts
-- `AdjustQuantityModal()` --references--> `InventoryItem`  [EXTRACTED]
-  features/inventory/AdjustQuantityModal.tsx → src/types.ts
+- `QUICKSTART_CLOUD_FUNCTIONS.md (5-minute quick start)` --semantically_similar_to--> `CLOUD_FUNCTIONS_SETUP.md (setup guide)`  [INFERRED] [semantically similar]
+  QUICKSTART_CLOUD_FUNCTIONS.md → CLOUD_FUNCTIONS_SETUP.md
+- `Firestore emulator and Rules Playground` --semantically_similar_to--> `Firebase emulator local testing`  [INFERRED] [semantically similar]
+  firestore-rules-test.md → CLOUD_FUNCTIONS_SETUP.md
+- `KIICH multi-warehouse inventory system` --conceptually_related_to--> `Firestore collections (warehouses, inventory, purchaseOrders, poHistory, moves, activityHistory)`  [INFERRED]
+  PRODUCT.md → CLAUDE.md
+- `API key domain restrictions` --conceptually_related_to--> `API keys exposed in client-side bundle`  [INFERRED]
+  firestore-rules-test.md → SECURITY.md
+- `App()` --calls--> `useCollection()`  [EXTRACTED]
+  src/App.tsx → /Users/kingdem/Projects/BenchStockdev/src/hooks/useCollection.ts
 
 ## Hyperedges (group relationships)
-- **Cloud Functions with Auth and API Key Protection** — docs_architectural_patterns_cloudfunctions, docs_architectural_patterns_security, functions_readme_lookupupc [INFERRED 0.85]
-- **Inventory Data Flow: App distributes inventory to pages** — src_app_appcomponent, dashboard_dashboardpage_dashboardpage, inventory_itemdetailpage_itemdetailpage, activityhistory_activityhistorypage_activityhistorypage [INFERRED 0.95]
-- **Stock Status Pipeline Consumers** — utils_stockstatus_getstockstatus, components_statuschip_statuschip, components_globalsearch_globalsearch, dashboard_dashboardpage_dashboardpage [INFERRED 0.95]
-- **Modal-based Interaction Pattern Components** — components_modal_modal, inventory_adjustquantitymodal_adjustquantitymodal, transfers_transfertrackingmodal_transfertrackingmodal [INFERRED 0.95]
+- **API key security and Cloud Functions documentation set** — security, cloud_functions_setup, quickstart_cloud_functions [INFERRED 0.85]
+- **Firebase security layers (rules, API key restrictions, Cloud Functions)** — security_firestore_rules, firestore_rules_test_domain_restrictions, security_cloud_functions_proxy [INFERRED 0.75]
 
-## Communities (21 total, 9 thin omitted)
+## Communities (25 total, 7 thin omitted)
 
-### Community 0 - "Core App Shell"
-Cohesion: 0.07
-Nodes (26): LoadingSpinner(), MessageBox, MessageBoxHandle, MessageBoxState, MessageBoxType, Custom Hooks Pattern, State Management Pattern, useCollection() (+18 more)
+### Community 0 - "Community 0"
+Cohesion: 0.06
+Nodes (40): ActivityHistoryPage(), ActivityHistoryPageProps, DataTable(), DataTableColumn, DataTableFilterField, DataTableProps, Modal(), ModalProps (+32 more)
 
-### Community 1 - "Data Tables & Activity Logs"
-Cohesion: 0.2
-Nodes (18): ActivityHistoryPage(), ActivityHistoryPageProps, DataTable(), DataTableColumn, DataTableFilterField, DataTableProps, ActivityLog, PoFormState (+10 more)
+### Community 1 - "Community 1"
+Cohesion: 0.06
+Nodes (27): ActivityLog, AddWarehouseModalProps, App(), InventoryItem, NavButtonProps, PageKey, PoFormState, PurchaseOrder (+19 more)
 
-### Community 2 - "Search & Status Display"
-Cohesion: 0.13
-Nodes (19): GlobalSearch(), GlobalSearchProps, StatusChip(), StatusChipProps, statusLabels, statusStyles, Stock Status Evaluation Pipeline, DashboardPage() (+11 more)
+### Community 2 - "Community 2"
+Cohesion: 0.08
+Nodes (36): CLAUDE.md (project guide), App.tsx monolithic main component, Cloud Functions backend (UPC lookup, health check), Environment variables and API keys, Firestore collections (warehouses, inventory, purchaseOrders, poHistory, moves, activityHistory), Graphify knowledge graph usage rules, Organization-based multi-tenancy, Reusable components (DataTable, Modal, MessageBox, LoadingSpinner) (+28 more)
 
-### Community 4 - "Multi-tenancy & UPC Lookup"
-Cohesion: 0.19
-Nodes (13): ProjectModal(), ProjectModalProps, UserSettingsModal(), UserSettingsModalProps, Project, buildBasePath(), jsonSafeParse(), lookupProductByUpc() (+5 more)
+### Community 3 - "Community 3"
+Cohesion: 0.09
+Nodes (18): GlobalSearch(), GlobalSearchProps, StatusChip(), StatusChipProps, statusLabels, statusStyles, DashboardPage(), DashboardPageProps (+10 more)
 
-### Community 5 - "Toast Notifications & Undo"
-Cohesion: 0.36
-Nodes (6): Toast(), ToastItemProps, ToastProps, typeStyles, AdjustUndoPayload, ToastMessage
+### Community 4 - "Community 4"
+Cohesion: 0.08
+Nodes (25): dependencies, firebase, react, react-dom, task-master-ai, devDependencies, autoprefixer, postcss (+17 more)
 
-### Community 6 - "Modal Components"
-Cohesion: 0.36
-Nodes (6): Modal(), ModalProps, AdjustQuantityModal(), AdjustQuantityModalProps, TransferTrackingModal(), TransferTrackingModalProps
+### Community 5 - "Community 5"
+Cohesion: 0.09
+Nodes (21): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection, moduleResolution (+13 more)
 
-### Community 7 - "Dashboard UI"
-Cohesion: 0.22
-Nodes (8): Accessibility & Inclusion, Anti-references, Brand Personality, Design Principles, Product, Product Purpose, Register, Users
+### Community 6 - "Community 6"
+Cohesion: 0.09
+Nodes (21): dependencies, firebase-admin, firebase-functions, description, devDependencies, @types/node, typescript, engines (+13 more)
 
-### Community 8 - "Auth & Error Handling"
-Cohesion: 0.38
-Nodes (4): AuthPage(), AuthPageProps, getAuthErrorMessage Function, getAuthErrorMessage()
+### Community 7 - "Community 7"
+Cohesion: 0.1
+Nodes (19): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+11 more)
 
-### Community 9 - "React Assets"
-Cohesion: 0.67
-Nodes (3): React Logo, React Framework, SVG Vector Graphic
+### Community 8 - "Community 8"
+Cohesion: 0.15
+Nodes (12): compileOnSave, compilerOptions, esModuleInterop, module, noImplicitReturns, noUnusedLocals, outDir, skipLibCheck (+4 more)
 
-### Community 17 - "Community 17"
+### Community 9 - "Community 9"
+Cohesion: 0.17
+Nodes (11): firestore, rules, functions, ignore, runtime, source, hosting, headers (+3 more)
+
+### Community 10 - "Community 10"
+Cohesion: 0.25
+Nodes (7): computedHash, skillPath, source, sourceType, skills, impeccable, version
+
+### Community 11 - "Community 11"
+Cohesion: 0.43
+Nodes (7): PRODUCT.md (KIICH product context), WCAG 2.1 AA accessibility requirements, Anti-references (consumer-warm, enterprise ERP), Brand personality: reliable, direct, fast, Design principles (data is the UI, speed over ceremony), KIICH multi-warehouse inventory system, Warehouse staff and manager personas
+
+### Community 12 - "Community 12"
+Cohesion: 0.33
+Nodes (5): appFilePath, content, __dirname, __filename, replacements
+
+### Community 13 - "Community 13"
 Cohesion: 0.4
-Nodes (4): hooks, PreToolUse, permissions, allow
+Nodes (3): AuthPage(), AuthPageProps, getAuthErrorMessage()
 
-### Community 18 - "Community 18"
-Cohesion: 0.4
-Nodes (5): Cloud Functions Pattern, Multi-Tenancy Pattern, Security Pattern, lookupUPC Cloud Function, Three-Tier UPC API Fallback Chain
-
-### Community 19 - "Community 19"
+### Community 14 - "Community 14"
 Cohesion: 0.5
 Nodes (3): healthCheck, lookupUPC, ProductLookupResult
 
 ## Knowledge Gaps
-- **55 isolated node(s):** `allow`, `PreToolUse`, `Register`, `Users`, `Product Purpose` (+50 more)
+- **172 isolated node(s):** `version`, `source`, `sourceType`, `skillPath`, `computedHash` (+167 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `lookupProductByUpc()` connect `Multi-tenancy & UPC Lookup` to `Core App Shell`, `Community 18`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
-- **Why does `Three-Tier UPC API Fallback Chain` connect `Community 18` to `Multi-tenancy & UPC Lookup`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Are the 3 inferred relationships involving `ItemDetailPage()` (e.g. with `AdjustQuantityModal()` and `Stock Status Evaluation Pipeline`) actually correct?**
-  _`ItemDetailPage()` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `allow`, `PreToolUse`, `Register` to the rest of the system?**
-  _63 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Core App Shell` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
-- **Should `Search & Status Display` be split into smaller, more focused modules?**
-  _Cohesion score 0.13 - nodes in this community are weakly interconnected._
+- **Why does `DataTable()` connect `Community 0` to `Community 1`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `Modal()` connect `Community 0` to `Community 1`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **What connects `version`, `source`, `sourceType` to the rest of the system?**
+  _172 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 0` be split into smaller, more focused modules?**
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+- **Should `Community 1` be split into smaller, more focused modules?**
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+- **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.08 - nodes in this community are weakly interconnected._
+- **Should `Community 3` be split into smaller, more focused modules?**
+  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
