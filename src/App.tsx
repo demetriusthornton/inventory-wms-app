@@ -327,17 +327,27 @@ const App: React.FC = () => {
     [defaultWarehouseId, poHistory],
   );
 
-  const filteredTransfers = useMemo(
-    () =>
-      defaultWarehouseId
-        ? transfers.filter(
-            (t) =>
-              t.sourceBranchId === defaultWarehouseId ||
-              t.destinationBranchId === defaultWarehouseId,
-          )
-        : transfers,
-    [defaultWarehouseId, transfers],
+  const [transferRangeDays, setTransferRangeDays] = useState<number | "all">(
+    "all",
   );
+
+  const filteredTransfers = useMemo(() => {
+    let cutoff = 0;
+    if (transferRangeDays === 0) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      cutoff = startOfToday.getTime();
+    } else if (transferRangeDays !== "all") {
+      cutoff = Date.now() - transferRangeDays * 24 * 60 * 60 * 1000;
+    }
+    return transfers.filter(
+      (t) =>
+        (!defaultWarehouseId ||
+          t.sourceBranchId === defaultWarehouseId ||
+          t.destinationBranchId === defaultWarehouseId) &&
+        (cutoff === 0 || new Date(t.dateInitiated).getTime() >= cutoff),
+    );
+  }, [defaultWarehouseId, transfers, transferRangeDays]);
 
   const pendingPOs = useMemo(
     () => filteredPurchaseOrders.filter((po) => po.status === "pending"),
@@ -3847,6 +3857,22 @@ const App: React.FC = () => {
           }}
         >
           <div className="flex gap-2">
+            <select
+              aria-label="Date range"
+              className="border border-slate-300 rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              value={transferRangeDays}
+              onChange={(e) =>
+                setTransferRangeDays(
+                  e.target.value === "all" ? "all" : Number(e.target.value),
+                )
+              }
+            >
+              <option value="all">Show all</option>
+              <option value={0}>Today</option>
+              <option value={7}>Past 7 days</option>
+              <option value={14}>Past 14 days</option>
+              <option value={30}>Past 30 days</option>
+            </select>
             <button
               className="px-3 py-2 rounded-md bg-[var(--accent)] text-white text-xs sm:text-sm hover:bg-[var(--accent-hover)]"
               onClick={() => {
