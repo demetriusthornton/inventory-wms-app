@@ -627,17 +627,23 @@ const App: React.FC = () => {
     [defaultWarehouseId, poHistory],
   );
 
-  const filteredTransfers = useMemo(
-    () =>
-      defaultWarehouseId
-        ? transfers.filter(
-            (t) =>
-              t.sourceBranchId === defaultWarehouseId ||
-              t.destinationBranchId === defaultWarehouseId,
-          )
-        : transfers,
-    [defaultWarehouseId, transfers],
+  const [transferRangeDays, setTransferRangeDays] = useState<number | "all">(
+    "all",
   );
+
+  const filteredTransfers = useMemo(() => {
+    const cutoff =
+      transferRangeDays === "all"
+        ? 0
+        : Date.now() - transferRangeDays * 24 * 60 * 60 * 1000;
+    return transfers.filter(
+      (t) =>
+        (!defaultWarehouseId ||
+          t.sourceBranchId === defaultWarehouseId ||
+          t.destinationBranchId === defaultWarehouseId) &&
+        (cutoff === 0 || new Date(t.dateInitiated).getTime() >= cutoff),
+    );
+  }, [defaultWarehouseId, transfers, transferRangeDays]);
 
   const pendingPOs = useMemo(
     () => filteredPurchaseOrders.filter((po) => po.status === "pending"),
@@ -3585,6 +3591,22 @@ const App: React.FC = () => {
           }}
         >
           <div className="flex gap-2">
+            <select
+              aria-label="Date range"
+              className="border border-slate-300 rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]"
+              value={transferRangeDays}
+              onChange={(e) =>
+                setTransferRangeDays(
+                  e.target.value === "all" ? "all" : Number(e.target.value),
+                )
+              }
+            >
+              <option value="all">All time</option>
+              <option value={1}>Past day</option>
+              <option value={7}>Past 7 days</option>
+              <option value={14}>Past 14 days</option>
+              <option value={30}>Past 30 days</option>
+            </select>
             <button
               className="px-3 py-2 rounded-md bg-[#0ea5e9] text-white text-xs sm:text-sm hover:bg-[#0284c7]"
               onClick={() => {
