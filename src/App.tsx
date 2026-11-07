@@ -4319,14 +4319,12 @@ const App: React.FC = () => {
         </button>
 
         {/* Logo area – same width as sidebar so content stays aligned */}
-        <div className="w-44 lg:w-56 flex-shrink-0 flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[var(--accent)] flex items-center justify-center">
-            <span className="text-white text-[11px] font-bold tracking-tight">KI</span>
-          </div>
-          <div className="leading-tight">
-            <p className="brand-title text-sm font-semibold text-[var(--fg)]">KIICH</p>
-            <p className="text-[10px] text-[var(--muted)]">IMS Console</p>
-          </div>
+        <div className="w-44 lg:w-56 flex-shrink-0 flex items-center">
+          <img
+            src="/kiich-logo.png"
+            alt="KIICH"
+            className="h-8 w-auto dark:bg-white dark:rounded-lg dark:px-1.5 dark:py-0.5"
+          />
         </div>
 
         {/* Search trigger */}
