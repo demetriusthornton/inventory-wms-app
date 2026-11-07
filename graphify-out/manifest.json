@@ -24,6 +24,11 @@
     "ast_hash": "1c7072ae75f3e890be673cb25304bad4",
     "semantic_hash": ""
   },
+  "/Users/kingdem/Projects/KIICH-app/build-manifest.json": {
+    "mtime": 1793362959.4934807,
+    "ast_hash": "89d3a04f9d14ffc621dd600c77b4e2ad",
+    "semantic_hash": ""
+  },
   "/Users/kingdem/Projects/KIICH-app/AuthPage.tsx": {
     "mtime": 1793258367.7226002,
     "ast_hash": "132286bd35e298ef323a58d2ffc76335",
@@ -860,8 +865,8 @@
     "semantic_hash": ""
   },
   "/Users/kingdem/Projects/KIICH-app/src/App.tsx": {
-    "mtime": 1793362483.6489286,
-    "ast_hash": "66ba4020ae32e1ad74559f21486aa85a",
+    "mtime": 1793362939.6530395,
+    "ast_hash": "a193087cf67be67c8c8840315af31694",
     "semantic_hash": ""
   },
   "/Users/kingdem/Projects/KIICH-app/src/main.tsx": {

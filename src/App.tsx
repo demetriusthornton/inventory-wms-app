@@ -484,25 +484,33 @@ const App: React.FC = () => {
   const transferSourceOptions = useMemo(() => {
     const set = new Set<string>();
     transfers.forEach((t) => set.add(t.sourceBranchId));
-    return Array.from(set).map((id) => {
-      const wh = warehouses.find((w) => w.id === id);
-      return {
-        label: wh ? wh.shortCode || wh.name : id,
-        value: id,
-      };
-    });
+    return Array.from(set)
+      .map((id) => {
+        const wh = warehouses.find((w) => w.id === id);
+        return {
+          label: wh ? wh.shortCode || wh.name : id,
+          value: id,
+        };
+      })
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
+      );
   }, [transfers, warehouses]);
 
   const transferDestinationOptions = useMemo(() => {
     const set = new Set<string>();
     transfers.forEach((t) => set.add(t.destinationBranchId));
-    return Array.from(set).map((id) => {
-      const wh = warehouses.find((w) => w.id === id);
-      return {
-        label: wh ? wh.shortCode || wh.name : id,
-        value: id,
-      };
-    });
+    return Array.from(set)
+      .map((id) => {
+        const wh = warehouses.find((w) => w.id === id);
+        return {
+          label: wh ? wh.shortCode || wh.name : id,
+          value: id,
+        };
+      })
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
+      );
   }, [transfers, warehouses]);
 
   const warehouseStateOptions = useMemo(() => {
@@ -4640,7 +4648,7 @@ const App: React.FC = () => {
           open={settingsModalOpen}
           onClose={() => setSettingsModalOpen(false)}
           authUser={authUser}
-          warehouses={warehouses}
+          warehouses={sortedWarehouses}
           defaultWarehouseId={defaultWarehouseId}
           onSetDefaultWarehouse={setDefaultWarehouseId}
         />
