@@ -254,63 +254,108 @@
       "file_type": "code",
       "source_file": "src/App.tsx",
       "source_location": "L1",
-      "id": "src_app_tsx",
       "community": 105,
-      "norm_label": "app.tsx"
+      "norm_label": "app.tsx",
+      "id": "src_app_tsx"
     },
     {
       "label": "PageKey",
       "file_type": "code",
       "source_file": "src/App.tsx",
       "source_location": "L67",
-      "id": "src_app_pagekey",
       "community": 0,
-      "norm_label": "pagekey"
+      "norm_label": "pagekey",
+      "id": "src_app_pagekey"
     },
     {
       "label": "makeEmptyPoForm()",
       "file_type": "code",
       "source_file": "src/App.tsx",
       "source_location": "L79",
-      "id": "src_app_makeemptypoform",
       "community": 0,
-      "norm_label": "makeemptypoform()"
+      "norm_label": "makeemptypoform()",
+      "id": "src_app_makeemptypoform"
     },
     {
       "label": "getInitialDarkMode()",
       "file_type": "code",
       "source_file": "src/App.tsx",
       "source_location": "L103",
-      "id": "src_app_getinitialdarkmode",
       "community": 0,
-      "norm_label": "getinitialdarkmode()"
+      "norm_label": "getinitialdarkmode()",
+      "id": "src_app_getinitialdarkmode"
     },
     {
       "label": "App()",
       "file_type": "code",
       "source_file": "src/App.tsx",
       "source_location": "L105",
-      "id": "src_app_app",
       "community": 0,
-      "norm_label": "app()"
+      "norm_label": "app()",
+      "id": "src_app_app"
     },
     {
       "label": "SidebarItemProps",
       "file_type": "code",
       "source_file": "src/App.tsx",
-      "source_location": "L4654",
-      "id": "src_app_sidebaritemprops",
-      "community": 0,
-      "norm_label": "sidebaritemprops"
+      "source_location": "L4662",
+      "community": 105,
+      "norm_label": "sidebaritemprops",
+      "id": "src_app_sidebaritemprops"
     },
     {
       "label": "SidebarItem()",
       "file_type": "code",
       "source_file": "src/App.tsx",
-      "source_location": "L4661",
-      "id": "src_app_sidebaritem",
-      "community": 0,
-      "norm_label": "sidebaritem()"
+      "source_location": "L4669",
+      "community": 105,
+      "norm_label": "sidebaritem()",
+      "id": "src_app_sidebaritem"
+    },
+    {
+      "label": "DashboardPage.tsx",
+      "file_type": "code",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L1",
+      "community": 2,
+      "norm_label": "dashboardpage.tsx",
+      "id": "src_features_dashboard_dashboardpage_tsx"
+    },
+    {
+      "label": "PageKey",
+      "file_type": "code",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "community": 2,
+      "norm_label": "pagekey",
+      "id": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "label": "DashboardPageProps",
+      "file_type": "code",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "community": 2,
+      "norm_label": "dashboardpageprops",
+      "id": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "label": "DashboardPage()",
+      "file_type": "code",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "community": 2,
+      "norm_label": "dashboardpage()",
+      "id": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "label": "StatCard()",
+      "file_type": "code",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L371",
+      "community": 2,
+      "norm_label": "statcard()",
+      "id": "dashboard_dashboardpage_statcard"
     },
     {
       "label": "skills-lock.json",
@@ -1559,7 +1604,7 @@
       "file_type": "code",
       "source_file": ".agents/skills/impeccable/scripts/command-metadata.json",
       "source_location": "L1",
-      "community": 211,
+      "community": 212,
       "norm_label": "command-metadata.json",
       "id": "agents_skills_impeccable_scripts_command_metadata_json"
     },
@@ -8111,7 +8156,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/AuthPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_authpage_tsx"
     },
@@ -8120,7 +8165,7 @@
       "file_type": "code",
       "source_file": "src/AuthPage.tsx",
       "source_location": "L11",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpageprops",
       "id": "src_authpage_authpageprops"
     },
@@ -8129,7 +8174,7 @@
       "file_type": "code",
       "source_file": "src/AuthPage.tsx",
       "source_location": "L15",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage()",
       "id": "src_authpage_authpage"
     },
@@ -8138,7 +8183,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_types_ts"
     },
@@ -8147,7 +8192,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstatus",
       "id": "src_types_transferstatus"
     },
@@ -8174,7 +8219,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L53",
-      "community": 2,
+      "community": 252,
       "norm_label": "purchaseorderitem",
       "id": "src_types_purchaseorderitem"
     },
@@ -8183,7 +8228,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L66",
-      "community": 2,
+      "community": 252,
       "norm_label": "purchaseorder",
       "id": "src_types_purchaseorder"
     },
@@ -8192,7 +8237,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L80",
-      "community": 2,
+      "community": 252,
       "norm_label": "poformstate",
       "id": "src_types_poformstate"
     },
@@ -8201,7 +8246,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L89",
-      "community": 2,
+      "community": 252,
       "norm_label": "transferline",
       "id": "src_types_transferline"
     },
@@ -8210,7 +8255,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L96",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfer",
       "id": "src_types_transfer"
     },
@@ -8228,7 +8273,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_features_transfers_transferstable_tsx"
     },
@@ -8237,7 +8282,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransfersTable.tsx",
       "source_location": "L5",
-      "community": 2,
+      "community": 8,
       "norm_label": "option",
       "id": "transfers_transferstable_option"
     },
@@ -8246,7 +8291,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransfersTable.tsx",
       "source_location": "L10",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstableprops",
       "id": "transfers_transferstable_transferstableprops"
     },
@@ -8255,7 +8300,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransfersTable.tsx",
       "source_location": "L24",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable()",
       "id": "transfers_transferstable_transferstable"
     },
@@ -8264,7 +8309,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_features_transfers_transfertrackingmodal_tsx"
     },
@@ -8273,7 +8318,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L5",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodalprops",
       "id": "transfers_transfertrackingmodal_transfertrackingmodalprops"
     },
@@ -8282,7 +8327,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L14",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal()",
       "id": "transfers_transfertrackingmodal_transfertrackingmodal"
     },
@@ -8354,7 +8399,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/utils/authErrors.test.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.test.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_utils_autherrors_test_ts"
     },
@@ -8363,7 +8408,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/utils/authErrors.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_utils_autherrors_ts"
     },
@@ -8372,7 +8417,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/utils/authErrors.ts",
       "source_location": "L5",
-      "community": 8,
+      "community": 0,
       "norm_label": "getautherrormessage()",
       "id": "utils_autherrors_getautherrormessage"
     },
@@ -8381,7 +8426,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/MessageBox.tsx",
       "source_location": "L1",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_components_messagebox_tsx"
     },
@@ -8390,7 +8435,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/MessageBox.tsx",
       "source_location": "L3",
-      "community": 137,
+      "community": 0,
       "norm_label": "messageboxtype",
       "id": "components_messagebox_messageboxtype"
     },
@@ -8399,7 +8444,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/MessageBox.tsx",
       "source_location": "L5",
-      "community": 137,
+      "community": 0,
       "norm_label": "messageboxhandle",
       "id": "components_messagebox_messageboxhandle"
     },
@@ -8408,7 +8453,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/MessageBox.tsx",
       "source_location": "L10",
-      "community": 137,
+      "community": 0,
       "norm_label": "messageboxstate",
       "id": "components_messagebox_messageboxstate"
     },
@@ -8417,7 +8462,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/MessageBox.tsx",
       "source_location": "L16",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox",
       "id": "components_messagebox_messagebox"
     },
@@ -8444,7 +8489,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/DataTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_components_datatable_tsx"
     },
@@ -8453,7 +8498,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/DataTable.tsx",
       "source_location": "L4",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatablecolumn",
       "id": "components_datatable_datatablecolumn"
     },
@@ -8462,7 +8507,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/DataTable.tsx",
       "source_location": "L11",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatablefilterfield",
       "id": "components_datatable_datatablefilterfield"
     },
@@ -8471,7 +8516,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/DataTable.tsx",
       "source_location": "L18",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatableprops",
       "id": "components_datatable_datatableprops"
     },
@@ -8480,7 +8525,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/DataTable.tsx",
       "source_location": "L33",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable()",
       "id": "components_datatable_datatable"
     },
@@ -8489,7 +8534,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/components/Modal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_components_modal_tsx"
     },
@@ -8498,7 +8543,7 @@
       "file_type": "code",
       "source_file": "src/components/Modal.tsx",
       "source_location": "L4",
-      "community": 2,
+      "community": 8,
       "norm_label": "modalprops",
       "id": "components_modal_modalprops"
     },
@@ -8507,7 +8552,7 @@
       "file_type": "code",
       "source_file": "src/components/Modal.tsx",
       "source_location": "L13",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal()",
       "id": "components_modal_modal"
     },
@@ -8516,7 +8561,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/jovial-beaver/src/hooks/useCollection.ts",
       "source_location": "L1",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_jovial_beaver_src_hooks_usecollection_ts"
     },
@@ -8525,7 +8570,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/hooks/useCollection.ts",
       "source_location": "L15",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollectionoptions",
       "id": "hooks_usecollection_usecollectionoptions"
     },
@@ -8534,7 +8579,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/hooks/useCollection.ts",
       "source_location": "L26",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection()",
       "id": "hooks_usecollection_usecollection"
     },
@@ -9605,7 +9650,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/AuthPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_authpage_tsx"
     },
@@ -9614,7 +9659,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_types_ts"
     },
@@ -9632,7 +9677,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L129",
-      "community": 2,
+      "community": 252,
       "norm_label": "userrole",
       "id": "src_types_userrole"
     },
@@ -9659,7 +9704,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_transfers_transferstable_tsx"
     },
@@ -9668,7 +9713,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_transfers_transfertrackingmodal_tsx"
     },
@@ -9707,42 +9752,6 @@
       "community": 2,
       "norm_label": "dashboardpage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx"
-    },
-    {
-      "label": "PageKey",
-      "file_type": "code",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L6",
-      "community": 2,
-      "norm_label": "pagekey",
-      "id": "dashboard_dashboardpage_pagekey"
-    },
-    {
-      "label": "DashboardPageProps",
-      "file_type": "code",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L16",
-      "community": 2,
-      "norm_label": "dashboardpageprops",
-      "id": "dashboard_dashboardpage_dashboardpageprops"
-    },
-    {
-      "label": "DashboardPage()",
-      "file_type": "code",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L26",
-      "community": 2,
-      "norm_label": "dashboardpage()",
-      "id": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "label": "StatCard()",
-      "file_type": "code",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L425",
-      "community": 2,
-      "norm_label": "statcard()",
-      "id": "dashboard_dashboardpage_statcard"
     },
     {
       "label": "QuickAction()",
@@ -9857,7 +9866,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/activityHistory/ActivityHistoryPage.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "activityhistorypage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_activityhistory_activityhistorypage_tsx"
     },
@@ -9866,7 +9875,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/activityHistory/ActivityHistoryPage.tsx",
       "source_location": "L5",
-      "community": 2,
+      "community": 8,
       "norm_label": "activityhistorypageprops",
       "id": "activityhistory_activityhistorypage_activityhistorypageprops"
     },
@@ -9875,7 +9884,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/activityHistory/ActivityHistoryPage.tsx",
       "source_location": "L12",
-      "community": 2,
+      "community": 8,
       "norm_label": "activityhistorypage()",
       "id": "activityhistory_activityhistorypage_activityhistorypage"
     },
@@ -9893,7 +9902,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/utils/authErrors.test.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.test.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_utils_autherrors_test_ts"
     },
@@ -9902,7 +9911,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/utils/authErrors.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_utils_autherrors_ts"
     },
@@ -9929,7 +9938,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/MessageBox.tsx",
       "source_location": "L1",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_components_messagebox_tsx"
     },
@@ -9992,7 +10001,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/DataTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_components_datatable_tsx"
     },
@@ -10028,7 +10037,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/components/Modal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_components_modal_tsx"
     },
@@ -10091,7 +10100,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/hooks/useCollection.ts",
       "source_location": "L1",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_hooks_usecollection_ts"
     },
@@ -11144,7 +11153,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/AuthPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_authpage_tsx"
     },
@@ -11153,7 +11162,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_types_ts"
     },
@@ -11162,7 +11171,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_features_transfers_transferstable_tsx"
     },
@@ -11171,7 +11180,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_features_transfers_transfertrackingmodal_tsx"
     },
@@ -11189,7 +11198,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/utils/authErrors.test.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.test.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_utils_autherrors_test_ts"
     },
@@ -11198,7 +11207,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/utils/authErrors.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_utils_autherrors_ts"
     },
@@ -11207,7 +11216,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/MessageBox.tsx",
       "source_location": "L1",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_components_messagebox_tsx"
     },
@@ -11225,7 +11234,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/DataTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_components_datatable_tsx"
     },
@@ -11234,7 +11243,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/components/Modal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_components_modal_tsx"
     },
@@ -11243,7 +11252,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/romantic-euclid/src/hooks/useCollection.ts",
       "source_location": "L1",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_romantic_euclid_src_hooks_usecollection_ts"
     },
@@ -13655,7 +13664,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/AuthPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_authpage_tsx"
     },
@@ -13664,7 +13673,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_types_ts"
     },
@@ -13673,7 +13682,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_transfers_transferstable_tsx"
     },
@@ -13682,7 +13691,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_transfers_transfertrackingmodal_tsx"
     },
@@ -13727,7 +13736,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/activityHistory/ActivityHistoryPage.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "activityhistorypage.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_activityhistory_activityhistorypage_tsx"
     },
@@ -13745,7 +13754,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/utils/authErrors.test.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.test.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_utils_autherrors_test_ts"
     },
@@ -13754,7 +13763,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/utils/authErrors.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_utils_autherrors_ts"
     },
@@ -13772,7 +13781,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/MessageBox.tsx",
       "source_location": "L1",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_components_messagebox_tsx"
     },
@@ -13799,7 +13808,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/DataTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_components_datatable_tsx"
     },
@@ -13817,7 +13826,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/components/Modal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal.tsx",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_components_modal_tsx"
     },
@@ -13835,7 +13844,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/hooks/useCollection.ts",
       "source_location": "L1",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection.ts",
       "id": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_hooks_usecollection_ts"
     },
@@ -13880,7 +13889,7 @@
       "file_type": "code",
       "source_file": "src/AuthPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage.tsx",
       "id": "src_authpage_tsx"
     },
@@ -13889,7 +13898,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "users_kingdem_projects_benchstockdev_src_types_ts"
     },
@@ -13898,7 +13907,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L13",
-      "community": 2,
+      "community": 105,
       "norm_label": "project",
       "id": "src_types_project"
     },
@@ -13907,7 +13916,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/types.ts",
       "source_location": "L25",
-      "community": 2,
+      "community": 252,
       "norm_label": "projectitem",
       "id": "src_types_projectitem"
     },
@@ -13916,7 +13925,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/settings/UserSettingsModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 105,
       "norm_label": "usersettingsmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_features_settings_usersettingsmodal_tsx"
     },
@@ -13925,7 +13934,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/settings/UserSettingsModal.tsx",
       "source_location": "L10",
-      "community": 2,
+      "community": 105,
       "norm_label": "usersettingsmodalprops",
       "id": "settings_usersettingsmodal_usersettingsmodalprops"
     },
@@ -13934,7 +13943,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/settings/UserSettingsModal.tsx",
       "source_location": "L19",
-      "community": 2,
+      "community": 105,
       "norm_label": "usersettingsmodal()",
       "id": "settings_usersettingsmodal_usersettingsmodal"
     },
@@ -13943,7 +13952,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/warehouses/AddWarehouseModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 105,
       "norm_label": "addwarehousemodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_features_warehouses_addwarehousemodal_tsx"
     },
@@ -13952,7 +13961,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/warehouses/AddWarehouseModal.tsx",
       "source_location": "L7",
-      "community": 2,
+      "community": 105,
       "norm_label": "addwarehousemodalprops",
       "id": "warehouses_addwarehousemodal_addwarehousemodalprops"
     },
@@ -13961,7 +13970,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/warehouses/AddWarehouseModal.tsx",
       "source_location": "L19",
-      "community": 2,
+      "community": 105,
       "norm_label": "addwarehousemodal()",
       "id": "warehouses_addwarehousemodal_addwarehousemodal"
     },
@@ -13970,7 +13979,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/projects/ProjectModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 105,
       "norm_label": "projectmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_features_projects_projectmodal_tsx"
     },
@@ -13979,7 +13988,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/projects/ProjectModal.tsx",
       "source_location": "L5",
-      "community": 2,
+      "community": 105,
       "norm_label": "projectmodalprops",
       "id": "projects_projectmodal_projectmodalprops"
     },
@@ -13988,7 +13997,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/projects/ProjectModal.tsx",
       "source_location": "L13",
-      "community": 2,
+      "community": 105,
       "norm_label": "projectmodal()",
       "id": "projects_projectmodal_projectmodal"
     },
@@ -13997,7 +14006,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_features_transfers_transferstable_tsx"
     },
@@ -14006,7 +14015,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/transfers/TransferTrackingModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_features_transfers_transfertrackingmodal_tsx"
     },
@@ -14051,7 +14060,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/activityHistory/ActivityHistoryPage.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "activityhistorypage.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_features_activityhistory_activityhistorypage_tsx"
     },
@@ -14069,7 +14078,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/utils/authErrors.test.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.test.ts",
       "id": "users_kingdem_projects_benchstockdev_src_utils_autherrors_test_ts"
     },
@@ -14078,7 +14087,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/utils/authErrors.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.ts",
       "id": "users_kingdem_projects_benchstockdev_src_utils_autherrors_ts"
     },
@@ -14096,7 +14105,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/MessageBox.tsx",
       "source_location": "L1",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_components_messagebox_tsx"
     },
@@ -14123,7 +14132,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/components/DataTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable.tsx",
       "id": "users_kingdem_projects_benchstockdev_src_components_datatable_tsx"
     },
@@ -14141,7 +14150,7 @@
       "file_type": "code",
       "source_file": "src/components/Modal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal.tsx",
       "id": "src_components_modal_tsx"
     },
@@ -14159,7 +14168,7 @@
       "file_type": "code",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/src/hooks/useCollection.ts",
       "source_location": "L1",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection.ts",
       "id": "users_kingdem_projects_benchstockdev_src_hooks_usecollection_ts"
     },
@@ -29675,7 +29684,7 @@
       "file_type": "code",
       "source_file": "src/features/projects/ProjectModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 105,
       "norm_label": "projectmodal.tsx",
       "id": "src_features_projects_projectmodal_tsx"
     },
@@ -29684,7 +29693,7 @@
       "file_type": "code",
       "source_file": "src/features/settings/UserSettingsModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 105,
       "norm_label": "usersettingsmodal.tsx",
       "id": "src_features_settings_usersettingsmodal_tsx"
     },
@@ -29693,7 +29702,7 @@
       "file_type": "code",
       "source_file": "src/features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "src_features_transfers_transferstable_tsx"
     },
@@ -29702,7 +29711,7 @@
       "file_type": "code",
       "source_file": "src/features/warehouses/AddWarehouseModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 105,
       "norm_label": "addwarehousemodal.tsx",
       "id": "src_features_warehouses_addwarehousemodal_tsx"
     },
@@ -29711,7 +29720,7 @@
       "file_type": "code",
       "source_file": "src/types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "src_types_ts"
     },
@@ -29765,7 +29774,7 @@
       "file_type": "code",
       "source_file": "AuthPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "authpage.tsx",
       "id": "authpage_tsx"
     },
@@ -29774,7 +29783,7 @@
       "file_type": "code",
       "source_file": "types.ts",
       "source_location": "L1",
-      "community": 2,
+      "community": 252,
       "norm_label": "types.ts",
       "id": "types_ts"
     },
@@ -29783,7 +29792,7 @@
       "file_type": "code",
       "source_file": "features/transfers/TransfersTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transferstable.tsx",
       "id": "features_transfers_transferstable_tsx"
     },
@@ -29792,7 +29801,7 @@
       "file_type": "code",
       "source_file": "features/transfers/TransferTrackingModal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "transfertrackingmodal.tsx",
       "id": "features_transfers_transfertrackingmodal_tsx"
     },
@@ -29837,7 +29846,7 @@
       "file_type": "code",
       "source_file": "features/activityHistory/ActivityHistoryPage.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "activityhistorypage.tsx",
       "id": "features_activityhistory_activityhistorypage_tsx"
     },
@@ -29855,7 +29864,7 @@
       "file_type": "code",
       "source_file": "utils/authErrors.test.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.test.ts",
       "id": "utils_autherrors_test_ts"
     },
@@ -29864,7 +29873,7 @@
       "file_type": "code",
       "source_file": "utils/authErrors.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 0,
       "norm_label": "autherrors.ts",
       "id": "utils_autherrors_ts"
     },
@@ -29882,7 +29891,7 @@
       "file_type": "code",
       "source_file": "components/MessageBox.tsx",
       "source_location": "L1",
-      "community": 137,
+      "community": 0,
       "norm_label": "messagebox.tsx",
       "id": "components_messagebox_tsx"
     },
@@ -29909,7 +29918,7 @@
       "file_type": "code",
       "source_file": "components/DataTable.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "datatable.tsx",
       "id": "components_datatable_tsx"
     },
@@ -29927,7 +29936,7 @@
       "file_type": "code",
       "source_file": "components/Modal.tsx",
       "source_location": "L1",
-      "community": 2,
+      "community": 8,
       "norm_label": "modal.tsx",
       "id": "components_modal_tsx"
     },
@@ -29945,7 +29954,7 @@
       "file_type": "code",
       "source_file": "hooks/useCollection.ts",
       "source_location": "L1",
-      "community": 138,
+      "community": 0,
       "norm_label": "usecollection.ts",
       "id": "hooks_usecollection_ts"
     },
@@ -30010,7 +30019,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 138,
+      "community": 0,
       "norm_label": "custom hooks pattern",
       "id": "docs_architectural_patterns_customhooks"
     },
@@ -30062,7 +30071,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 138,
+      "community": 0,
       "norm_label": "state management pattern",
       "id": "docs_architectural_patterns_statemanagement"
     },
@@ -30192,7 +30201,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 8,
+      "community": 0,
       "norm_label": "getautherrormessage function",
       "id": "utils_autherrors_getautherrmessage"
     },
@@ -30217,9 +30226,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_schema",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_schema"
     },
     {
       "relation": "contains",
@@ -30227,9 +30236,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_created_at",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_created_at"
     },
     {
       "relation": "contains",
@@ -30237,9 +30246,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_business",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_business"
     },
     {
       "relation": "contains",
@@ -30247,9 +30256,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_signature_move",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_signature_move"
     },
     {
       "relation": "contains",
@@ -30257,9 +30266,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_mcp_calls",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_mcp_calls"
     },
     {
       "relation": "contains",
@@ -30267,9 +30276,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_references_surveyed",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_references_surveyed"
     },
     {
       "relation": "contains",
@@ -30277,9 +30286,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_inner_pages_viewed",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_inner_pages_viewed"
     },
     {
       "relation": "contains",
@@ -30287,9 +30296,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_layers_read",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_layers_read"
     },
     {
       "relation": "contains",
@@ -30297,9 +30306,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_files_written",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_files_written"
     },
     {
       "relation": "contains",
@@ -30307,9 +30316,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_sections",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_sections"
     },
     {
       "relation": "contains",
@@ -30317,9 +30326,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_diverge",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_diverge"
     },
     {
       "relation": "contains",
@@ -30327,9 +30336,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_converge",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_converge"
     },
     {
       "relation": "contains",
@@ -30337,9 +30346,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_commission",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_commission"
     },
     {
       "relation": "contains",
@@ -30347,9 +30356,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_variants",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_variants"
     },
     {
       "relation": "contains",
@@ -30357,9 +30366,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_explore",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_explore"
     },
     {
       "relation": "contains",
@@ -30367,9 +30376,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_visual",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_visual"
     },
     {
       "relation": "contains",
@@ -30377,9 +30386,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_novelty",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_novelty"
     },
     {
       "relation": "contains",
@@ -30387,9 +30396,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_verifier",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_verifier"
     },
     {
       "relation": "contains",
@@ -30397,9 +30406,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_buildability",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_buildability"
     },
     {
       "relation": "contains",
@@ -30407,9 +30416,9 @@
       "source_file": "build-manifest.json",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "build_manifest_json",
-      "target": "kiich_app_build_manifest_architecture",
-      "confidence_score": 1.0
+      "target": "kiich_app_build_manifest_architecture"
     },
     {
       "relation": "imports",
@@ -30718,6 +30727,17 @@
       "confidence_score": 1.0,
       "source": "src_app_tsx",
       "target": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_features_dashboard_dashboardpage_tsx"
     },
     {
       "relation": "imports",
@@ -31185,6 +31205,364 @@
       "confidence_score": 1.0,
       "source": "app_tsx",
       "target": "src_app_sidebaritem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpanel_dashboardpanel"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L371",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_statcard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_pagekey"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpageprops"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "src_types_warehouse"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "src_types_inventoryitem"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 2",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "src_types_activitylog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_app_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 4",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "dashboard_dashboardpanel_dashboardpanel"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/App.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_app_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "App.tsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_dashboardpage"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 3",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "utils_stockstatus_getstockstatus"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "concept_stockstatus_pipeline"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/features/dashboard/DashboardPage.tsx",
+      "source_location": "line 216",
+      "weight": 1.0,
+      "source": "dashboard_dashboardpage_dashboardpage",
+      "target": "inventory_adjustquantitymodal_adjustquantitymodal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L425",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_statcard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L425",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_statcard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
+      "source_location": "L425",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_statcard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "features/dashboard/DashboardPage.tsx",
+      "source_location": "L425",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "features_dashboard_dashboardpage_tsx",
+      "target": "dashboard_dashboardpage_statcard"
     },
     {
       "relation": "contains",
@@ -49055,16 +49433,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": "line 2",
-      "weight": 1.0,
-      "source": "dashboard_dashboardpage_dashboardpage",
-      "target": "src_types_warehouse"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "src/features/inventory/AdjustQuantityModal.tsx",
       "source_location": "line 5",
       "weight": 1.0,
@@ -49423,16 +49791,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_globalsearch_tsx",
-      "target": "src_types_inventoryitem"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": "line 2",
-      "weight": 1.0,
-      "source": "dashboard_dashboardpage_dashboardpage",
       "target": "src_types_inventoryitem"
     },
     {
@@ -50321,16 +50679,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "features_activityhistory_activityhistorypage_tsx",
-      "target": "src_types_activitylog"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": "line 2",
-      "weight": 1.0,
-      "source": "dashboard_dashboardpage_dashboardpage",
       "target": "src_types_activitylog"
     },
     {
@@ -54528,17 +54876,6 @@
       "target": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx"
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/App.tsx",
-      "source_location": "L42",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_app_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -55342,16 +55679,6 @@
       "target": "dashboard_dashboardpanel_dashboardpanel"
     },
     {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": "line 4",
-      "weight": 1.0,
-      "source": "dashboard_dashboardpage_dashboardpage",
-      "target": "dashboard_dashboardpanel_dashboardpanel"
-    },
-    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -55377,223 +55704,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_pagekey"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpageprops"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L425",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_statcard"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/silly-aryabhata/src/features/dashboard/DashboardPage.tsx",
       "source_location": "L438",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "users_kingdem_projects_benchstockdev_claude_worktrees_silly_aryabhata_src_features_dashboard_dashboardpage_tsx",
       "target": "dashboard_dashboardpage_quickaction"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_pagekey"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_pagekey"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "features/dashboard/DashboardPage.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_pagekey"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpageprops"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpageprops"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "features/dashboard/DashboardPage.tsx",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpageprops"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/App.tsx",
-      "source_location": "L42",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_app_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "App.tsx",
-      "source_location": "L49",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "features/dashboard/DashboardPage.tsx",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_dashboardpage"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": "line 3",
-      "weight": 1.0,
-      "source": "dashboard_dashboardpage_dashboardpage",
-      "target": "utils_stockstatus_getstockstatus"
-    },
-    {
-      "relation": "implements",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": null,
-      "weight": 0.85,
-      "source": "dashboard_dashboardpage_dashboardpage",
-      "target": "concept_stockstatus_pipeline"
-    },
-    {
-      "relation": "calls",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/features/dashboard/DashboardPage.tsx",
-      "source_location": "line 216",
-      "weight": 1.0,
-      "source": "dashboard_dashboardpage_dashboardpage",
-      "target": "inventory_adjustquantitymodal_adjustquantitymodal"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/.claude/worktrees/trusting-northcutt/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L425",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_claude_worktrees_trusting_northcutt_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_statcard"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "/Users/kingdem/Projects/BenchStockdev/src/features/dashboard/DashboardPage.tsx",
-      "source_location": "L425",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "users_kingdem_projects_benchstockdev_src_features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_statcard"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "features/dashboard/DashboardPage.tsx",
-      "source_location": "L425",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "features_dashboard_dashboardpage_tsx",
-      "target": "dashboard_dashboardpage_statcard"
     },
     {
       "relation": "contains",
@@ -78727,5 +78842,5 @@
       "source_file": "src/components/Modal.tsx"
     }
   ],
-  "built_at_commit": "45bb77cd3ba5f8d5bc1b8e1fcae2d2403efc44de"
+  "built_at_commit": "204df4c085573bef46d1fa05d4d43564d8a48c93"
 }

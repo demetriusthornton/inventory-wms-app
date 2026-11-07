@@ -1,16 +1,16 @@
-# Graph Report - KIICH-app  (2026-10-30)
+# Graph Report - KIICH-app  (2026-11-07)
 
 ## Corpus Check
-- 277 files · ~277,715 words
+- 277 files · ~277,446 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3341 nodes · 4727 edges · 254 communities (239 shown, 15 thin omitted)
+- 3342 nodes · 4737 edges · 252 communities (237 shown, 15 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `45bb77cd`
+- Built from commit: `204df4c0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -152,8 +152,6 @@
 - [[_COMMUNITY_Community 134|Community 134]]
 - [[_COMMUNITY_Community 135|Community 135]]
 - [[_COMMUNITY_Community 136|Community 136]]
-- [[_COMMUNITY_Community 137|Community 137]]
-- [[_COMMUNITY_Community 138|Community 138]]
 - [[_COMMUNITY_Community 139|Community 139]]
 - [[_COMMUNITY_Community 140|Community 140]]
 - [[_COMMUNITY_Community 141|Community 141]]
@@ -259,14 +257,14 @@
 - [[_COMMUNITY_Community 253|Community 253]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Warehouse` - 39 edges
-2. `InventoryItem` - 38 edges
-3. `ActivityLog` - 38 edges
+1. `Warehouse` - 40 edges
+2. `InventoryItem` - 39 edges
+3. `ActivityLog` - 39 edges
 4. `Modal()` - 33 edges
 5. `DataTable()` - 30 edges
 6. `Transfer` - 25 edges
-7. `C` - 22 edges
-8. `getStockStatus()` - 22 edges
+7. `getStockStatus()` - 23 edges
+8. `C` - 22 edges
 9. `compilerOptions` - 20 edges
 10. `compilerOptions` - 20 edges
 
@@ -288,19 +286,19 @@
 - **Stock Status Pipeline Consumers** — utils_stockstatus_getstockstatus, components_statuschip_statuschip, components_globalsearch_globalsearch, dashboard_dashboardpage_dashboardpage [INFERRED 0.95]
 - **Modal-based Interaction Pattern Components** — components_modal_modal, inventory_adjustquantitymodal_adjustquantitymodal, transfers_transfertrackingmodal_transfertrackingmodal [INFERRED 0.95]
 
-## Communities (254 total, 15 thin omitted)
+## Communities (252 total, 15 thin omitted)
 
 ### Community 0 - "Core App Shell"
-Cohesion: 0.16
-Nodes (21): LoadingSpinner(), ActivityLog, AddWarehouseModal(), AddWarehouseModalProps, App(), getInitialDarkMode(), InventoryItem, makeEmptyPoForm() (+13 more)
+Cohesion: 0.07
+Nodes (31): LoadingSpinner(), MessageBox, MessageBoxHandle, MessageBoxState, MessageBoxType, Custom Hooks Pattern, State Management Pattern, useCollection() (+23 more)
 
 ### Community 1 - "Data Tables & Activity Logs"
 Cohesion: 0.09
 Nodes (68): C, $(), ae(), at(), be(), bt(), ce(), ct() (+60 more)
 
 ### Community 2 - "Search & Status Display"
-Cohesion: 0.07
-Nodes (56): ActivityHistoryPage(), ActivityHistoryPageProps, DataTable(), DataTableColumn, DataTableFilterField, DataTableProps, GlobalSearch(), GlobalSearchProps (+48 more)
+Cohesion: 0.14
+Nodes (28): GlobalSearch(), GlobalSearchProps, StatusChip(), StatusChipProps, statusLabels, statusStyles, Stock Status Evaluation Pipeline, DashboardPage() (+20 more)
 
 ### Community 4 - "Multi-tenancy & UPC Lookup"
 Cohesion: 0.04
@@ -319,8 +317,8 @@ Cohesion: 0.22
 Nodes (8): Accessibility & Inclusion, Anti-references, Brand Personality, Design Principles, Product, Product Purpose, Register, Users
 
 ### Community 8 - "Auth & Error Handling"
-Cohesion: 0.18
-Nodes (4): AuthPage(), AuthPageProps, getAuthErrorMessage Function, getAuthErrorMessage()
+Cohesion: 0.14
+Nodes (15): ActivityHistoryPage(), ActivityHistoryPageProps, DataTable(), DataTableColumn, DataTableFilterField, DataTableProps, Modal(), ModalProps (+7 more)
 
 ### Community 9 - "React Assets"
 Cohesion: 0.67
@@ -679,8 +677,8 @@ Cohesion: 0.23
 Nodes (13): applyParamDefaults(), applyParamValue(), closedClipPath(), closeTunePopover(), hideParamsPanel(), openTunePopover(), parseVariantParams(), popoverDirection() (+5 more)
 
 ### Community 105 - "Community 105"
-Cohesion: 0.54
-Nodes (6): buildBasePath(), jsonSafeParse(), lookupProductByUpc(), parseCsvSimple(), ProductLookupResult, sanitizeImageUrl()
+Cohesion: 0.18
+Nodes (15): ProjectModal(), ProjectModalProps, UserSettingsModal(), UserSettingsModalProps, SidebarItem(), SidebarItemProps, Project, buildBasePath() (+7 more)
 
 ### Community 106 - "Community 106"
 Cohesion: 0.17
@@ -805,14 +803,6 @@ Nodes (9): 1. Impatient Power User: "Alex", 2. Confused First-Timer: "Jordan", 3
 ### Community 136 - "Community 136"
 Cohesion: 0.2
 Nodes (9): Color, Components, Layout, Motion, Product bans (on top of the shared absolute bans), Product permissions, Product register, The product slop test (+1 more)
-
-### Community 137 - "Community 137"
-Cohesion: 0.53
-Nodes (4): MessageBox, MessageBoxHandle, MessageBoxState, MessageBoxType
-
-### Community 138 - "Community 138"
-Cohesion: 0.31
-Nodes (4): Custom Hooks Pattern, State Management Pattern, useCollection(), UseCollectionOptions
 
 ### Community 139 - "Community 139"
 Cohesion: 0.2
@@ -1083,11 +1073,11 @@ Cohesion: 0.67
 Nodes (3): adapt, argumentHint, description
 
 ### Community 211 - "Community 211"
-Cohesion: 0.5
+Cohesion: 0.67
 Nodes (3): animate, argumentHint, description
 
 ### Community 212 - "Community 212"
-Cohesion: 0.67
+Cohesion: 0.5
 Nodes (3): audit, argumentHint, description
 
 ### Community 213 - "Community 213"
@@ -1191,8 +1181,8 @@ Cohesion: 0.67
 Nodes (3): ✅ Do:, ❌ Don't:, Security Best Practices
 
 ### Community 252 - "Community 252"
-Cohesion: 0.56
-Nodes (7): Toast(), ToastItem(), ToastItemProps, ToastProps, typeStyles, AdjustUndoPayload, ToastMessage
+Cohesion: 0.3
+Nodes (13): Toast(), ToastItem(), ToastItemProps, ToastProps, typeStyles, AdjustUndoPayload, PoFormState, ProjectItem (+5 more)
 
 ### Community 253 - "Community 253"
 Cohesion: 0.33
@@ -1212,11 +1202,11 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `schema`, `created_at`, `business` to the rest of the system?**
   _1826 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Core App Shell` be split into smaller, more focused modules?**
+  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
 - **Should `Data Tables & Activity Logs` be split into smaller, more focused modules?**
   _Cohesion score 0.09 - nodes in this community are weakly interconnected._
 - **Should `Search & Status Display` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14 - nodes in this community are weakly interconnected._
 - **Should `Multi-tenancy & UPC Lookup` be split into smaller, more focused modules?**
   _Cohesion score 0.04 - nodes in this community are weakly interconnected._
-- **Should `Toast Notifications & Undo` be split into smaller, more focused modules?**
-  _Cohesion score 0.08 - nodes in this community are weakly interconnected._
