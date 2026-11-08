@@ -77,6 +77,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
     <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center p-4">
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg max-w-md w-full p-8">
         <div className="text-center mb-8">
+          <img src="/kiich-icon.png" alt="" className="w-14 h-14 rounded-2xl mx-auto mb-3" />
           <h1 className="brand-title text-2xl font-bold text-[var(--fg)]">
             KIICH
           </h1>
