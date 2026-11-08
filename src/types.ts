@@ -8,6 +8,8 @@ export interface Warehouse {
   city: string;
   state: string;
   zip?: string;
+  /** Optional free-text location label (e.g. "Building B, Dock 3"). */
+  location?: string;
   type?: "standard" | "project";
   projectId?: string;
 }

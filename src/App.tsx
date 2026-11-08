@@ -1862,6 +1862,9 @@ const App: React.FC = () => {
           row[idx("streetaddress")] ?? row[idx("streetAddress")] ?? "",
         city: row[idx("city")] ?? "",
         state: row[idx("state")] ?? "",
+        ...(row[idx("location")]?.trim()
+          ? { location: row[idx("location")].trim() }
+          : {}),
       };
       batch.set(ref, warehouse);
     }
@@ -3743,7 +3746,7 @@ const App: React.FC = () => {
         <DataTable<Warehouse>
           title="Branches"
           data={sortedWarehouses}
-          searchFields={["shortCode", "name", "city", "state"]}
+          searchFields={["shortCode", "name", "city", "state", "location"]}
           filterFields={[
             {
               key: "state",
@@ -3760,6 +3763,7 @@ const App: React.FC = () => {
             { key: "city", label: "City" },
             { key: "state", label: "State" },
             { key: "zip", label: "Zip" },
+            { key: "location", label: "Location" },
             {
               key: "default",
               label: "Default",

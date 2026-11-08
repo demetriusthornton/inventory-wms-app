@@ -31,6 +31,7 @@ export const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
   const [city, setCity] = useState("");
   const [stateVal, setStateVal] = useState("");
   const [zip, setZip] = useState("");
+  const [location, setLocation] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -42,6 +43,7 @@ export const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       setCity(existing.city);
       setStateVal(existing.state);
       setZip(existing.zip ?? "");
+      setLocation(existing.location ?? "");
     } else {
       setShortCode("");
       setName("");
@@ -49,6 +51,7 @@ export const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
       setCity("");
       setStateVal("");
       setZip("");
+      setLocation("");
     }
     setSaveError(null);
   }, [existing, open]);
@@ -68,6 +71,7 @@ export const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
         city: city.trim(),
         state: stateVal.trim(),
         zip: zip.trim(),
+        ...(location.trim() ? { location: location.trim() } : {}),
       };
       await setDoc(ref, warehouse);
       await onLogActivity({
@@ -175,6 +179,17 @@ export const AddWarehouseModal: React.FC<AddWarehouseModalProps> = ({
             className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
             value={zip}
             onChange={(e) => setZip(e.target.value)}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-medium text-slate-600 mb-1">
+            Location (optional)
+          </label>
+          <input
+            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="e.g. Building B, Dock 3"
           />
         </div>
       </div>
