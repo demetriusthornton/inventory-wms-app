@@ -3916,11 +3916,8 @@ const App: React.FC = () => {
 
         {/* Logo area – same width as sidebar so content stays aligned */}
         <div className="w-44 lg:w-56 flex-shrink-0 flex items-center gap-2.5">
-          <img src="/kiich-icon.png" alt="KIICH" className="w-8 h-8 rounded-xl" />
-          <div className="leading-tight">
-            <p className="brand-title text-sm font-semibold text-[var(--fg)]">KIICH</p>
-            <p className="text-[10px] text-[var(--muted)]">IMS Console</p>
-          </div>
+          <img src="/kiich-logo-light.png" alt="KIICH" className="h-8 w-auto dark:hidden" />
+          <img src="/kiich-logo-dark.png" alt="KIICH" className="h-8 w-auto hidden dark:block" />
         </div>
 
         {/* Search trigger */}
