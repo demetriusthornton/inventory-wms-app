@@ -79,7 +79,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
         <div className="text-center mb-8">
           <img src="/kiich-logo-light.png" alt="KIICH" className="h-14 w-auto mx-auto dark:hidden" />
           <img src="/kiich-logo-dark.png" alt="KIICH" className="h-14 w-auto mx-auto hidden dark:block" />
-          <p className="text-[var(--muted)] mt-2">
+          <p className="text-sm font-medium text-[var(--fg)] mt-3">Keeping Inventory In Check</p>
+          <p className="text-[var(--muted)] mt-1">
             {isRegistering ? "Create a new account" : "Sign in to your account"}
           </p>
         </div>
