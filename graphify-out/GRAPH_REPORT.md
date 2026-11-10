@@ -1,16 +1,16 @@
-# Graph Report - KIICH-app  (2026-10-30)
+# Graph Report - KIICH-app  (2026-11-08)
 
 ## Corpus Check
-- 277 files · ~277,715 words
+- 278 files · ~279,295 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3341 nodes · 4727 edges · 254 communities (239 shown, 15 thin omitted)
+- 3343 nodes · 4678 edges · 254 communities (239 shown, 15 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `45bb77cd`
+- Built from commit: `ef9d943f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -259,12 +259,12 @@
 - [[_COMMUNITY_Community 253|Community 253]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Warehouse` - 39 edges
-2. `InventoryItem` - 38 edges
-3. `ActivityLog` - 38 edges
-4. `Modal()` - 33 edges
-5. `DataTable()` - 30 edges
-6. `Transfer` - 25 edges
+1. `Warehouse` - 38 edges
+2. `InventoryItem` - 37 edges
+3. `ActivityLog` - 37 edges
+4. `Modal()` - 32 edges
+5. `DataTable()` - 29 edges
+6. `Transfer` - 24 edges
 7. `C` - 22 edges
 8. `getStockStatus()` - 22 edges
 9. `compilerOptions` - 20 edges
@@ -291,8 +291,8 @@
 ## Communities (254 total, 15 thin omitted)
 
 ### Community 0 - "Core App Shell"
-Cohesion: 0.16
-Nodes (21): LoadingSpinner(), ActivityLog, AddWarehouseModal(), AddWarehouseModalProps, App(), getInitialDarkMode(), InventoryItem, makeEmptyPoForm() (+13 more)
+Cohesion: 0.14
+Nodes (22): LoadingSpinner(), ActivityLog, AddWarehouseModal(), AddWarehouseModalProps, App(), getInitialDarkMode(), InventoryItem, makeEmptyPoForm() (+14 more)
 
 ### Community 1 - "Data Tables & Activity Logs"
 Cohesion: 0.09
@@ -300,7 +300,7 @@ Nodes (68): C, $(), ae(), at(), be(), bt(), ce(), ct() (+60 more)
 
 ### Community 2 - "Search & Status Display"
 Cohesion: 0.07
-Nodes (56): ActivityHistoryPage(), ActivityHistoryPageProps, DataTable(), DataTableColumn, DataTableFilterField, DataTableProps, GlobalSearch(), GlobalSearchProps (+48 more)
+Nodes (58): ActivityHistoryPage(), ActivityHistoryPageProps, DataTable(), DataTableColumn, DataTableFilterField, DataTableProps, GlobalSearch(), GlobalSearchProps (+50 more)
 
 ### Community 4 - "Multi-tenancy & UPC Lookup"
 Cohesion: 0.04
@@ -623,8 +623,8 @@ Cohesion: 0.12
 Nodes (15): Accessibility & Inclusion, Brand & Personality, code:bash (node {{scripts_path}}/load-context.mjs), code:markdown (# Product), Interview mode, not confirmation mode, Minimum viable interview, Register (ask first; it shapes everything below), Step 1: Load current state (+7 more)
 
 ### Community 91 - "Community 91"
-Cohesion: 0.12
-Nodes (16): 1. Read the screenshot (if present), 2. Wrap the element, 3. Load the action's reference, 5. Apply the freeform prompt (if present), 6. Write all variants in a single edit, 7. Parameters (composition-sized, 0–4 per variant), 8. Signal done, Aborting an in-flight session (+8 more)
+Cohesion: 0.15
+Nodes (13): 1. Read the screenshot (if present), 2. Wrap the element, 3. Load the action's reference, 5. Apply the freeform prompt (if present), 7. Parameters (composition-sized, 0–4 per variant), 8. Signal done, Aborting an in-flight session, code:bash (node {{scripts_path}}/live-poll.mjs --reply EVENT_ID error ") (+5 more)
 
 ### Community 92 - "Community 92"
 Cohesion: 0.12
@@ -651,8 +651,8 @@ Cohesion: 0.13
 Nodes (14): 10. Help and Documentation, 1. Visibility of System Status, 2. Match Between System and Real World, 3. User Control and Freedom, 4. Consistency and Standards, 5. Error Prevention, 6. Recognition Rather Than Recall, 7. Flexibility and Efficiency of Use (+6 more)
 
 ### Community 98 - "Community 98"
-Cohesion: 0.25
-Nodes (12): getLegacyLiveSessionsDir(), readLiveServerInfo(), completeCli(), completeThroughServer(), parseArgs(), readServerInfo(), parseArgs(), resumeCli() (+4 more)
+Cohesion: 0.14
+Nodes (21): getLegacyLiveSessionsDir(), readLiveServerInfo(), completeCli(), completeThroughServer(), parseArgs(), readServerInfo(), parseArgs(), resumeCli() (+13 more)
 
 ### Community 99 - "Community 99"
 Cohesion: 0.13
@@ -679,7 +679,7 @@ Cohesion: 0.23
 Nodes (13): applyParamDefaults(), applyParamValue(), closedClipPath(), closeTunePopover(), hideParamsPanel(), openTunePopover(), parseVariantParams(), popoverDirection() (+5 more)
 
 ### Community 105 - "Community 105"
-Cohesion: 0.54
+Cohesion: 0.55
 Nodes (6): buildBasePath(), jsonSafeParse(), lookupProductByUpc(), parseCsvSimple(), ProductLookupResult, sanitizeImageUrl()
 
 ### Community 106 - "Community 106"
@@ -699,8 +699,8 @@ Cohesion: 0.18
 Nodes (11): detectCsp(), INLINE_HEADER_SIGNALS, LAYOUT_EXTS, MONOREPO_HELPER_SIGNALS, NUXT_ROUTE_RULES_SIGNALS, NUXT_SECURITY_SIGNALS, result, SCAN_EXTS (+3 more)
 
 ### Community 110 - "Community 110"
-Cohesion: 0.26
-Nodes (9): applyEvent(), baseSnapshot(), COMPLETED_PHASES, getJournalPath(), getSnapshotPath(), rebuildSnapshotFromJournal(), safeSessionId(), toPendingEvent() (+1 more)
+Cohesion: 0.67
+Nodes (3): 6. Write all variants in a single edit, code:html (<!-- Variants: insert below this line -->), code:tsx (<style data-impeccable-css="SESSION_ID">{`)
 
 ### Community 111 - "Community 111"
 Cohesion: 0.17
@@ -1083,11 +1083,11 @@ Cohesion: 0.67
 Nodes (3): adapt, argumentHint, description
 
 ### Community 211 - "Community 211"
-Cohesion: 0.5
+Cohesion: 0.67
 Nodes (3): animate, argumentHint, description
 
 ### Community 212 - "Community 212"
-Cohesion: 0.67
+Cohesion: 0.5
 Nodes (3): audit, argumentHint, description
 
 ### Community 213 - "Community 213"
@@ -1199,24 +1199,24 @@ Cohesion: 0.33
 Nodes (6): firestoreRules, appData, defaultPolicy, optionalDomainRestriction, rateLimits, userProfiles
 
 ## Knowledge Gaps
-- **1818 isolated node(s):** `schema`, `created_at`, `business`, `signature_move`, `mcp_calls` (+1813 more)
+- **1822 isolated node(s):** `SidebarItemProps`, `ProjectStatus`, `ProjectShipmentLine`, `schema`, `created_at` (+1817 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `lookupProductByUpc()` connect `Community 105` to `Core App Shell`, `Community 18`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Why does `Three-Tier UPC API Fallback Chain` connect `Community 18` to `Community 105`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **What connects `schema`, `created_at`, `business` to the rest of the system?**
-  _1826 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `lookupProductByUpc()` connect `Community 105` to `Core App Shell`, `Community 18`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
+- **What connects `SidebarItemProps`, `ProjectStatus`, `ProjectShipmentLine` to the rest of the system?**
+  _1830 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Core App Shell` be split into smaller, more focused modules?**
+  _Cohesion score 0.14 - nodes in this community are weakly interconnected._
 - **Should `Data Tables & Activity Logs` be split into smaller, more focused modules?**
   _Cohesion score 0.09 - nodes in this community are weakly interconnected._
 - **Should `Search & Status Display` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
 - **Should `Multi-tenancy & UPC Lookup` be split into smaller, more focused modules?**
   _Cohesion score 0.04 - nodes in this community are weakly interconnected._
-- **Should `Toast Notifications & Undo` be split into smaller, more focused modules?**
-  _Cohesion score 0.08 - nodes in this community are weakly interconnected._

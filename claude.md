@@ -1,136 +1,83 @@
 # Inventory WMS App
 
-## What This Is
-
-A warehouse management system (WMS) for tracking inventory, purchase orders, transfers, and warehouse operations. Single-page application with real-time Firebase sync.
-
-## Why This Exists
-
-Multi-warehouse inventory management with real-time tracking, purchase orders, transfers, activity logging, and UPC barcode lookup.
+Warehouse management system for tracking inventory, purchase orders, and stock transfers across multiple branches. Built for internal use with Firebase Authentication (email verification required).
 
 ## Tech Stack
 
-- **Frontend**: React 18 + TypeScript 5
-- **Build**: Vite 6
-- **Backend**: Firebase 11 (Auth + Firestore + Cloud Functions)
-- **Styling**: TailwindCSS 3 + PostCSS
-- **Testing**: Vitest 4
+- **Frontend:** React 18, TypeScript 5, Vite 6
+- **Styling:** Tailwind CSS 3 + CSS custom properties for light/dark theming
+- **Backend:** Firebase (Auth, Cloud Firestore, Cloud Functions, Hosting)
+- **Cloud Functions:** Node.js 18, firebase-functions 4.5, firebase-admin 12
+- **Testing:** Vitest
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | TypeScript check + Vite production build |
+| `npm run lint` | ESLint |
+| `npm run test` | Vitest |
+| `npm run preview` | Preview production build |
+
+Cloud Functions (run from `functions/`):
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Compile TypeScript |
+| `npm run serve` | Build + start Firebase emulator |
+| `npm run deploy` | Deploy to Firebase |
 
 ## Project Structure
 
-### Source (`src/`)
-- **[App.tsx](src/App.tsx)** (3974 lines) - Main app component with business logic
-- **[types.ts](src/types.ts)** - Centralized TypeScript types
-- **[AuthPage.tsx](AuthPage.tsx)** - Auth UI (email/password, Google)
-
-### Features (`src/features/`)
-- **transfers/** - Inter-warehouse transfer components
-
-### Components (`src/components/`)
-- **[DataTable.tsx](src/components/DataTable.tsx)** - Generic table (search, sort, filter)
-- **[Modal.tsx](src/components/Modal.tsx)** - Reusable modal
-- **[MessageBox.tsx](src/components/MessageBox.tsx)** - Notifications
-- **[LoadingSpinner.tsx](src/components/LoadingSpinner.tsx)** - Loading UI
-
-### Hooks (`src/hooks/`)
-- **[useCollection.ts](src/hooks/useCollection.ts)** - Real-time Firestore sync
-
-### Utils (`src/utils/`)
-- **[helpers.ts](src/utils/helpers.ts)** - Sanitization, parsing, UPC lookup
-- **[authErrors.ts](src/utils/authErrors.ts)** - Auth error handling
-
-### Backend (`functions/`)
-- **[index.ts](functions/src/index.ts)** - Cloud Functions (UPC lookup, health check)
-
-### Config
-- **[firebase.json](firebase.json)** - Firebase config
-- **[firestore.rules](firestore.rules)** - DB security rules
-- **[vite.config.ts](vite.config.ts)** - Vite config
-- **[tailwind.config.cjs](tailwind.config.cjs)** - Tailwind config
-- **tsconfig.json** - TypeScript configs (root, app, node)
-
-## Essential Commands
-
-```bash
-npm run dev          # Dev server with HMR
-npm run build        # TypeScript check + production build
-npm run test         # Run tests with Vitest
-npm run lint         # ESLint
-npm run preview      # Preview production build
+```
+src/
+  App.tsx              Main component — all pages, modals, CRUD handlers (~3950 lines)
+  AuthPage.tsx         Login/registration with email verification
+  main.tsx             Entry point
+  types.ts             Shared TypeScript interfaces (Warehouse, InventoryItem, PurchaseOrder, Transfer, ActivityLog)
+  index.css            CSS custom properties for theming (light/dark)
+  components/          Reusable UI: DataTable, Modal, MessageBox, LoadingSpinner
+  features/            Feature-scoped components (e.g., features/transfers/)
+  hooks/               Custom hooks (useCollection for real-time Firestore subscriptions)
+  utils/               Helpers (UPC lookup, CSV parsing, image sanitization, auth errors)
+functions/
+  src/index.ts         Cloud Function for secure UPC lookups (server-side API keys)
+firestore.rules        Security rules — deny-by-default, requires email verification
 ```
 
-## Key Directories
+## Key Architecture Decisions
 
-| Directory | Purpose |
-|-----------|---------|
-| `src/` | Application source |
-| `src/components/` | Reusable UI components |
-| `src/features/` | Feature-specific components |
-| `src/hooks/` | Custom React hooks |
-| `src/utils/` | Helper functions |
-| `functions/` | Cloud Functions (backend) |
-| `.claude/docs/` | Additional documentation |
-| `tasks/` | Task planning and TODOs |
-
-## Firestore Collections
-
-All namespaced by org: `${basePath}/${collectionName}` where basePath = `organizations/${appId}`
-
-- **warehouses** - Branches/locations
-- **inventory** - Current inventory
-- **purchaseOrders** - Active POs
-- **poHistory** - Completed/deleted POs
-- **moves** - Inter-warehouse transfers
-- **activityHistory** - Audit logs
+- **No router library** — state-based page switching via `PageKey` type in [App.tsx:39-45](src/App.tsx#L39-L45)
+- **No state management library** — React hooks (`useState`, `useMemo`, `useCallback`) + real-time Firestore subscriptions via [useCollection](src/hooks/useCollection.ts)
+- **No form library** — individual `useState` per field with inline validation
+- **All data mutations** must be followed by a `logActivity()` call for audit trail
+- **Firestore path structure:** `artifacts/{appId}/shared/global/{collection}`
+- **IDs:** client-generated via `crypto.randomUUID()`
+- **Timestamps:** ISO 8601 strings
+- **Theming:** CSS custom properties (`var(--bg)`, `var(--fg)`, etc.) with Tailwind arbitrary values — never hardcode colors
 
 ## Environment Variables
 
-Create `.env.local` (never commit):
-- `VITE_GOUPC_API_KEY` - Go-UPC key (optional, use Cloud Functions)
-- `VITE_UPCITEMDB_KEY` - UPCItemDB key (optional, use Cloud Functions)
+Copy `.env.example` to `.env.local` (frontend) and `functions/.env.example` to `functions/.env` (Cloud Functions). Key variables:
+- `VITE_USE_CLOUD_FUNCTIONS` — `true` for production (routes UPC lookups through Cloud Functions)
+- `VITE_ALLOWED_EMAIL_DOMAIN` — restrict registration to a specific email domain
+- API keys: `VITE_GOUPC_API_KEY`, `VITE_UPCITEMDB_KEY` (dev only; production uses Cloud Functions env)
 
-See [.env.example](.env.example) for reference.
+## Firestore Collections
 
-**Production**: Use Cloud Functions with environment variables for API key security.
-
-## Multi-Tenancy
-
-Organization-based data isolation:
-- Each org has unique `appId` (e.g., "wms-app-prod")
-- All paths include `basePath`: `organizations/${appId}`
-- Security via [firestore.rules](firestore.rules)
+All under `artifacts/{appId}/shared/global/`:
+- `warehouses` — branch/warehouse locations
+- `inventory` — items in stock (filtered by `assignedBranchId`)
+- `purchaseOrders` — active purchase orders
+- `poHistory` — completed/cancelled POs
+- `moves` — stock transfer records
+- `activityHistory` — audit log of all mutations
 
 ## Additional Documentation
 
-- **[Architectural Patterns](.claude/docs/architectural_patterns.md)** - Design patterns and conventions
-- **[Security Guide](SECURITY.md)** - Security best practices
-- **[Cloud Functions Setup](CLOUD_FUNCTIONS_SETUP.md)** - Detailed CF config
-- **[Quick Start: Cloud Functions](QUICKSTART_CLOUD_FUNCTIONS.md)** - Fast CF setup
+Check these files when working on relevant areas:
 
-## Working Guidelines
-
-### Before Starting
-1. Read relevant files
-2. Check [architectural_patterns.md](.claude/docs/architectural_patterns.md)
-3. Write plan to [tasks/todo.md](tasks/todo.md)
-4. Get user approval
-
-### During Work
-- Keep changes simple and minimal
-- Impact as little code as possible
-- Mark tasks complete as you go
-- Provide high-level change summaries
-
-### After Completion
-- Add review section to [tasks/todo.md](tasks/todo.md)
-- Summarize changes and notes
-
-## graphify
-
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+| File | When to check |
+|------|---------------|
+| [.claude/docs/architectural_patterns.md](.claude/docs/architectural_patterns.md) | Adding features, modifying CRUD operations, understanding conventions (modal patterns, DataTable usage, activity logging, form state, theming, Cloud Functions, error handling) |
