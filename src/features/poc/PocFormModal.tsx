@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { collection, doc, writeBatch, updateDoc } from "firebase/firestore";
+import { collection, doc, writeBatch, updateDoc, increment } from "firebase/firestore";
 import type { Firestore } from "firebase/firestore";
 import { Modal } from "../../components/Modal";
 import type {
   ActivityLog,
+  InventoryItem,
   PocDocument,
   PocEquipmentItem,
   PocProject,
+  Warehouse,
 } from "../../types";
 import { addDays } from "../../utils/pocDates";
 import { isValidLink, makeLinkDocument } from "./pocStorage";
@@ -26,6 +28,8 @@ interface EquipmentRow {
   manufactureName: string;
   serialNumber: string;
   quantity: string;
+  /** Set when the row was imported from the default branch inventory. */
+  sourceItemId?: string;
 }
 
 interface LinkRow {
@@ -71,6 +75,10 @@ interface PocFormModalProps {
     entry: Omit<ActivityLog, "id" | "timestamp" | "userName">,
   ) => Promise<void>;
   onAlert: (msg: string) => void;
+  /** User's default branch; enables "Import" when creating a POC. */
+  defaultBranch?: Warehouse | null;
+  /** Inventory items assigned to the default branch. */
+  defaultBranchInventory?: InventoryItem[];
 }
 
 export const PocFormModal: React.FC<PocFormModalProps> = ({
@@ -82,6 +90,8 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
   getUserName,
   onLogActivity,
   onAlert,
+  defaultBranch = null,
+  defaultBranchInventory = [],
 }) => {
   const [pocName, setPocName] = useState("");
   const [summary, setSummary] = useState("");
@@ -91,6 +101,37 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
   const [equipment, setEquipment] = useState<EquipmentRow[]>([]);
   const [links, setLinks] = useState<LinkRow[]>([]);
   const [saving, setSaving] = useState(false);
+  const [importItemId, setImportItemId] = useState("");
+
+  const inventoryById = new Map(defaultBranchInventory.map((i) => [i.id, i]));
+  const importCandidates = defaultBranchInventory
+    .filter((i) => i.amountInInventory > 0)
+    .filter((i) => !equipment.some((r) => r.sourceItemId === i.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const importAvailable = (r: EquipmentRow) =>
+    r.sourceItemId ? inventoryById.get(r.sourceItemId)?.amountInInventory ?? 0 : Infinity;
+
+  const handleImportRow = () => {
+    const item = inventoryById.get(importItemId);
+    if (!item) return;
+    const row: EquipmentRow = {
+      key: crypto.randomUUID(),
+      name: item.name,
+      modelNumber: item.modelNumber,
+      manufactureName: item.manufactureName,
+      serialNumber: "",
+      quantity: "1",
+      sourceItemId: item.id,
+    };
+    setEquipment((rows) => {
+      // Replace the untouched blank starter row instead of leaving it behind.
+      const blank = (x: EquipmentRow) =>
+        !x.sourceItemId && !x.name && !x.modelNumber && !x.manufactureName && !x.serialNumber;
+      return [...rows.filter((x) => !blank(x)), row];
+    });
+    setImportItemId("");
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -101,6 +142,7 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
     setDurationDays(editing ? String(editing.loanDurationDays) : "");
     setEquipment(editing ? [] : [emptyEquipmentRow()]);
     setLinks([]);
+    setImportItemId("");
   }, [open, editing]);
 
   const durationNum = Number(durationDays);
@@ -114,7 +156,11 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
     !!vendorName.trim() &&
     !!returnByDate;
   const equipmentValid =
-    !!editing || (equipment.length > 0 && equipment.every(isEquipmentRowValid));
+    !!editing ||
+    (equipment.length > 0 &&
+      equipment.every(
+        (r) => isEquipmentRowValid(r) && Number(r.quantity) <= importAvailable(r),
+      ));
   const linksValid = links.every((l) => isValidLink(l.url));
   const canSave = !saving && headerValid && equipmentValid && linksValid;
 
@@ -163,8 +209,11 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
 
       const batch = writeBatch(db);
       batch.set(doc(collection(db, `${basePath}/pocProjects`), pocId), poc);
+      const imported: { inv: InventoryItem; qty: number }[] = [];
       for (const r of equipment) {
         const id = crypto.randomUUID();
+        const qty = Number(r.quantity);
+        const inv = r.sourceItemId ? inventoryById.get(r.sourceItemId) : undefined;
         const item: PocEquipmentItem = {
           id,
           pocId,
@@ -172,13 +221,35 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
           modelNumber: r.modelNumber.trim(),
           manufactureName: r.manufactureName.trim(),
           ...(r.serialNumber.trim() ? { serialNumber: r.serialNumber.trim() } : {}),
-          quantity: Number(r.quantity),
+          quantity: qty,
+          ...(inv && defaultBranch
+            ? { sourceItemId: inv.id, sourceBranchId: defaultBranch.id }
+            : {}),
           createdAt: nowIso,
           createdBy: userName,
         };
         batch.set(doc(collection(db, `${basePath}/pocEquipment`), id), item);
+        if (inv) {
+          batch.update(doc(collection(db, `${basePath}/inventory`), inv.id), {
+            amountInInventory: increment(-qty),
+          });
+          imported.push({ inv, qty });
+        }
       }
       await batch.commit();
+
+      for (const { inv, qty } of imported) {
+        await onLogActivity({
+          action: "poc_equipment_import",
+          collection: "inventory",
+          docId: inv.id,
+          itemId: inv.id,
+          delta: -qty,
+          resultingQuantity: inv.amountInInventory - qty,
+          ...(defaultBranch ? { locationId: defaultBranch.id } : {}),
+          summary: `Moved ${qty}× ${inv.name} (${inv.modelNumber}) from ${defaultBranch?.name ?? "default branch"} to POC ${poc.pocName}`,
+        });
+      }
 
       await onLogActivity({
         action: "poc_create",
@@ -294,6 +365,36 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
                   + Add Row
                 </button>
               </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  className={`${smInputCls} sm:w-auto sm:flex-1`}
+                  value={importItemId}
+                  onChange={(e) => setImportItemId(e.target.value)}
+                  disabled={!defaultBranch}
+                  title={defaultBranch ? undefined : "Set a default branch in User Settings first"}
+                >
+                  <option value="">
+                    {!defaultBranch
+                      ? "Import: no default branch set"
+                      : importCandidates.length
+                        ? `Import from ${defaultBranch.shortCode || defaultBranch.name}...`
+                        : `No in-stock items at ${defaultBranch.shortCode || defaultBranch.name}`}
+                  </option>
+                  {importCandidates.map((i) => (
+                    <option key={i.id} value={i.id}>
+                      {i.name} — {i.modelNumber} ({i.amountInInventory} available)
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="px-3 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--fg)] hover:bg-[var(--surface-1)] disabled:opacity-50"
+                  onClick={handleImportRow}
+                  disabled={!importItemId}
+                >
+                  Import
+                </button>
+              </div>
               <div className="border border-[var(--border)] rounded-md overflow-x-auto">
                 <table className="min-w-full text-xs">
                   <thead className="bg-[var(--surface-1)]">
@@ -310,19 +411,35 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
                     {equipment.map((r) => (
                       <tr key={r.key} className="border-t border-[var(--border)]">
                         <td className="px-2 py-1">
-                          <input className={smInputCls} value={r.name} onChange={(e) => updateRow(r.key, { name: e.target.value })} />
+                          <input className={smInputCls} value={r.name} readOnly={!!r.sourceItemId} onChange={(e) => updateRow(r.key, { name: e.target.value })} />
+                          {r.sourceItemId && (
+                            <span className="text-[10px] text-[var(--muted)]">
+                              from {defaultBranch?.shortCode || defaultBranch?.name}
+                            </span>
+                          )}
                         </td>
                         <td className="px-2 py-1">
-                          <input className={smInputCls} value={r.modelNumber} onChange={(e) => updateRow(r.key, { modelNumber: e.target.value })} />
+                          <input className={smInputCls} value={r.modelNumber} readOnly={!!r.sourceItemId} onChange={(e) => updateRow(r.key, { modelNumber: e.target.value })} />
                         </td>
                         <td className="px-2 py-1">
-                          <input className={smInputCls} value={r.manufactureName} onChange={(e) => updateRow(r.key, { manufactureName: e.target.value })} />
+                          <input className={smInputCls} value={r.manufactureName} readOnly={!!r.sourceItemId} onChange={(e) => updateRow(r.key, { manufactureName: e.target.value })} />
                         </td>
                         <td className="px-2 py-1">
                           <input className={smInputCls} placeholder="Optional" value={r.serialNumber} onChange={(e) => updateRow(r.key, { serialNumber: e.target.value })} />
                         </td>
                         <td className="px-2 py-1">
-                          <input type="number" min={1} step={1} className={smInputCls} value={r.quantity} onChange={(e) => updateRow(r.key, { quantity: e.target.value })} />
+                          <input
+                            type="number"
+                            min={1}
+                            max={r.sourceItemId ? importAvailable(r) : undefined}
+                            step={1}
+                            className={`${smInputCls} ${Number(r.quantity) > importAvailable(r) ? "border-red-500" : ""}`}
+                            value={r.quantity}
+                            onChange={(e) => updateRow(r.key, { quantity: e.target.value })}
+                          />
+                          {r.sourceItemId && (
+                            <span className="text-[10px] text-[var(--muted)]">max {importAvailable(r)}</span>
+                          )}
                         </td>
                         <td className="px-2 py-1 text-right">
                           <button

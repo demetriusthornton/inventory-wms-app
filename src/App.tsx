@@ -4162,6 +4162,11 @@ const App: React.FC = () => {
     const onAlert = (msg: string) => messageBoxRef.current?.alert(msg);
     const onConfirm = (msg: string) =>
       messageBoxRef.current?.confirm(msg) ?? Promise.resolve(undefined);
+    const defaultBranch =
+      warehouses.find((w) => w.id === defaultWarehouseId) ?? null;
+    const defaultBranchInventory = defaultWarehouseId
+      ? inventoryItems.filter((i) => i.assignedBranchId === defaultWarehouseId)
+      : [];
     if (selectedPocId) {
       const poc = pocProjects.find((p) => p.id === selectedPocId);
       if (!poc) {
@@ -4174,14 +4179,8 @@ const App: React.FC = () => {
           basePath={basePath!}
           poc={poc}
           equipment={pocEquipment.filter((e) => e.pocId === selectedPocId)}
-          defaultBranch={
-            warehouses.find((w) => w.id === defaultWarehouseId) ?? null
-          }
-          defaultBranchInventory={
-            defaultWarehouseId
-              ? inventoryItems.filter((i) => i.assignedBranchId === defaultWarehouseId)
-              : []
-          }
+          defaultBranch={defaultBranch}
+          defaultBranchInventory={defaultBranchInventory}
           getUserName={getUserName}
           onBack={() => setSelectedPocId(null)}
           onLogActivity={logActivity}
@@ -4201,6 +4200,8 @@ const App: React.FC = () => {
         onLogActivity={logActivity}
         onAlert={onAlert}
         onConfirm={onConfirm}
+        defaultBranch={defaultBranch}
+        defaultBranchInventory={defaultBranchInventory}
       />
     );
   };

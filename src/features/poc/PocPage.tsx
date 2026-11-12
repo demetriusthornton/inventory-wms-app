@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { collection, doc, writeBatch } from "firebase/firestore";
 import type { Firestore } from "firebase/firestore";
 import { DataTable } from "../../components/DataTable";
-import type { ActivityLog, PocEquipmentItem, PocProject, PocStatus } from "../../types";
+import type {
+  ActivityLog,
+  InventoryItem,
+  PocEquipmentItem,
+  PocProject,
+  PocStatus,
+  Warehouse,
+} from "../../types";
 import { daysUntil } from "../../utils/pocDates";
 import { PocFormModal } from "./PocFormModal";
 
@@ -18,6 +25,8 @@ interface PocPageProps {
   ) => Promise<void>;
   onAlert: (msg: string) => void;
   onConfirm: (msg: string) => Promise<boolean | undefined>;
+  defaultBranch: Warehouse | null;
+  defaultBranchInventory: InventoryItem[];
 }
 
 export const POC_STATUS_COLORS: Record<PocStatus, string> = {
@@ -53,6 +62,8 @@ export const PocPage: React.FC<PocPageProps> = ({
   onLogActivity,
   onAlert,
   onConfirm,
+  defaultBranch,
+  defaultBranchInventory,
 }) => {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PocProject | null>(null);
@@ -188,6 +199,8 @@ export const PocPage: React.FC<PocPageProps> = ({
         getUserName={getUserName}
         onLogActivity={onLogActivity}
         onAlert={onAlert}
+        defaultBranch={defaultBranch}
+        defaultBranchInventory={defaultBranchInventory}
       />
     </div>
   );
