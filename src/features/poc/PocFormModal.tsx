@@ -353,13 +353,21 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
         {!editing && (
           <>
             <div className="space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-[var(--fg)]">
                   Equipment <Req />
                 </h3>
-                <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  className="px-3 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
+                  onClick={() => setEquipment((rows) => [...rows, emptyEquipmentRow()])}
+                >
+                  + Add Row
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
                 <select
-                  className={`${smInputCls} w-auto max-w-[16rem]`}
+                  className={`${smInputCls} sm:w-auto sm:flex-1`}
                   value={importItemId}
                   onChange={(e) => setImportItemId(e.target.value)}
                   disabled={!defaultBranch}
@@ -384,16 +392,8 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
                   onClick={handleImportRow}
                   disabled={!importItemId}
                 >
-                  Import from Inventory
+                  Import
                 </button>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
-                  onClick={() => setEquipment((rows) => [...rows, emptyEquipmentRow()])}
-                >
-                  + Add Row
-                </button>
-                </div>
               </div>
               <div className="border border-[var(--border)] rounded-md overflow-x-auto">
                 <table className="min-w-full text-xs">
