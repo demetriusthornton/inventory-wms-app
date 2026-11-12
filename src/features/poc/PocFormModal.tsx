@@ -102,26 +102,43 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
   const [links, setLinks] = useState<LinkRow[]>([]);
   const [saving, setSaving] = useState(false);
   const [importItemId, setImportItemId] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
+  const [importSearch, setImportSearch] = useState("");
+  const [importQty, setImportQty] = useState("1");
 
   const inventoryById = new Map(defaultBranchInventory.map((i) => [i.id, i]));
   const importCandidates = defaultBranchInventory
     .filter((i) => i.amountInInventory > 0)
     .filter((i) => !equipment.some((r) => r.sourceItemId === i.id))
+    .filter((i) => {
+      const q = importSearch.trim().toLowerCase();
+      if (!q) return true;
+      return [i.name, i.modelNumber, i.upc ?? "", i.manufactureName].some((v) =>
+        v.toLowerCase().includes(q),
+      );
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
+  const importPicked = inventoryById.get(importItemId);
+  const importQtyNum = Number(importQty);
+  const importQtyValid =
+    !!importPicked &&
+    Number.isInteger(importQtyNum) &&
+    importQtyNum >= 1 &&
+    importQtyNum <= importPicked.amountInInventory;
 
   const importAvailable = (r: EquipmentRow) =>
     r.sourceItemId ? inventoryById.get(r.sourceItemId)?.amountInInventory ?? 0 : Infinity;
 
   const handleImportRow = () => {
     const item = inventoryById.get(importItemId);
-    if (!item) return;
+    if (!item || !importQtyValid) return;
     const row: EquipmentRow = {
       key: crypto.randomUUID(),
       name: item.name,
       modelNumber: item.modelNumber,
       manufactureName: item.manufactureName,
       serialNumber: "",
-      quantity: "1",
+      quantity: String(importQtyNum),
       sourceItemId: item.id,
     };
     setEquipment((rows) => {
@@ -131,6 +148,9 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
       return [...rows.filter((x) => !blank(x)), row];
     });
     setImportItemId("");
+    setImportQty("1");
+    setImportSearch("");
+    setImportOpen(false);
   };
 
   useEffect(() => {
@@ -143,6 +163,9 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
     setEquipment(editing ? [] : [emptyEquipmentRow()]);
     setLinks([]);
     setImportItemId("");
+    setImportOpen(false);
+    setImportSearch("");
+    setImportQty("1");
   }, [open, editing]);
 
   const durationNum = Number(durationDays);
@@ -353,48 +376,98 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
         {!editing && (
           <>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-sm font-semibold text-[var(--fg)]">
                   Equipment <Req />
                 </h3>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
-                  onClick={() => setEquipment((rows) => [...rows, emptyEquipmentRow()])}
-                >
-                  + Add Row
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="px-3 py-1 rounded-md border border-[#005691] text-xs text-[#005691] hover:bg-[var(--surface-1)]"
+                    onClick={() => setImportOpen((o) => !o)}
+                  >
+                    Import from Inventory
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3 py-1 rounded-md bg-[#005691] text-xs text-white hover:bg-[#00426e]"
+                    onClick={() => setEquipment((rows) => [...rows, emptyEquipmentRow()])}
+                  >
+                    + Add Row
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <select
-                  className={`${smInputCls} sm:w-auto sm:flex-1`}
-                  value={importItemId}
-                  onChange={(e) => setImportItemId(e.target.value)}
-                  disabled={!defaultBranch}
-                  title={defaultBranch ? undefined : "Set a default branch in User Settings first"}
-                >
-                  <option value="">
-                    {!defaultBranch
-                      ? "Import: no default branch set"
-                      : importCandidates.length
-                        ? `Import from ${defaultBranch.shortCode || defaultBranch.name}...`
-                        : `No in-stock items at ${defaultBranch.shortCode || defaultBranch.name}`}
-                  </option>
-                  {importCandidates.map((i) => (
-                    <option key={i.id} value={i.id}>
-                      {i.name} — {i.modelNumber} ({i.amountInInventory} available)
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="px-3 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--fg)] hover:bg-[var(--surface-1)] disabled:opacity-50"
-                  onClick={handleImportRow}
-                  disabled={!importItemId}
-                >
-                  Import
-                </button>
-              </div>
+              {importOpen && (
+                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-1)] p-3 space-y-2">
+                  {!defaultBranch ? (
+                    <p className="text-xs text-[var(--fg)]">
+                      No default branch set. Choose one in User Settings to import from inventory.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-xs text-[var(--muted)]">
+                        Importing from <span className="font-semibold text-[var(--fg)]">{defaultBranch.name}</span>.
+                        The quantity is deducted from this branch when the POC is saved.
+                      </p>
+                      <input
+                        className={smInputCls}
+                        placeholder="Search name, model #, UPC, manufacturer"
+                        value={importSearch}
+                        onChange={(e) => setImportSearch(e.target.value)}
+                      />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <select
+                          className={`${smInputCls} flex-1 min-w-[12rem]`}
+                          value={importItemId}
+                          onChange={(e) => {
+                            setImportItemId(e.target.value);
+                            setImportQty("1");
+                          }}
+                        >
+                          <option value="">
+                            {importCandidates.length ? "Select item..." : "No matching in-stock items"}
+                          </option>
+                          {importCandidates.map((i) => (
+                            <option key={i.id} value={i.id}>
+                              {i.name} — {i.modelNumber} ({i.amountInInventory} available)
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          min={1}
+                          max={importPicked?.amountInInventory}
+                          step={1}
+                          className={`${smInputCls} w-20`}
+                          value={importQty}
+                          onChange={(e) => setImportQty(e.target.value)}
+                          aria-label="Quantity"
+                        />
+                        <button
+                          type="button"
+                          className="px-3 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7] disabled:opacity-50"
+                          onClick={handleImportRow}
+                          disabled={!importQtyValid}
+                        >
+                          Add to POC
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--fg)] hover:bg-[var(--surface-1)]"
+                          onClick={() => setImportOpen(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      {importPicked && (
+                        <p className="text-[10px] text-[var(--muted)]">
+                          Max {importPicked.amountInInventory}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
               <div className="border border-[var(--border)] rounded-md overflow-x-auto">
                 <table className="min-w-full text-xs">
                   <thead className="bg-[var(--surface-1)]">
