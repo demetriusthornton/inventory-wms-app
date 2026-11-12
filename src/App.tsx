@@ -4174,6 +4174,14 @@ const App: React.FC = () => {
           basePath={basePath!}
           poc={poc}
           equipment={pocEquipment.filter((e) => e.pocId === selectedPocId)}
+          defaultBranch={
+            warehouses.find((w) => w.id === defaultWarehouseId) ?? null
+          }
+          defaultBranchInventory={
+            defaultWarehouseId
+              ? inventoryItems.filter((i) => i.assignedBranchId === defaultWarehouseId)
+              : []
+          }
           getUserName={getUserName}
           onBack={() => setSelectedPocId(null)}
           onLogActivity={logActivity}

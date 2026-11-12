@@ -186,6 +186,9 @@ export interface PocEquipmentItem {
   manufactureName: string;
   serialNumber?: string;
   quantity: number;
+  /** Set when imported (stock moved) from a branch's inventory. */
+  sourceItemId?: string;
+  sourceBranchId?: string;
   createdAt: string;
   createdBy: string;
 }

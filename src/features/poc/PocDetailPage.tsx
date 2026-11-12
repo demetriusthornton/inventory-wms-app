@@ -6,10 +6,18 @@ import {
   updateDoc,
   deleteDoc,
   writeBatch,
+  increment,
 } from "firebase/firestore";
 import type { Firestore } from "firebase/firestore";
 import { Modal } from "../../components/Modal";
-import type { ActivityLog, PocDocument, PocEquipmentItem, PocProject } from "../../types";
+import type {
+  ActivityLog,
+  InventoryItem,
+  PocDocument,
+  PocEquipmentItem,
+  PocProject,
+  Warehouse,
+} from "../../types";
 import { PocFormModal, isEquipmentRowValid, pocInputCls, pocLabelCls } from "./PocFormModal";
 import { DaysLeft, POC_STATUS_COLORS, formatIsoDate } from "./PocPage";
 import { isValidLink, makeLinkDocument } from "./pocStorage";
@@ -19,6 +27,10 @@ interface PocDetailPageProps {
   basePath: string;
   poc: PocProject;
   equipment: PocEquipmentItem[];
+  /** User's default branch (null if none set). */
+  defaultBranch: Warehouse | null;
+  /** Inventory items assigned to the default branch. */
+  defaultBranchInventory: InventoryItem[];
   getUserName: () => string;
   onBack: () => void;
   onLogActivity: (
@@ -51,6 +63,8 @@ export const PocDetailPage: React.FC<PocDetailPageProps> = ({
   basePath,
   poc,
   equipment,
+  defaultBranch,
+  defaultBranchInventory,
   getUserName,
   onBack,
   onLogActivity,
@@ -69,6 +83,13 @@ export const PocDetailPage: React.FC<PocDetailPageProps> = ({
   const [itemForm, setItemForm] = useState<ItemForm>(emptyItemForm());
   const [savingItem, setSavingItem] = useState(false);
 
+  // Import from default branch modal
+  const [importOpen, setImportOpen] = useState(false);
+  const [importSearch, setImportSearch] = useState("");
+  const [importItemId, setImportItemId] = useState("");
+  const [importQty, setImportQty] = useState("1");
+  const [importing, setImporting] = useState(false);
+
   // Document links
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkName, setLinkName] = useState("");
@@ -79,6 +100,74 @@ export const PocDetailPage: React.FC<PocDetailPageProps> = ({
   const [trackingNumber, setTrackingNumber] = useState("");
   const [rmaNumber, setRmaNumber] = useState("");
   const [returning, setReturning] = useState(false);
+
+  // ── Import from default branch ─────────────────────────────────────────────
+
+  const importItem = defaultBranchInventory.find((i) => i.id === importItemId);
+  const importQtyNum = Number(importQty);
+  const importValid =
+    !!importItem &&
+    Number.isInteger(importQtyNum) &&
+    importQtyNum >= 1 &&
+    importQtyNum <= importItem.amountInInventory;
+  const importCandidates = defaultBranchInventory
+    .filter((i) => i.amountInInventory > 0)
+    .filter((i) => {
+      const q = importSearch.trim().toLowerCase();
+      if (!q) return true;
+      return [i.name, i.modelNumber, i.upc ?? "", i.manufactureName]
+        .some((v) => v.toLowerCase().includes(q));
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const openImport = () => {
+    setImportSearch("");
+    setImportItemId("");
+    setImportQty("1");
+    setImportOpen(true);
+  };
+
+  const handleImport = async () => {
+    if (!importValid || !importItem || !defaultBranch) return;
+    const qty = importQtyNum;
+    setImporting(true);
+    try {
+      const id = crypto.randomUUID();
+      const row: PocEquipmentItem = {
+        id,
+        pocId: poc.id,
+        name: importItem.name,
+        modelNumber: importItem.modelNumber,
+        manufactureName: importItem.manufactureName,
+        quantity: qty,
+        sourceItemId: importItem.id,
+        sourceBranchId: defaultBranch.id,
+        createdAt: new Date().toISOString(),
+        createdBy: getUserName(),
+      };
+      const batch = writeBatch(db);
+      batch.update(doc(collection(db, `${basePath}/inventory`), importItem.id), {
+        amountInInventory: increment(-qty),
+      });
+      batch.set(doc(collection(db, `${basePath}/pocEquipment`), id), row);
+      await batch.commit();
+      await onLogActivity({
+        action: "poc_equipment_import",
+        collection: "inventory",
+        docId: importItem.id,
+        itemId: importItem.id,
+        delta: -qty,
+        resultingQuantity: importItem.amountInInventory - qty,
+        locationId: defaultBranch.id,
+        summary: `Moved ${qty}× ${importItem.name} (${importItem.modelNumber}) from ${defaultBranch.name} to POC ${poc.pocName}`,
+      });
+      setImportOpen(false);
+    } catch (err: any) {
+      onAlert(`Failed to import equipment: ${err?.message ?? String(err)}`);
+    } finally {
+      setImporting(false);
+    }
+  };
 
   // ── Equipment ──────────────────────────────────────────────────────────────
 
@@ -350,12 +439,22 @@ export const PocDetailPage: React.FC<PocDetailPageProps> = ({
             {isActive ? `Equipment (${totalQty})` : "Returned Equipment"}
           </h3>
           {isActive && (
-            <button
-              className="px-3 py-1.5 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
-              onClick={openAddItem}
-            >
-              + Add Equipment
-            </button>
+            <div className="flex gap-2">
+              <button
+                className="px-3 py-1.5 rounded-md border border-[var(--border)] text-sm text-[var(--fg)] hover:bg-[var(--surface-1)] disabled:opacity-50"
+                onClick={openImport}
+                disabled={!defaultBranch}
+                title={defaultBranch ? undefined : "Set a default branch in User Settings first"}
+              >
+                Import from {defaultBranch ? defaultBranch.shortCode || defaultBranch.name : "Default Branch"}
+              </button>
+              <button
+                className="px-3 py-1.5 rounded-md bg-[#005691] text-sm text-white hover:bg-[#00426e]"
+                onClick={openAddItem}
+              >
+                + Add Equipment
+              </button>
+            </div>
           )}
         </div>
         {(() => {
@@ -531,6 +630,86 @@ export const PocDetailPage: React.FC<PocDetailPageProps> = ({
               className={pocInputCls}
               value={itemForm.quantity}
               onChange={(e) => setItemForm((p) => ({ ...p, quantity: e.target.value }))}
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Import from default branch modal */}
+      <Modal
+        open={importOpen}
+        onClose={() => !importing && setImportOpen(false)}
+        title={`Import from ${defaultBranch?.name ?? "Default Branch"}`}
+        maxWidthClass="max-w-xl"
+        footer={
+          <div className="flex justify-end gap-3">
+            <button
+              className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
+              onClick={() => setImportOpen(false)}
+              disabled={importing}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7] disabled:opacity-50"
+              onClick={handleImport}
+              disabled={importing || !importValid}
+            >
+              {importing ? "Importing..." : "Import"}
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-xs text-[var(--muted)]">
+            The quantity is deducted from {defaultBranch?.name ?? "the default branch"} and added to this POC.
+          </p>
+          <div>
+            <label className={pocLabelCls}>Search</label>
+            <input
+              className={pocInputCls}
+              placeholder="Name, model #, UPC, manufacturer"
+              value={importSearch}
+              onChange={(e) => setImportSearch(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className={pocLabelCls}>
+              Item <Req />
+            </label>
+            <select
+              className={pocInputCls}
+              value={importItemId}
+              onChange={(e) => {
+                setImportItemId(e.target.value);
+                setImportQty("1");
+              }}
+            >
+              <option value="">
+                {importCandidates.length ? "Select item..." : "No items in stock"}
+              </option>
+              {importCandidates.map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.name} — {i.modelNumber} ({i.amountInInventory} available)
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={pocLabelCls}>
+              Quantity <Req />
+              {importItem && (
+                <span className="font-normal text-[var(--muted)]"> (max {importItem.amountInInventory})</span>
+              )}
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={importItem?.amountInInventory}
+              step={1}
+              className={pocInputCls}
+              value={importQty}
+              onChange={(e) => setImportQty(e.target.value)}
             />
           </div>
         </div>
