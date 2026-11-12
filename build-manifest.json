@@ -8,7 +8,17 @@
   "inner_pages_viewed": [],
   "layers_read": [],
   "files_written": [
-    "/Users/kingdem/Projects/KIICH-app/src/App.tsx"
+    "/Users/kingdem/Projects/KIICH-app/src/App.tsx",
+    "/Users/kingdem/.claude/plans/useing-the-projects-inventroy-cached-reddy.md",
+    "/Users/kingdem/Projects/KIICH-app/src/types.ts",
+    "/Users/kingdem/Projects/KIICH-app/src/utils/pocDates.ts",
+    "/Users/kingdem/Projects/KIICH-app/src/utils/pocDates.test.ts",
+    "/Users/kingdem/Projects/KIICH-app/src/features/poc/pocStorage.ts",
+    "/Users/kingdem/Projects/KIICH-app/src/features/poc/PocFormModal.tsx",
+    "/Users/kingdem/Projects/KIICH-app/src/features/poc/PocPage.tsx",
+    "/Users/kingdem/Projects/KIICH-app/src/features/poc/PocDetailPage.tsx",
+    "/Users/kingdem/Projects/KIICH-app/storage.rules",
+    "/Users/kingdem/Projects/KIICH-app/firebase.json"
   ],
   "sections": [],
   "diverge": null,

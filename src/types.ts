@@ -67,6 +67,55 @@ export interface ProjectShipment {
   shippedAt?: string;
 }
 
+export type PocStatus = "active" | "returned";
+
+export interface PocDocument {
+  id: string;
+  kind: "link";
+  name: string;
+  url: string;
+  addedAt: string;
+  addedBy: string;
+}
+
+export interface PocProject {
+  id: string;
+  pocName: string;
+  summary: string;
+  vendorName: string;
+  receivedDate: string; // YYYY-MM-DD
+  loanDurationDays: number;
+  returnByDate: string; // YYYY-MM-DD, receivedDate + loanDurationDays
+  status: PocStatus;
+  documents: PocDocument[];
+  returnTrackingNumber?: string;
+  returnRmaNumber?: string;
+  returnedAt?: string;
+  returnedBy?: string;
+  /** Snapshot of equipment at return time (equipment rows are deleted on return). */
+  returnedItems?: {
+    name: string;
+    modelNumber: string;
+    manufactureName: string;
+    serialNumber?: string;
+    quantity: number;
+  }[];
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface PocEquipmentItem {
+  id: string;
+  pocId: string;
+  name: string;
+  modelNumber: string;
+  manufactureName: string;
+  serialNumber?: string;
+  quantity: number;
+  createdAt: string;
+  createdBy: string;
+}
+
 export interface InventoryItem {
   id: string;
   upc?: string;

@@ -34,6 +34,8 @@ import { Modal } from "./components/Modal";
 import { useCollection } from "./hooks/useCollection";
 import { ProjectsPage } from "./features/projects/ProjectsPage";
 import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
+import { PocPage } from "./features/poc/PocPage";
+import { PocDetailPage } from "./features/poc/PocDetailPage";
 import {
   buildBasePath,
   jsonSafeParse,
@@ -56,6 +58,8 @@ import type {
   Project,
   ProjectInventoryItem,
   ProjectShipment,
+  PocProject,
+  PocEquipmentItem,
 } from "./types";
 import { Toast } from "./components/Toast";
 import { GlobalSearch } from "./components/GlobalSearch";
@@ -75,7 +79,8 @@ type PageKey =
   | "transfers"
   | "warehouses"
   | "activityHistory"
-  | "projects";
+  | "projects"
+  | "poc";
 
 const makeEmptyPoForm = (): PoFormState => ({
   orderNumber: "",
@@ -306,6 +311,20 @@ const App: React.FC = () => {
       db,
       basePath,
       collectionName: "projectShipments",
+    });
+
+  const { data: pocProjects, loading: loadingPocProjects } =
+    useCollection<PocProject>({
+      db,
+      basePath,
+      collectionName: "pocProjects",
+    });
+
+  const { data: pocEquipment, loading: loadingPocEquipment } =
+    useCollection<PocEquipmentItem>({
+      db,
+      basePath,
+      collectionName: "pocEquipment",
     });
 
   useEffect(() => {
@@ -561,6 +580,7 @@ const App: React.FC = () => {
   const [editingPO, setEditingPO] = useState<PurchaseOrder | null>(null);
 
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedPocId, setSelectedPocId] = useState<string | null>(null);
 
   const [poReceiveMode, setPoReceiveMode] = useState<{
     po: PurchaseOrder;
@@ -3733,6 +3753,45 @@ const App: React.FC = () => {
     );
   };
 
+  const renderPocPage = () => {
+    const onAlert = (msg: string) => messageBoxRef.current?.alert(msg);
+    const onConfirm = (msg: string) =>
+      messageBoxRef.current?.confirm(msg) ?? Promise.resolve(undefined);
+    if (selectedPocId) {
+      const poc = pocProjects.find((p) => p.id === selectedPocId);
+      if (!poc) {
+        setSelectedPocId(null);
+        return null;
+      }
+      return (
+        <PocDetailPage
+          db={db!}
+          basePath={basePath!}
+          poc={poc}
+          equipment={pocEquipment.filter((e) => e.pocId === selectedPocId)}
+          getUserName={getUserName}
+          onBack={() => setSelectedPocId(null)}
+          onLogActivity={logActivity}
+          onAlert={onAlert}
+          onConfirm={onConfirm}
+        />
+      );
+    }
+    return (
+      <PocPage
+        db={db!}
+        basePath={basePath!}
+        pocProjects={pocProjects}
+        pocEquipment={pocEquipment}
+        getUserName={getUserName}
+        onSelectPoc={(p) => setSelectedPocId(p.id)}
+        onLogActivity={logActivity}
+        onAlert={onAlert}
+        onConfirm={onConfirm}
+      />
+    );
+  };
+
   const renderWarehousesPage = () => {
     return (
       <div className="space-y-4">
@@ -4035,6 +4094,16 @@ const App: React.FC = () => {
               }
             />
             <SidebarItem
+              label="POC Equipment"
+              active={page === "poc"}
+              onClick={() => { setPage("poc"); setSidebarOpen(false); }}
+              icon={
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              }
+            />
+            <SidebarItem
               label="Purchase Orders"
               active={page === "pos"}
               onClick={() => { setPage("pos"); setSidebarOpen(false); }}
@@ -4100,7 +4169,9 @@ const App: React.FC = () => {
           loadingActivity ||
           loadingProjects ||
           loadingProjectShipments ||
-          loadingProjectInventory) && <LoadingSpinner />}
+          loadingProjectInventory ||
+          loadingPocProjects ||
+          loadingPocEquipment) && <LoadingSpinner />}
         {page === "dashboard" && (
           <DashboardPage
             inventory={filteredInventory}
@@ -4170,6 +4241,7 @@ const App: React.FC = () => {
         {page === "transfers" && renderTransfersPage()}
         {page === "warehouses" && renderWarehousesPage()}
         {page === "projects" && renderProjectsPage()}
+        {page === "poc" && renderPocPage()}
         {page === "activityHistory" && (
           <ActivityHistoryPage
             activityHistory={activityHistory}
