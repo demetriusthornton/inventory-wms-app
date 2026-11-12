@@ -290,9 +290,10 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
   };
 
   return (
+    <>
     <Modal
       open={open}
-      onClose={() => !saving && onClose()}
+      onClose={() => !saving && !importOpen && onClose()}
       title={editing ? "Edit POC" : "New POC"}
       maxWidthClass="max-w-4xl"
       footer={
@@ -383,10 +384,17 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="px-3 py-1 rounded-md border border-[#005691] text-xs text-[#005691] hover:bg-[var(--surface-1)]"
-                    onClick={() => setImportOpen((o) => !o)}
+                    className="px-3 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--fg)] hover:bg-[var(--surface-1)] disabled:opacity-50"
+                    onClick={() => {
+                      setImportSearch("");
+                      setImportItemId("");
+                      setImportQty("1");
+                      setImportOpen(true);
+                    }}
+                    disabled={!defaultBranch}
+                    title={defaultBranch ? undefined : "Set a default branch in User Settings first"}
                   >
-                    Import from Inventory
+                    Import from {defaultBranch ? defaultBranch.shortCode || defaultBranch.name : "Default Branch"}
                   </button>
                   <button
                     type="button"
@@ -397,77 +405,6 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
                   </button>
                 </div>
               </div>
-              {importOpen && (
-                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-1)] p-3 space-y-2">
-                  {!defaultBranch ? (
-                    <p className="text-xs text-[var(--fg)]">
-                      No default branch set. Choose one in User Settings to import from inventory.
-                    </p>
-                  ) : (
-                    <>
-                      <p className="text-xs text-[var(--muted)]">
-                        Importing from <span className="font-semibold text-[var(--fg)]">{defaultBranch.name}</span>.
-                        The quantity is deducted from this branch when the POC is saved.
-                      </p>
-                      <input
-                        className={smInputCls}
-                        placeholder="Search name, model #, UPC, manufacturer"
-                        value={importSearch}
-                        onChange={(e) => setImportSearch(e.target.value)}
-                      />
-                      <div className="flex flex-wrap items-center gap-2">
-                        <select
-                          className={`${smInputCls} flex-1 min-w-[12rem]`}
-                          value={importItemId}
-                          onChange={(e) => {
-                            setImportItemId(e.target.value);
-                            setImportQty("1");
-                          }}
-                        >
-                          <option value="">
-                            {importCandidates.length ? "Select item..." : "No matching in-stock items"}
-                          </option>
-                          {importCandidates.map((i) => (
-                            <option key={i.id} value={i.id}>
-                              {i.name} — {i.modelNumber} ({i.amountInInventory} available)
-                            </option>
-                          ))}
-                        </select>
-                        <input
-                          type="number"
-                          min={1}
-                          max={importPicked?.amountInInventory}
-                          step={1}
-                          className={`${smInputCls} w-20`}
-                          value={importQty}
-                          onChange={(e) => setImportQty(e.target.value)}
-                          aria-label="Quantity"
-                        />
-                        <button
-                          type="button"
-                          className="px-3 py-1 rounded-md bg-[#0ea5e9] text-xs text-white hover:bg-[#0284c7] disabled:opacity-50"
-                          onClick={handleImportRow}
-                          disabled={!importQtyValid}
-                        >
-                          Add to POC
-                        </button>
-                        <button
-                          type="button"
-                          className="px-3 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--fg)] hover:bg-[var(--surface-1)]"
-                          onClick={() => setImportOpen(false)}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      {importPicked && (
-                        <p className="text-[10px] text-[var(--muted)]">
-                          Max {importPicked.amountInInventory}
-                        </p>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
               <div className="border border-[var(--border)] rounded-md overflow-x-auto">
                 <table className="min-w-full text-xs">
                   <thead className="bg-[var(--surface-1)]">
@@ -572,5 +509,86 @@ export const PocFormModal: React.FC<PocFormModalProps> = ({
         )}
       </div>
     </Modal>
+
+    {/* Import from default branch — same dialog as on the POC page */}
+    <Modal
+      open={open && importOpen}
+      onClose={() => setImportOpen(false)}
+      title={`Import from ${defaultBranch?.name ?? "Default Branch"}`}
+      maxWidthClass="max-w-xl"
+      footer={
+        <div className="flex justify-end gap-3">
+          <button
+            className="px-4 py-2 rounded-md bg-[#dc2626] text-sm text-white hover:bg-[#b91c1c]"
+            onClick={() => setImportOpen(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="px-4 py-2 rounded-md bg-[#0ea5e9] text-sm text-white hover:bg-[#0284c7] disabled:opacity-50"
+            onClick={handleImportRow}
+            disabled={!importQtyValid}
+          >
+            Import
+          </button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <p className="text-xs text-[var(--muted)]">
+          The quantity is deducted from {defaultBranch?.name ?? "the default branch"} and added to
+          this POC when the POC is saved.
+        </p>
+        <div>
+          <label className={pocLabelCls}>Search</label>
+          <input
+            className={pocInputCls}
+            placeholder="Name, model #, UPC, manufacturer"
+            value={importSearch}
+            onChange={(e) => setImportSearch(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className={pocLabelCls}>
+            Item <Req />
+          </label>
+          <select
+            className={pocInputCls}
+            value={importItemId}
+            onChange={(e) => {
+              setImportItemId(e.target.value);
+              setImportQty("1");
+            }}
+          >
+            <option value="">
+              {importCandidates.length ? "Select item..." : "No items in stock"}
+            </option>
+            {importCandidates.map((i) => (
+              <option key={i.id} value={i.id}>
+                {i.name} — {i.modelNumber} ({i.amountInInventory} available)
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className={pocLabelCls}>
+            Quantity <Req />
+            {importPicked && (
+              <span className="font-normal text-[var(--muted)]"> (max {importPicked.amountInInventory})</span>
+            )}
+          </label>
+          <input
+            type="number"
+            min={1}
+            max={importPicked?.amountInInventory}
+            step={1}
+            className={pocInputCls}
+            value={importQty}
+            onChange={(e) => setImportQty(e.target.value)}
+          />
+        </div>
+      </div>
+    </Modal>
+    </>
   );
 };
